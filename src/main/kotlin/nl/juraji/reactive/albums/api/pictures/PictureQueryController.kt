@@ -3,7 +3,7 @@ package nl.juraji.reactive.albums.api.pictures
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.handlers.FindAllPicturesQuery
 import nl.juraji.reactive.albums.query.projections.handlers.PictureSearchParameter
-import nl.juraji.reactive.albums.services.SseService
+import nl.juraji.reactive.albums.services.SseStreamService
 import org.axonframework.messaging.responsetypes.ResponseTypes
 import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.MediaType
@@ -16,7 +16,7 @@ import reactor.core.publisher.Flux
 @RestController
 class PictureQueryController(
         private val queryGateway: QueryGateway,
-        private val sseService: SseService,
+        private val sseStreamService: SseStreamService,
 ) {
 
     @GetMapping("/api/pictures", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
@@ -29,8 +29,7 @@ class PictureQueryController(
                 ResponseTypes.instanceOf(PictureProjection::class.java)
         )
 
-
-        return sseService.asSseEventStream(
+        return sseStreamService.asEventStream(
                 Flux.concat(
                         query.initialResult().flatMapMany { Flux.fromIterable(it) },
                         query.updates()

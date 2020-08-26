@@ -8,9 +8,9 @@ import java.time.Duration
 import java.util.*
 
 @Service
-class SseService {
+class SseStreamService {
 
-    fun <T> asSseEventStream(source: Flux<T>): Flux<ServerSentEvent<T>> {
+    fun <T> asEventStream(source: Flux<T>): Flux<ServerSentEvent<T>> {
         val sourceStream: Flux<ServerSentEvent<T>> = sourceEventStream(source)
         val heartbeatStream: Flux<ServerSentEvent<T>> = buildHeartbeatEventStream()
 
@@ -35,7 +35,7 @@ class SseService {
                         .build()
             }
 
-    companion object : LoggerCompanion() {
+    companion object {
         private val heartbeatInterval = Duration.ofSeconds(10)
     }
 
