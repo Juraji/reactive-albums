@@ -4,7 +4,10 @@ import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.events.PictureAttributesUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.TagAddedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.TagRemovedEvent
 import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.config.ProcessingGroup
@@ -33,14 +36,36 @@ class PictureProjectionsEventHandler(
 
     @EventSourcingHandler
     fun on(evt: PictureAttributesUpdatedEvent) {
-        updateAndEmit(evt.pictureId) {
-            it.copy(
-                    fileSize = evt.fileSize ?: it.fileSize,
-                    lastModifiedTime = evt.lastModifiedTime ?: it.lastModifiedTime,
-                    imageWidth = evt.imageWidth ?: it.imageWidth,
-                    imageHeight = evt.imageHeight ?: it.imageHeight,
-                    contentHash = evt.contentHash ?: it.contentHash
+        updateAndEmit(evt.pictureId) { node ->
+            node.copy(
+                    fileSize = evt.fileSize ?: node.fileSize,
+                    lastModifiedTime = evt.lastModifiedTime ?: node.lastModifiedTime,
+                    imageWidth = evt.imageWidth ?: node.imageWidth,
+                    imageHeight = evt.imageHeight ?: node.imageHeight,
+                    contentHash = evt.contentHash ?: node.contentHash,
             )
+        }
+    }
+
+    @EventSourcingHandler
+    fun on(evt: TagAddedEvent) {
+        updateAndEmit(evt.pictureId) { node ->
+            val tags = node.tags.plus(TagProjection(
+                    label = evt.label,
+                    color = evt.color,
+                    linkType = evt.linkType,
+            ))
+
+            node.copy(tags = tags)
+        }
+    }
+
+    @EventSourcingHandler
+    fun on(evt: TagRemovedEvent) {
+        updateAndEmit(evt.pictureId) { node ->
+            val tags = node.tags.filter { t -> t.label != evt.label }.toSet()
+
+            node.copy(tags = tags)
         }
     }
 

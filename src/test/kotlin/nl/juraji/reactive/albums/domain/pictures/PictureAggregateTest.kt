@@ -41,7 +41,7 @@ internal class PictureAggregateTest {
                         ),
                         PictureAnalysisRequestedEvent(
                                 pictureId = pictureId,
-                                location = location
+                                location = location,
                         )
                 )
     }

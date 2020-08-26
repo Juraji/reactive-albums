@@ -5,4 +5,4 @@ import org.axonframework.common.IdentifierFactory
 
 data class PictureId(
         override val identifier: String = IdentifierFactory.getInstance().generateIdentifier(),
-) : EntityId
+) : EntityId(identifier)

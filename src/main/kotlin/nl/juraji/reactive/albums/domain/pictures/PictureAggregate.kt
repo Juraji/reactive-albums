@@ -1,15 +1,17 @@
 package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
+import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
+import nl.juraji.reactive.albums.domain.pictures.commands.RemoveTagCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UpdatePictureAttributesCommand
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAttributesUpdatedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.*
+import nl.juraji.reactive.albums.util.extensions.isHexColor
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
+import org.axonframework.modelling.command.AggregateMember
 import org.axonframework.spring.stereotype.Aggregate
 
 @Aggregate
@@ -17,6 +19,10 @@ class PictureAggregate() {
 
     @AggregateIdentifier
     private lateinit var pictureId: PictureId
+    private lateinit var displayName: String
+
+    @AggregateMember
+    private var tags: Set<TagEntity> = emptySet()
 
     @CommandHandler
     constructor(cmd: CreatePictureCommand) : this() {
@@ -36,7 +42,7 @@ class PictureAggregate() {
 
         AggregateLifecycle.apply(PictureAnalysisRequestedEvent(
                 pictureId = cmd.pictureId,
-                location = cmd.location
+                location = cmd.location,
         ))
     }
 
@@ -55,8 +61,47 @@ class PictureAggregate() {
         )
     }
 
+    @CommandHandler
+    fun handle(cmd: AddTagCommand) {
+        Validate.isTrue(cmd.label.isNotBlank()) { "Tag label should not be blank" }
+        Validate.isTrue(cmd.color.isHexColor()) { "Tag color should be a valid hexadecimal color" }
+        Validate.isTrue(tags.none { it.label == cmd.label }) { "Tag with label ${cmd.label} already exists on $displayName" }
+
+        AggregateLifecycle.apply(
+                TagAddedEvent(
+                        pictureId = pictureId,
+                        label = cmd.label,
+                        color = cmd.color,
+                        linkType = cmd.tagLinkType,
+                )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: RemoveTagCommand) {
+        Validate.isTrue(tags.any { it.label == cmd.label }) { "Tag with label ${cmd.label} does not exist on $displayName" }
+
+        AggregateLifecycle.apply(
+                TagRemovedEvent(
+                        pictureId = pictureId,
+                        label = cmd.label
+                )
+        )
+    }
+
     @EventSourcingHandler
     fun on(evt: PictureCreatedEvent) {
         pictureId = evt.pictureId
+        displayName = evt.displayName
+    }
+
+    @EventSourcingHandler
+    fun on(evt: TagAddedEvent) {
+        tags = tags.plus(TagEntity(evt.label))
+    }
+
+    @EventSourcingHandler
+    fun on(evt: TagRemovedEvent) {
+        tags = tags.minus(TagEntity(evt.label))
     }
 }
