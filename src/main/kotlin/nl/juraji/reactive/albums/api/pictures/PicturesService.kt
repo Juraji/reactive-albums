@@ -47,8 +47,4 @@ class PicturesService(
                 PictureProjection::class
         )
     }
-
-    companion object : LoggerCompanion() {
-        private val projectionTimeout = Duration.ofSeconds(5)
-    }
 }

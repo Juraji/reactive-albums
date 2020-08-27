@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.services
 
-import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.springframework.http.codec.ServerSentEvent
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
