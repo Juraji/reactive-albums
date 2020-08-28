@@ -2,7 +2,7 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.query.projections.PictureImage
+import nl.juraji.reactive.albums.query.projections.PictureImageProjection
 import nl.juraji.reactive.albums.query.projections.handlers.FindPictureByIdQuery
 import org.axonframework.queryhandling.QueryGateway
 import org.springframework.core.io.FileSystemResource
@@ -34,6 +34,6 @@ class PictureImageController(
     fun getPictures(
             @PathVariable("pictureId") pictureId: PictureId,
     ): Mono<Resource> = Mono
-            .fromFuture(queryGateway.query(FindPictureByIdQuery(pictureId), PictureImage::class.java))
-            .map { (location) -> FileSystemResource(location) }
+            .fromFuture(queryGateway.query(FindPictureByIdQuery(pictureId), PictureImageProjection::class.java))
+            .map { FileSystemResource(it.location) }
 }

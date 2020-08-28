@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.domain.pictures.sagas
+package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
@@ -6,6 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagAddedEvent
 import nl.juraji.reactive.albums.util.LoggerCompanion
+import nl.juraji.reactive.albums.util.extensions.toHexColor
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.*
@@ -16,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 @Saga
 @Revision("1.0")
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
-class AutoTagSaga {
+class AutoTagPictureSaga {
 
     @Autowired
     private lateinit var commandGateway: CommandGateway
@@ -26,7 +27,7 @@ class AutoTagSaga {
     fun on(evt: PictureAnalysisRequestedEvent) {
         evt.location.parent.forEach {
             val label = it.fileName.toString()
-            val color = labelAsHexColor(label)
+            val color = label.toHexColor()
 
             commandGateway.send<Unit>(
                     AddTagCommand(
@@ -35,27 +36,22 @@ class AutoTagSaga {
                             color = color,
                             tagLinkType = TagLinkType.AUTO
                     )
-            ).thenRun { SagaLifecycle.associateWith(evt.pictureId.toString(), label) }
+            ).thenRun { SagaLifecycle.associateWith(TAG_ASSOCIATION, label) }
         }
     }
 
     @SagaEventHandler(associationProperty = "pictureId")
     fun onEvent(evt: TagAddedEvent) {
         val scope = SagaLifecycle.getCurrentScope<AnnotatedSaga<Any>>()
-        scope.associationValues.remove(AssociationValue(TAG_ID_ASSOCIATION, evt.label))
+        scope.associationValues.remove(AssociationValue(TAG_ASSOCIATION, evt.label))
 
-        if (scope.associationValues.none { it.key == TAG_ID_ASSOCIATION }) {
+        if (scope.associationValues.none { it.key == TAG_ASSOCIATION }) {
             logger.debug("Auto tagging completed for ${evt.pictureId}")
             SagaLifecycle.end()
         }
     }
 
-    private fun labelAsHexColor(label: String): String = Integer
-            .toHexString(label.hashCode())
-            .padStart(8, '0')
-            .substring(2)
-
     companion object : LoggerCompanion() {
-        private const val TAG_ID_ASSOCIATION = "tag-id"
+        private const val TAG_ASSOCIATION = "label"
     }
 }

@@ -1,7 +1,7 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.query.projections.PictureImage
+import nl.juraji.reactive.albums.query.projections.PictureImageProjection
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import org.axonframework.queryhandling.QueryHandler
@@ -18,7 +18,7 @@ class PictureProjectionsQueryHandler(
                     .orElseThrow { NoSuchEntityException("Picture", q.pictureId) }
 
     @QueryHandler
-    fun queryPictureImage(q: FindPictureByIdQuery): PictureImage =
+    fun queryPictureImage(q: FindPictureByIdQuery): PictureImageProjection =
             pictureRepository.findPictureImageById(q.pictureId.identifier)
                     .orElseThrow { NoSuchEntityException("Picture", q.pictureId) }
 
@@ -30,7 +30,7 @@ class PictureProjectionsQueryHandler(
 /**
  * Possible results:
  * - PictureProjection::class.java
- * - PictureImage::class.java
+ * - PictureImageProjection::class.java
  */
 data class FindPictureByIdQuery(
         val pictureId: PictureId,

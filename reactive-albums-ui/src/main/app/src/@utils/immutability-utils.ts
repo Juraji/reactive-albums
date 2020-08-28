@@ -1,4 +1,4 @@
-export function merge<T>(target: T | undefined, ...source: (T | undefined)[]): T {
+export function merge<T>(target: T | undefined, ...source: (Partial<T> | undefined)[]): T {
   return Object.assign({}, target, ...source);
 }
 

@@ -7,14 +7,12 @@ import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.handlers.FindPictureByIdQuery
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.services.FileSystemService
-import nl.juraji.reactive.albums.util.LoggerCompanion
 import nl.juraji.reactive.albums.util.extensions.subscribeToNextUpdate
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.queryhandling.QueryGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.nio.file.Paths
-import java.time.Duration
+import java.nio.file.Path
 
 @Service
 class PicturesService(
@@ -25,18 +23,16 @@ class PicturesService(
 ) {
 
     fun addPicture(
-            location: String,
+            location: Path,
             displayName: String?,
     ): Mono<PictureProjection> {
-        Validate.isFalse(pictureRepository.existsByLocation(location)) { "A picture with location $location already exists" }
-
-        val path = Paths.get(location)
-        Validate.isTrue(fileSystemService.exists(path)) { "File at $location does not exist" }
-        val contentType = fileSystemService.readContentType(path)
+        Validate.isFalse(pictureRepository.existsByLocation(location.toString())) { "A picture with location $location already exists" }
+        Validate.isTrue(fileSystemService.exists(location)) { "File at $location does not exist" }
+        val contentType = fileSystemService.readContentType(location)
 
         val command = CreatePictureCommand(
                 pictureId = PictureId(),
-                location = path,
+                location = location,
                 contentType = contentType,
                 displayName = displayName
         )

@@ -1,10 +1,7 @@
 package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
-import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.RemoveTagCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.UpdatePictureAttributesCommand
+import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.util.extensions.isHexColor
 import org.axonframework.commandhandling.CommandHandler
@@ -78,6 +75,15 @@ class PictureAggregate() {
     }
 
     @CommandHandler
+    fun handle(cmd: DeletePictureCommand) {
+        AggregateLifecycle.apply(
+                PictureDeletedEvent(
+                        pictureId = cmd.pictureId
+                )
+        )
+    }
+
+    @CommandHandler
     fun handle(cmd: RemoveTagCommand) {
         Validate.isTrue(tags.any { it.label == cmd.label }) { "Tag with label ${cmd.label} does not exist on $displayName" }
 
@@ -103,5 +109,10 @@ class PictureAggregate() {
     @EventSourcingHandler
     fun on(evt: TagRemovedEvent) {
         tags = tags.minus(TagEntity(evt.label))
+    }
+
+    @EventSourcingHandler
+    fun on(evt: PictureDeletedEvent) {
+        AggregateLifecycle.markDeleted()
     }
 }

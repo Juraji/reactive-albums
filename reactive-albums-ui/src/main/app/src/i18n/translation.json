@@ -4,8 +4,18 @@
       "label": "Home"
     },
     "add-pictures-modal": {
-      "drop-zone-input-label": "Drop pictures here or click to add",
-      "drop-zone-input-label-active": "Drop files..."
+      "title": "Register directory",
+      "form": {
+        "field_location": {
+          "label": "Directory",
+          "placeholder": "X:\\\\path\\to\\file or /path/to/file"
+        },
+        "field_recursive": {
+          "label": "Register subdirectories"
+        }
+      },
+      "close-btn": "home.add-pictures-modal.close-btn",
+      "add-btn": "home.add-pictures-modal.add-btn"
     }
   },
   "navigation": {

@@ -2,10 +2,7 @@ package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAttributesUpdatedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.TagAddedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.TagRemovedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
@@ -67,6 +64,11 @@ class PictureProjectionsEventHandler(
 
             node.copy(tags = tags)
         }
+    }
+
+    @EventSourcingHandler
+    fun on(evt: PictureDeletedEvent) {
+        deleteAndEmit(evt.pictureId)
     }
 
     private fun updateAndEmit(id: PictureId, update: (PictureProjection) -> PictureProjection) {

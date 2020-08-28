@@ -7,5 +7,5 @@ data class CreatePictureCommand(
         override val pictureId: PictureId,
         val location: Path,
         val contentType: String,
-        val displayName: String?,
+        val displayName: String? = null,
 ) : PictureCommand(pictureId)

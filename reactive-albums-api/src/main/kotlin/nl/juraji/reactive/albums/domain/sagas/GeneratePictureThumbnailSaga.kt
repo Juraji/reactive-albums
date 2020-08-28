@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.domain.pictures.sagas
+package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
@@ -17,7 +17,7 @@ import java.nio.file.Paths
 @Saga
 @Revision("1.0")
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
-class GenerateThumbnailSaga {
+class GeneratePictureThumbnailSaga {
 
     @Autowired
     private lateinit var imageService: ImageService

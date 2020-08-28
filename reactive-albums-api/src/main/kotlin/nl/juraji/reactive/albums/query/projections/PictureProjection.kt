@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.query.projections
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.util.serialization.BitsetAttributeConverter
 import java.time.LocalDateTime
@@ -22,10 +23,15 @@ data class PictureProjection(
         val imageHeight: Int? = null,
         val duplicateCount: Int = 0,
         @JsonIgnore @Lob val contentHash: BitSet? = null,
-        @ElementCollection(fetch = FetchType.EAGER) val tags: Set<TagProjection> = emptySet()
+        @ElementCollection(fetch = FetchType.EAGER) val tags: Set<TagProjection> = emptySet(),
 )
 
-data class PictureImage(
-        val location: String,
-        val pictureType: PictureType,
-)
+interface PictureImageProjection {
+    val location: String
+    val pictureType: PictureType
+}
+
+interface PictureLocationProjection {
+    val id: PictureId
+    val location: String
+}
