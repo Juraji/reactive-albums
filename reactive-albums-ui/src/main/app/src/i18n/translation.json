@@ -1,0 +1,14 @@
+{
+  "home": {
+    "nav-item": {
+      "label": "Home"
+    },
+    "add-pictures-modal": {
+      "drop-zone-input-label": "Drop pictures here or click to add",
+      "drop-zone-input-label-active": "Drop files..."
+    }
+  },
+  "navigation": {
+    "title": "Albums"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@actions": ["src/@actions"],
+      "@api": ["src/@api"],
+      "@components": ["src/@components"],
+      "@hooks": ["src/@hooks"],
+      "@reducers": ["src/@reducers"],
+      "@templates": ["src/@templates"],
+      "@types": ["src/@types"],
+      "@utils": ["src/@utils"]
+    }
+  }
+}
