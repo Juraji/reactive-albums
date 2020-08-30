@@ -10,7 +10,7 @@ export const pictureEntityAdapter = createEntityAdapter<Picture>({
 
 export const pictureStoreReducer = createReducer(pictureEntityAdapter.getInitialState(), (builder) => {
   builder.addCase(fetchAllPictures.fulfilled, (state, action) => {
-    return pictureEntityAdapter.addMany(state, action.payload.data);
+    return pictureEntityAdapter.addMany(state, action.payload);
   });
   builder.addCase(upsertPictures, (state, action) => pictureEntityAdapter.upsertMany(state, action));
 });

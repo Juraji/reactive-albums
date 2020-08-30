@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { AlertTriangle, CheckCircle, Plus, Repeat } from 'react-feather';
+import { Plus } from 'react-feather';
 
 import { useDispatch } from '@hooks';
 import { Formik, FormikProps } from 'formik';
@@ -12,42 +12,46 @@ import {
   registerDirectoryFormInitialValues,
 } from './register-directory-button-form-schema';
 import Form from 'react-bootstrap/Form';
-import { append, formikControlProps, formikIsFormValid, merge, replace, update } from '@utils';
+import { formikControlProps, formikIsFormValid } from '@utils';
 import { registerDirectory } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
+import { Directory } from '../../@types/Directory.domain';
+import { useToasts } from 'react-toast-notifications';
+
+interface DirsRegisteredToast {
+  directories: Directory[];
+}
+
+const DirsRegisteredToast: FC<DirsRegisteredToast> = ({ directories }) => {
+  return (
+    <>
+      <span>Added the following directories:</span>
+      <ul>
+        {directories.map((directory, index) => (
+          <li key={index}>{directory.location}</li>
+        ))}
+      </ul>
+    </>
+  );
+};
 
 interface RegisterDirectoryButtonProps {}
 
-interface UploadHistoryItem extends RegisterDirectoryForm {
-  status: 'busy' | 'completed' | 'failed';
-  message?: string;
-}
-
 export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
   const { t } = useTranslation();
+  const { addToast } = useToasts();
   const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
-  const [uploadHistory, setUploadHistory] = useState<UploadHistoryItem[]>([]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const onSubmitForm = (e: RegisterDirectoryForm) => {
-    const historyItem: UploadHistoryItem = { ...e, status: 'busy' };
-    setUploadHistory(append(uploadHistory, historyItem));
-
     dispatch(registerDirectory(e))
       .then(unwrapResult)
-      .then(() => {
-        let index = uploadHistory.findIndex((h) => h.location === e.location);
-        setUploadHistory(replace(uploadHistory, index, update(uploadHistory[index], 'status', 'completed')));
-      })
-      .catch((e) => {
-        let index = uploadHistory.findIndex((h) => h.location === e.location);
-        const updated = merge(uploadHistory[index], { status: 'failed', message: e.message });
-        setUploadHistory(replace(uploadHistory, index, updated));
-      });
+      .then((dirs: Directory[]) => addToast(<DirsRegisteredToast directories={dirs} />))
+      .catch((e) => addToast(e.message, { appearance: 'error' }));
   };
 
   return (
@@ -87,17 +91,6 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
                     {...formikControlProps(formikBag, 'recursive')}
                   />
                 </Form.Group>
-                <ul className="list-unstyled upload-history">
-                  {uploadHistory.map((item, index) => (
-                    <li key={index} className={`upload-history-item ${item.status}`}>
-                      <span>{item.location}</span>
-                      {item.recursive ? <Repeat className="ml-2" /> : null}
-                      {item.status === 'busy' ? <Repeat className="ml-2" /> : null}
-                      {item.status === 'completed' ? <CheckCircle className="ml-2" /> : null}
-                      {item.status === 'failed' ? <AlertTriangle className="ml-2" /> : null}
-                    </li>
-                  ))}
-                </ul>
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>

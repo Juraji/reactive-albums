@@ -1,0 +1,6 @@
+@import "variables";
+
+.react-toast-notifications__container {
+  margin-top: 4rem;
+  z-index: $zindex-popover !important;
+}

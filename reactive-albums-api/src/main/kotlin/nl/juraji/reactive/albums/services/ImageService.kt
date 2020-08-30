@@ -33,7 +33,7 @@ class ImageService(
         val image = readImage(source)
         val scaledImage = Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, size)
 
-        if (!ImageIO.write(scaledImage, pictureType.subtype, target.toFile())) {
+        if (!ImageIO.write(scaledImage, pictureType.type, target.toFile())) {
             throw IOException("Unable to write thumbnail as $pictureType to $target")
         }
 
