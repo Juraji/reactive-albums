@@ -4,10 +4,11 @@ export class Page<T> {
   public readonly last: boolean;
 
   constructor(
-    public readonly content: T[],
-    public readonly currentPage: number,
-    public readonly totalItems: number,
-    public readonly size: number
+    public readonly content: T[] = [],
+    public readonly currentPage: number = 0,
+    public readonly totalItems: number = 0,
+    public readonly size: number = 0,
+    public readonly filter: string
   ) {
     this.totalPages = Math.ceil(totalItems / size);
     this.first = currentPage === 0;

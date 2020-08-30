@@ -1,5 +1,5 @@
 import React, { FC, ReactElement } from 'react';
-import { useEventSource } from '../../@hooks/use-event-source';
+import { useEventSource } from '@hooks';
 import { useDispatch } from '@hooks';
 import { Picture } from '@types';
 import { upsertPicture } from '@reducers';

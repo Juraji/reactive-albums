@@ -3,17 +3,20 @@ import React, { FC } from 'react';
 import './index.scss';
 import { usePicturesPage } from '@reducers';
 import { RegisterDirectoryButton } from './register-directory-button';
+import { PictureControls } from './picture-controls';
 
 const HomePage: FC = () => {
-  const currentPage = usePicturesPage(0, 50);
+  const { page, setPage, setSize, setFilter } = usePicturesPage();
 
   return (
     <>
       <RegisterDirectoryButton />
 
       <div className="home-page">
-        <pre>{JSON.stringify(currentPage, null, 2)}</pre>
+        <pre>{JSON.stringify(page, null, 2)}</pre>
       </div>
+
+      <PictureControls page={page} onSelectPage={setPage} onSelectPageSize={setSize} onUpdateFilter={setFilter} />
     </>
   );
 };

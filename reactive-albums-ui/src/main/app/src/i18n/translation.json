@@ -14,8 +14,16 @@
           "label": "Register subdirectories"
         }
       },
-      "close-btn": "home.add-pictures-modal.close-btn",
-      "add-btn": "home.add-pictures-modal.add-btn"
+      "close-btn": "Close",
+      "add-btn": "Add directory"
+    },
+    "pagination": {
+      "page_size_label": "{{- option}} of {{- totalItems}} Pictures",
+      "current_page_label": "Page {{- currentPage}} of {{- totalPages}}",
+      "no_items_found": "No Items found",
+      "filter": {
+        "placeholder": "Search..."
+      }
     }
   },
   "navigation": {

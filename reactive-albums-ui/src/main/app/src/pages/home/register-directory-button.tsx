@@ -4,7 +4,6 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { AlertTriangle, CheckCircle, Plus, Repeat } from 'react-feather';
 
-import './register-directory-button.scss';
 import { useDispatch } from '@hooks';
 import { Formik, FormikProps } from 'formik';
 import {
@@ -35,7 +34,6 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
   const handleShow = () => setShow(true);
 
   const onSubmitForm = (e: RegisterDirectoryForm) => {
-    console.log(e);
     const historyItem: UploadHistoryItem = { ...e, status: 'busy' };
     setUploadHistory(append(uploadHistory, historyItem));
 
@@ -47,16 +45,8 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
       })
       .catch((e) => {
         let index = uploadHistory.findIndex((h) => h.location === e.location);
-        setUploadHistory(
-          replace(
-            uploadHistory,
-            index,
-            merge(uploadHistory[index], {
-              status: 'failed',
-              message: e.message,
-            })
-          )
-        );
+        const updated = merge(uploadHistory[index], { status: 'failed', message: e.message });
+        setUploadHistory(replace(uploadHistory, index, updated));
       });
   };
 

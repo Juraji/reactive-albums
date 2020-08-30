@@ -33,13 +33,9 @@ class ScanDirectorySaga {
     @Autowired
     private lateinit var fileSystemService: FileSystemService
 
-    private lateinit var location: Path
-
     @StartSaga
     @SagaEventHandler(associationProperty = "directoryId")
     fun on(evt: DirectoryScanRequestedEvent) {
-        this.location = evt.location
-
         val directoryFiles = fileSystemService.listFiles(evt.location);
 
         if (!evt.firstTime) {
@@ -84,7 +80,7 @@ class ScanDirectorySaga {
         val scope = SagaLifecycle.getCurrentScope<AnnotatedSaga<Any>>()
 
         if (scope.associationValues.none { it.key == ADD_PICTURE_ASSOCIATION || it.key == DELETE_PICTURE_ASSOCIATION }) {
-            logger.debug("Directory scan completed for $location")
+            logger.debug("Directory scan completed")
             SagaLifecycle.end()
         }
     }
