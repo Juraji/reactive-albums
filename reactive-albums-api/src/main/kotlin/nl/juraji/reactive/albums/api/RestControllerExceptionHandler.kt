@@ -55,8 +55,10 @@ class RestControllerExceptionHandler(
     fun handleIncorrectResultSizeDataAccessException(ex: IncorrectResultSizeDataAccessException): ApiErrorResult =
             ApiErrorResult(status = HttpStatus.CONFLICT, message = ex.localizedMessage)
 
-    private fun handleDefault(ex: Throwable): ApiErrorResult =
-            ApiErrorResult(status = HttpStatus.INTERNAL_SERVER_ERROR, message = ex.localizedMessage)
+    private fun handleDefault(ex: Throwable): ApiErrorResult {
+        logger.error("Unhandled error in Api", ex)
+        return ApiErrorResult(status = HttpStatus.INTERNAL_SERVER_ERROR, message = ex.localizedMessage)
+    }
 
     companion object : LoggerCompanion() {
     }

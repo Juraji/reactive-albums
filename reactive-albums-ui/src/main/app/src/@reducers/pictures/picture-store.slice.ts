@@ -1,6 +1,7 @@
 import { createEntityAdapter, createReducer } from '@reduxjs/toolkit';
 import { Picture } from '@types';
-import { upsertPicture } from './picture.actions';
+import { upsertPictures } from './picture.actions';
+import { fetchAllPictures } from './picture.thunks';
 
 export const pictureEntityAdapter = createEntityAdapter<Picture>({
   selectId: (p) => p.id,
@@ -8,7 +9,10 @@ export const pictureEntityAdapter = createEntityAdapter<Picture>({
 });
 
 export const pictureStoreReducer = createReducer(pictureEntityAdapter.getInitialState(), (builder) => {
-  builder.addCase(upsertPicture, (state, action) => pictureEntityAdapter.upsertOne(state, action));
+  builder.addCase(fetchAllPictures.fulfilled, (state, action) => {
+    return pictureEntityAdapter.addMany(state, action.payload.data);
+  });
+  builder.addCase(upsertPictures, (state, action) => pictureEntityAdapter.upsertMany(state, action));
 });
 
 export const {

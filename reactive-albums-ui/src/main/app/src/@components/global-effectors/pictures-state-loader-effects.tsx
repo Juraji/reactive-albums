@@ -1,18 +1,21 @@
-import React, { FC, ReactElement } from 'react';
-import { useEventSource } from '@hooks';
-import { useDispatch } from '@hooks';
+import React, { FC, ReactElement, useEffect } from 'react';
+import { useDispatch, useEventSource } from '@hooks';
 import { Picture } from '@types';
-import { upsertPicture } from '@reducers';
+import { fetchAllPictures, upsertPictures } from '@reducers';
 
 export const PicturesStateLoaderEffects: FC = (): ReactElement => {
   const dispatch = useDispatch();
 
   const onPictureMessage = (data: string) => {
-    const picture: Picture = JSON.parse(data);
-    dispatch(upsertPicture(picture));
+    const pictures: Picture[] = JSON.parse(data);
+    dispatch(upsertPictures(pictures));
   };
 
-  useEventSource('/pictures', {}, [dispatch], onPictureMessage);
+  useEventSource('/pictures/updates', {}, [dispatch], onPictureMessage);
+
+  useEffect(() => {
+    dispatch(fetchAllPictures());
+  }, [dispatch]);
 
   return <></>;
 };
