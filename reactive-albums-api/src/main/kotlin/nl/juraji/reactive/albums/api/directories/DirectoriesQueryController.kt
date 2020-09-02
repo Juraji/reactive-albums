@@ -1,8 +1,9 @@
-package nl.juraji.reactive.albums.api.pictures
+package nl.juraji.reactive.albums.api.directories
 
 import nl.juraji.reactive.albums.api.ServerSentEventFlux
 import nl.juraji.reactive.albums.api.SseController
-import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.DirectoryProjection
+import nl.juraji.reactive.albums.query.projections.handlers.FindAllDirectoriesQuery
 import nl.juraji.reactive.albums.query.projections.handlers.FindAllPicturesQuery
 import nl.juraji.reactive.albums.util.extensions.bufferLastIdentity
 import org.axonframework.messaging.responsetypes.ResponseTypes
@@ -15,19 +16,19 @@ import reactor.kotlin.core.publisher.toMono
 import java.time.Duration
 
 @RestController
-class PictureQueryController(
+class DirectoriesQueryController(
         private val queryGateway: QueryGateway,
 ) : SseController() {
 
-    @GetMapping("/api/pictures")
-    fun getPictures(): Flux<PictureProjection> = queryGateway
-            .query(FindAllPicturesQuery(), ResponseTypes.multipleInstancesOf(PictureProjection::class.java))
+    @GetMapping("/api/directories")
+    fun getAllDirectories(): Flux<DirectoryProjection> = queryGateway
+            .query(FindAllDirectoriesQuery(), ResponseTypes.multipleInstancesOf(DirectoryProjection::class.java))
             .toMono()
             .flatMapMany { Flux.fromIterable(it) }
 
-    @GetMapping("/api/pictures/updates", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
-    fun getPictureUpdates(): ServerSentEventFlux<List<PictureProjection>> {
-        val updates: Flux<List<PictureProjection>> = queryGateway.subscriptionQuery(FindAllPicturesQuery(), PictureProjection::class.java, PictureProjection::class.java)
+    @GetMapping("/api/directories/updates", produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun getDirectoryUpdates(): ServerSentEventFlux<List<DirectoryProjection>> {
+        val updates: Flux<List<DirectoryProjection>> = queryGateway.subscriptionQuery(FindAllPicturesQuery(), DirectoryProjection::class.java, DirectoryProjection::class.java)
                 .updates()
                 .bufferLastIdentity(Duration.ofMillis(1500)) { it.id }
 

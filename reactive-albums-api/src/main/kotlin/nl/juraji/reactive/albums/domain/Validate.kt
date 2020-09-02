@@ -1,38 +1,49 @@
 package nl.juraji.reactive.albums.domain
 
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
+
 object Validate {
+    fun isTrue(assertion: Boolean, message: () -> String): Boolean =
+            if (!assertion) throw ValidationException(message())
+            else true
 
-    fun isTrue(assertion: Boolean, message: () -> String) {
-        if (!assertion) throw ValidationException(message())
-    }
+    fun isFalse(assertion: Boolean, message: () -> String): Boolean =
+            if (assertion) throw ValidationException(message())
+            else true
 
-    fun isFalse(assertion: Boolean, message: () -> String) {
-        if (assertion) throw ValidationException(message())
-    }
+    fun isNotNull(value: Any?, message: () -> String): Boolean =
+            if (value == null) throw ValidationException(message())
+            else true
+}
 
-    fun isNotNullOrBlank(value: String?, message: () -> String) {
-        if (value.isNullOrBlank()) throw ValidationException(message())
-    }
+object ValidateAsync {
+    private fun success(): Mono<Boolean> = Mono.just(true)
+    private fun fail(message: () -> String): Mono<Boolean> = Mono.error { ValidationException(message()) }
 
-    fun isNotNull(value: Any?, message: () -> String) {
-        if (value == null) throw ValidationException(message())
-    }
+    fun isTrue(assertion: Mono<Boolean>, message: () -> String): Mono<Boolean> =
+            assertion.flatMap { isTrue ->
+                if (isTrue) success()
+                else fail(message)
+            }
 
-    fun isNotEqual(a: Any, b: Any, message: () -> String) {
-        if (a == b) throw ValidationException(message())
-    }
+    fun isFalse(assertion: Mono<Boolean>, message: () -> String): Mono<Boolean> =
+            assertion.flatMap { isTrue ->
+                if (!isTrue) success()
+                else fail(message)
+            }
 
-    fun isNotEmpty(collection: Collection<Any>, message: () -> String) {
-        if (collection.isEmpty()) throw ValidationException(message())
-    }
+    fun <T : Any> isNotNull(value: Mono<T>, message: () -> String): Mono<Boolean> =
+            value
+                    .flatMap { success() }
+                    .switchIfEmpty(fail(message))
 
-    fun <T> anyMatch(collection: Collection<T>, predicate: (T) -> Boolean, message: () -> String) {
-        if (collection.none(predicate)) throw ValidationException(message())
-    }
+    fun all(vararg validations: Mono<Boolean>): Mono<Boolean> =
+            Flux.fromArray(validations)
+                    .flatMap { x -> x }
+                    .all { x -> x }
+                    .flatMap { success() }
 
-    fun <T> noneMatch(collection: Collection<T>, predicate: (T) -> Boolean, message: () -> String) {
-        if (collection.any(predicate)) throw ValidationException(message())
-    }
 }
 
 data class ValidationException(

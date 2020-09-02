@@ -1,9 +1,9 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
+import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryRegisteredEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregisteredEvent
-import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
@@ -23,6 +23,7 @@ class DirectoryProjectionsEventHandler(
                 id = evt.directoryId.identifier,
                 location = evt.location.toString(),
                 displayName = evt.displayName,
+                automaticScanEnabled = evt.automaticScanEnabled
         )
 
         saveAndEmit(entity)
@@ -33,7 +34,16 @@ class DirectoryProjectionsEventHandler(
         deleteAndEmit(evt.directoryId)
     }
 
-    private fun updateAndEmit(id: PictureId, update: (DirectoryProjection) -> DirectoryProjection) {
+    @EventSourcingHandler
+    fun on(evt: DirectoryUpdatedEvent) {
+        updateAndEmit(evt.directoryId) {
+            it.copy(
+                    automaticScanEnabled = evt.automaticScanEnabled
+            )
+        }
+    }
+
+    private fun updateAndEmit(id: DirectoryId, update: (DirectoryProjection) -> DirectoryProjection) {
         directoryRepository.findById(id.identifier)
                 .map { update(it) }
                 .ifPresent { saveAndEmit(it) }

@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 
 import './index.scss';
 import { usePicturesPage } from '@reducers';
-import { RegisterDirectoryButton } from './register-directory-button';
 import { PictureControls } from './picture-controls';
 
 const HomePage: FC = () => {
@@ -10,8 +9,6 @@ const HomePage: FC = () => {
 
   return (
     <>
-      <RegisterDirectoryButton />
-
       <div className="home-page">
         <pre>{JSON.stringify(page, null, 2)}</pre>
       </div>

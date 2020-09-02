@@ -8,4 +8,5 @@ data class DirectoryProjection(
         @Id val id: String,
         val location: String,
         val displayName: String,
+        val automaticScanEnabled: Boolean,
 )

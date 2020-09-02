@@ -9,3 +9,5 @@ export const directoriesSliceReducer = combineReducers({
 export type DirectoriesSliceState = ReturnType<typeof directoriesSliceReducer>;
 
 export * from './directory.thunks';
+export * from './directory.actions';
+export * from './directory.selector-hooks';

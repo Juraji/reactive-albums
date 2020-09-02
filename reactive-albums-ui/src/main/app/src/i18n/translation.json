@@ -3,20 +3,6 @@
     "nav-item": {
       "label": "Home"
     },
-    "add-pictures-modal": {
-      "title": "Register directory",
-      "form": {
-        "field_location": {
-          "label": "Directory",
-          "placeholder": "X:\\\\path\\to\\file or /path/to/file"
-        },
-        "field_recursive": {
-          "label": "Register subdirectories"
-        }
-      },
-      "close-btn": "Close",
-      "add-btn": "Add directory"
-    },
     "pagination": {
       "page_size_label": "{{- option}} of {{- totalItems}} Pictures",
       "current_page_label": "Page {{- currentPage}} of {{- totalPages}}",
@@ -28,5 +14,31 @@
   },
   "navigation": {
     "title": "Albums"
+  },
+  "directories": {
+    "nav-item": {
+      "label": "Directories"
+    },
+    "page_title": "Directories",
+    "register_directories_button": {
+      "form": {
+        "field_location": {
+          "placeholder": "C:\\path\\to\\directory or /path/to/directory"
+        },
+        "field_recursive": {
+          "label": "Include subdirectories"
+        }
+      },
+      "close-btn": "Cancel",
+      "add-btn": "Add",
+      "modal_title": "Register a directory"
+    },
+    "directory_item": {
+      "info": {
+        "automatic_scan_enabled": "Automatic scan enabled"
+      },
+      "confirm_unregister": "Are you sure you want to unregister {{- displayName}} and its descendants?"
+    },
+    "no_directories_registered": "No directories registered. Use the + button below to register a directory."
   }
 }

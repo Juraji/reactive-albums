@@ -12,10 +12,20 @@ class DirectoryProjectionsQueryHandler(
 ) {
 
     @QueryHandler
+    fun query(q: FindAllDirectoriesQuery): List<DirectoryProjection> =
+            directoryRepository.findAll()
+
+    @QueryHandler
     fun query(q: FindDirectoryById): DirectoryProjection =
             directoryRepository.findById(q.directoryId.identifier)
                     .orElseThrow { NoSuchEntityException("Directory", q.directoryId) }
 }
+
+/**
+ * Possible results:
+ * - ResponseTypes.multipleInstancesOf(DirectoryProjection::class.java)
+ */
+class FindAllDirectoriesQuery()
 
 /**
  * Possible results:

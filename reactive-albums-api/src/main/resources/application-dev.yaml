@@ -1,7 +1,6 @@
 cors:
   maxAge: "3600"
   origins:
-    - "http://localhost:4200"
     - "*"
 
 logging:

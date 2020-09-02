@@ -6,7 +6,6 @@ import java.nio.file.Files
 import java.nio.file.LinkOption
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
-import java.util.stream.Stream
 import kotlin.streams.toList
 
 @Service
@@ -17,5 +16,9 @@ class FileSystemService {
     fun createDirectories(path: Path): Path = Files.createDirectories(path)
     fun deleteIfExists(path: Path): Boolean = Files.deleteIfExists(path)
     fun listFiles(location: Path): List<Path> = Files.list(location).filter { Files.isRegularFile(it, LinkOption.NOFOLLOW_LINKS) }.toList()
-    fun listDirectoriesRecursive(location: Path): Stream<Path> = Files.walk(location, FileVisitOption.FOLLOW_LINKS).filter { Files.isDirectory(it) }
+
+    fun listDirectoriesRecursive(location: Path): List<Path> =
+            Files.walk(location, FileVisitOption.FOLLOW_LINKS)
+                    .filter { Files.isDirectory(it) }
+                    .toList()
 }

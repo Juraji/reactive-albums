@@ -8,7 +8,7 @@ data class RegisterDirectoryDto(
         val recursive: Boolean
 )
 
-data class UnregisterDirectoryDto(
+data class UpdateDirectoryDto(
         val directoryId: DirectoryId,
-        val recursive: Boolean
+        val automaticScanEnabled: Boolean?,
 )

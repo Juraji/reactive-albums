@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -15,8 +15,9 @@ import Form from 'react-bootstrap/Form';
 import { formikControlProps, formikIsFormValid } from '@utils';
 import { registerDirectory } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Directory } from '../../@types/Directory.domain';
 import { useToasts } from 'react-toast-notifications';
+import { Directory } from '@types';
+import { FormikHelpers } from 'formik/dist/types';
 
 interface DirsRegisteredToast {
   directories: Directory[];
@@ -47,20 +48,24 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const onSubmitForm = (e: RegisterDirectoryForm) => {
+  const onSubmitForm = (e: RegisterDirectoryForm, { resetForm }: FormikHelpers<RegisterDirectoryForm>) => {
     dispatch(registerDirectory(e))
       .then(unwrapResult)
-      .then((dirs: Directory[]) => addToast(<DirsRegisteredToast directories={dirs} />))
+      .then((dirs: Directory[]) => {
+        setShow(false);
+        addToast(<DirsRegisteredToast directories={dirs} />);
+        resetForm();
+      })
       .catch((e) => addToast(e.message, { appearance: 'error' }));
   };
 
   return (
     <>
-      <Button variant="primary" className="btn-rounded shadow-lg add-pictures-btn" onClick={handleShow}>
+      <Button variant="primary" className="register-directory-btn" onClick={handleShow}>
         <Plus />
       </Button>
 
-      <Modal show={show} onHide={handleClose} dialogClassName="add-pictures-modal">
+      <Modal show={show} onHide={handleClose} dialogClassName="register-directory-modal">
         <Formik
           initialValues={registerDirectoryFormInitialValues}
           onSubmit={onSubmitForm}
@@ -69,13 +74,12 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
           {(formikBag: FormikProps<RegisterDirectoryForm>) => (
             <Form noValidate onSubmit={formikBag.handleSubmit}>
               <Modal.Header closeButton>
-                <Modal.Title>{t('home.add-pictures-modal.title')}</Modal.Title>
+                <Modal.Title>{t('directories.register_directories_button.modal_title')}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form.Group>
-                  <Form.Label>{t('home.add-pictures-modal.form.field_location.label')}</Form.Label>
                   <Form.Control
-                    placeholder={t('home.add-pictures-modal.form.field_location.placeholder')}
+                    placeholder={t('directories.register_directories_button.form.field_location.placeholder')}
                     value={formikBag.values.location}
                     {...formikControlProps(formikBag, 'location')}
                   />
@@ -86,7 +90,7 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
                     custom
                     type="checkbox"
                     id="register-directory-recursive"
-                    label={t('home.add-pictures-modal.form.field_recursive.label')}
+                    label={t('directories.register_directories_button.form.field_recursive.label')}
                     checked={formikBag.values.recursive}
                     {...formikControlProps(formikBag, 'recursive')}
                   />
@@ -94,10 +98,10 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
-                  {t('home.add-pictures-modal.close-btn')}{' '}
+                  {t('directories.register_directories_button.close-btn')}{' '}
                 </Button>
                 <Button type="submit" variant="primary" disabled={!formikIsFormValid(formikBag)}>
-                  {t('home.add-pictures-modal.add-btn')}{' '}
+                  {t('directories.register_directories_button.add-btn')}{' '}
                 </Button>
               </Modal.Footer>
             </Form>
