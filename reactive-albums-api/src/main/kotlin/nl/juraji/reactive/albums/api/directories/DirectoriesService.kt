@@ -6,12 +6,9 @@ import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCo
 import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.handlers.FindDirectoryById
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDirectoryRepository
 import nl.juraji.reactive.albums.services.FileSystemService
-import nl.juraji.reactive.albums.util.extensions.subscribeToNextUpdate
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.queryhandling.QueryGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -24,8 +21,10 @@ class DirectoriesService(
         private val directoryRepository: ReactiveDirectoryRepository,
         private val fileSystemService: FileSystemService,
         private val commandGateway: CommandGateway,
-        private val queryGateway: QueryGateway,
 ) {
+    init {
+        reactor.util.Loggers.useSl4jLoggers()
+    }
 
     fun registerDirectory(location: Path, recursive: Boolean): Flux<DirectoryProjection> {
         return ValidateAsync.all(
@@ -42,12 +41,7 @@ class DirectoriesService(
             directories
                     .map { RegisterDirectoryCommand(directoryId = DirectoryId(), location = it) }
                     .flatMap { commandGateway.send<DirectoryId>(it).toMono() }
-                    .flatMap {
-                        queryGateway.subscribeToNextUpdate(
-                                FindDirectoryById(it),
-                                DirectoryProjection::class
-                        )
-                    }
+                    .flatMap { id -> directoryRepository.subscribeFirst { it.id == id.identifier } }
         }
     }
 
@@ -55,7 +49,7 @@ class DirectoriesService(
         val directoryIds: Flux<DirectoryId> = if (recursive) {
             directoryRepository
                     .findById(directoryId.identifier)
-                    .flatMapMany { directoryRepository.findAllSubdirectoriesByLocation(it.location) }
+                    .flatMapMany { directoryRepository.findAllByLocationStartsWith(it.location) }
                     .map { DirectoryId(it.id) }
         } else {
             Flux.fromIterable(listOf(directoryId))
@@ -73,11 +67,6 @@ class DirectoriesService(
         )
 
         return commandGateway.send<DirectoryId>(command).toMono()
-                .flatMap {
-                    queryGateway.subscribeToNextUpdate(
-                            FindDirectoryById(it),
-                            DirectoryProjection::class
-                    )
-                }
+                .flatMap { id -> directoryRepository.subscribeFirst { it.id == id.identifier } }
     }
 }

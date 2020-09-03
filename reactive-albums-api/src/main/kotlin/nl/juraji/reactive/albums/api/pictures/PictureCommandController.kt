@@ -12,10 +12,9 @@ class PictureCommandController(
 ) {
 
     @PostMapping("/api/pictures")
-    fun addPicture(@RequestBody dto: PictureDto): Mono<PictureProjection> {
-        return picturesService.addPicture(
-                location = dto.location,
-                displayName = dto.displayName
-        )
-    }
+    fun addPicture(@RequestBody dto: PictureDto): Mono<PictureProjection> =
+            picturesService.addPicture(
+                    location = dto.location,
+                    displayName = dto.displayName
+            )
 }

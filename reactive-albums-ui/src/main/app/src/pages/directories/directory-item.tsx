@@ -6,8 +6,55 @@ import FormCheck from 'react-bootstrap/FormCheck';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { Trash } from 'react-feather';
-import { useDispatch } from '@hooks';
+import { useDispatch, useToggleState } from '@hooks';
 import { unregisterDirectory, updateDirectory } from '@reducers';
+import Modal from 'react-bootstrap/Modal';
+import { unwrapResult } from '@reduxjs/toolkit';
+
+interface DeleteDirectoryConfirmProps {
+  directory: Directory;
+}
+
+const DeleteDirectoryButton: FC<DeleteDirectoryConfirmProps> = ({ directory }) => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const [show, setShow, handleShow, handleClose] = useToggleState(false);
+  const [recursive, setRecursive] = useToggleState(false);
+
+  const onUnregisterDirectory = () => {
+    dispatch(unregisterDirectory({ directoryId: directory.id, recursive }))
+      .then(unwrapResult)
+      .then(() => setShow(false));
+  };
+
+  return (
+    <>
+      <Button variant="danger" size="sm" onClick={handleShow}>
+        <Trash />
+      </Button>
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t('directories.directory_item.confirm_unregister.modal_title', directory)}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{t('directories.directory_item.confirm_unregister.message', directory)}</p>
+          <FormCheck
+            label={t('directories.directory_item.confirm_unregister.recursive_label')}
+            checked={recursive}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setRecursive(e.target.checked)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={onUnregisterDirectory}>
+            {t('directories.directory_item.confirm_unregister.confirm_button')}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+};
 
 interface DirectoryItemProps {
   directory: Directory;
@@ -25,12 +72,6 @@ export const DirectoryItem: FC<DirectoryItemProps> = ({ directory }) => {
         }),
       })
     );
-  };
-
-  const onUnregisterDirectory = () => {
-    if (window.confirm(t('directories.directory_item.confirm_unregister', directory))) {
-      dispatch(unregisterDirectory({ directoryId: directory.id }));
-    }
   };
 
   return (
@@ -52,9 +93,7 @@ export const DirectoryItem: FC<DirectoryItemProps> = ({ directory }) => {
       </Card.Body>
       <Card.Footer>
         <ButtonGroup>
-          <Button variant="danger" size="sm" onClick={onUnregisterDirectory}>
-            <Trash />
-          </Button>
+          <DeleteDirectoryButton directory={directory} />
         </ButtonGroup>
       </Card.Footer>
     </Card>

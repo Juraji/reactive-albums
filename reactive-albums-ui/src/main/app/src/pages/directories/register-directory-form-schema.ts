@@ -11,7 +11,7 @@ export const registerDirectoryFormInitialValues: RegisterDirectoryForm = {
   recursive: true,
 };
 
-export const registerDirectoryButtonFormSchema = object<RegisterDirectoryForm>({
+export const registerDirectoryFormSchema = object<RegisterDirectoryForm>({
   location: string().test('invalidPath', 'Location must be a valid path', validatePath).required(),
   recursive: boolean().required(),
 });

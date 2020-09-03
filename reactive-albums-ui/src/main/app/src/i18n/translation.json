@@ -37,7 +37,12 @@
       "info": {
         "automatic_scan_enabled": "Automatic scan enabled"
       },
-      "confirm_unregister": "Are you sure you want to unregister {{- displayName}} and its descendants?"
+      "confirm_unregister": {
+        "modal_title": "Unregister directory",
+        "message": "Are you sure you want to unregister {{- displayName}}?",
+        "confirm_button": "Yes",
+        "recursive_label": "Also delete all sub directories"
+      }
     },
     "no_directories_registered": "No directories registered. Use the + button below to register a directory."
   }

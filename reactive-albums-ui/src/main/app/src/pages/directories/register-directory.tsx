@@ -1,16 +1,16 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Plus } from 'react-feather';
 
-import { useDispatch } from '@hooks';
+import { useDispatch, useToggleState } from '@hooks';
 import { Formik, FormikProps } from 'formik';
 import {
-  registerDirectoryButtonFormSchema,
   RegisterDirectoryForm,
   registerDirectoryFormInitialValues,
-} from './register-directory-button-form-schema';
+  registerDirectoryFormSchema,
+} from './register-directory-form-schema';
 import Form from 'react-bootstrap/Form';
 import { formikControlProps, formikIsFormValid } from '@utils';
 import { registerDirectory } from '@reducers';
@@ -36,17 +36,14 @@ const DirsRegisteredToast: FC<DirsRegisteredToast> = ({ directories }) => {
   );
 };
 
-interface RegisterDirectoryButtonProps {}
+interface RegisterDirectoryProps {}
 
-export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
+export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const [show, setShow, handleShow, handleClose] = useToggleState(false);
 
   const onSubmitForm = (e: RegisterDirectoryForm, { resetForm }: FormikHelpers<RegisterDirectoryForm>) => {
     dispatch(registerDirectory(e))
@@ -69,7 +66,7 @@ export const RegisterDirectoryButton: FC<RegisterDirectoryButtonProps> = () => {
         <Formik
           initialValues={registerDirectoryFormInitialValues}
           onSubmit={onSubmitForm}
-          validationSchema={registerDirectoryButtonFormSchema}
+          validationSchema={registerDirectoryFormSchema}
         >
           {(formikBag: FormikProps<RegisterDirectoryForm>) => (
             <Form noValidate onSubmit={formikBag.handleSubmit}>

@@ -1,8 +1,6 @@
 package nl.juraji.reactive.albums.util.extensions
 
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
-import reactor.kotlin.core.publisher.toFlux
 import java.time.Duration
 
 /**
@@ -18,5 +16,3 @@ fun <T> Flux<T>.bufferLastIdentity(bufferingTimespan: Duration, identity: (T) ->
                         .map { (_, list) -> list.last() }
             }
 }
-
-fun <T> Iterable<Mono<T>>.flatMapToFlux(): Flux<T> = this.toFlux().flatMap { x -> x }

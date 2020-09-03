@@ -4,12 +4,9 @@ import nl.juraji.reactive.albums.domain.ValidateAsync
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.handlers.FindPictureByIdQuery
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import nl.juraji.reactive.albums.services.FileSystemService
-import nl.juraji.reactive.albums.util.extensions.subscribeToNextUpdate
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.queryhandling.QueryGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
@@ -20,7 +17,6 @@ class PicturesService(
         private val pictureRepository: ReactivePictureRepository,
         private val fileSystemService: FileSystemService,
         private val commandGateway: CommandGateway,
-        private val queryGateway: QueryGateway,
 ) {
 
     fun addPicture(
@@ -40,11 +36,8 @@ class PicturesService(
                     displayName = displayName
             )
 
-            commandGateway.sendAndWait<PictureId>(command)
-            queryGateway.subscribeToNextUpdate(
-                    FindPictureByIdQuery(command.pictureId),
-                    PictureProjection::class
-            )
+            commandGateway.send<PictureId>(command).toMono()
+                    .flatMap { pictureRepository.subscribeFirst { it.id == command.pictureId.identifier } }
         }
     }
 }

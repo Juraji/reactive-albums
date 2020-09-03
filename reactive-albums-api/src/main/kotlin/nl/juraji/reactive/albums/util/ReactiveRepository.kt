@@ -2,9 +2,11 @@ package nl.juraji.reactive.albums.util
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.support.TransactionTemplate
+import reactor.core.publisher.DirectProcessor
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
+import reactor.kotlin.core.publisher.toMono
 import java.util.*
 
 abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
@@ -12,27 +14,61 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
         private val scheduler: Scheduler,
         private val transactionTemplate: TransactionTemplate,
 ) {
+    private val updatesProcessor: DirectProcessor<ReactiveEvent<E>> = DirectProcessor.create()
+
     fun findById(id: ID): Mono<E> = fromOptional { it.findById(id) }
 
     fun findAll(): Flux<E> = fromIterator { it.findAll() }
 
-    fun save(instance: E): Mono<E> = executeInTransaction { it.save(instance) }
+    fun save(instance: E): Mono<E> =
+            executeInTransaction { it.save(instance) }
+                    .doOnNext { updatesProcessor.onNext(ReactiveEvent.updated(it)) }
 
-    protected fun <R> from(f: (T) -> R?): Mono<R> =
-            Mono.defer {
-                Mono.justOrEmpty(f(repository))
-            }.subscribeOn(scheduler)
+    fun deleteById(id: ID): Mono<E> = findById(id).flatMap { delete(it) }
 
-    protected fun <R> fromOptional(f: (T) -> Optional<R>): Mono<R> =
-            Mono.defer {
-                Mono.justOrEmpty(f(repository))
-            }.subscribeOn(scheduler)
+    fun delete(entity: E): Mono<E> =
+            executeInTransaction { it.delete(entity) }
+                    .map { entity }
+                    .doOnNext { updatesProcessor.onNext(ReactiveEvent.deleted(it)) }
 
-    protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> =
-            Flux.defer {
-                Flux.fromIterable(f(repository))
-            }.subscribeOn(scheduler)
+    fun update(id: ID, update: (E) -> E): Mono<E> = findById(id).flatMap { save(update(it)) }
+
+    fun subscribeToAll(): Flux<ReactiveEvent<E>> = updatesProcessor
+
+    fun subscribe(filter: (E) -> Boolean): Flux<ReactiveEvent<E>> = updatesProcessor.filter { filter(it.entity) }
+
+    fun subscribeFirst(filter: (E) -> Boolean): Mono<E> = updatesProcessor
+            .filter { filter(it.entity) }
+            .map { it.entity }
+            .toMono()
+
+    protected fun <R> from(f: (T) -> R?): Mono<R> = Mono
+            .defer { Mono.justOrEmpty(f(repository)) }
+            .subscribeOn(scheduler)
+
+    protected fun <R> fromOptional(f: (T) -> Optional<R>): Mono<R> = Mono
+            .defer { Mono.justOrEmpty(f(repository)) }
+            .subscribeOn(scheduler)
+
+    protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> = Flux
+            .defer { Flux.fromIterable(f(repository)) }
+            .subscribeOn(scheduler)
 
     protected fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
             from { rep -> transactionTemplate.execute { f(rep) } }
+
+}
+
+data class ReactiveEvent<T>(
+        val type: ReactiveEventType,
+        val entity: T,
+) {
+    companion object {
+        fun <T> updated(ent: T) = ReactiveEvent(type = ReactiveEventType.UPDATE, entity = ent)
+        fun <T> deleted(ent: T) = ReactiveEvent(type = ReactiveEventType.DELETE, entity = ent)
+    }
+}
+
+enum class ReactiveEventType {
+    UPDATE, DELETE
 }

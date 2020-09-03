@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import Container from 'react-bootstrap/Container';
 import { useTranslation } from 'react-i18next';
 import { useAllDirectories } from '@reducers';
-import { RegisterDirectoryButton } from './register-directory-button';
+import { RegisterDirectory } from './register-directory';
 import { DirectoryItem } from './directory-item';
 import { Conditional } from '@components';
 
@@ -24,7 +24,7 @@ const DirectoriesPage: FC = () => {
           ))}
         </Conditional>
       </div>
-      <RegisterDirectoryButton />
+      <RegisterDirectory />
     </Container>
   );
 };

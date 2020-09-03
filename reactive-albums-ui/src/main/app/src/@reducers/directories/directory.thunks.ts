@@ -28,9 +28,11 @@ export const updateDirectory = createAsyncThunk<Directory, UpdateDirectoryThunk>
 
 interface UnregisterDirectoryThunk {
   directoryId: string;
+  recursive: boolean;
 }
 
 export const unregisterDirectory = createAsyncThunk<Directory, UnregisterDirectoryThunk>(
   'directories/unregisterDirectory',
-  ({ directoryId }) => axios.delete(`/api/directories/${directoryId}`).then(unwrapApiResponse)
+  ({ directoryId, recursive }) =>
+    axios.delete(`/api/directories/${directoryId}`, { params: { recursive } }).then(unwrapApiResponse)
 );

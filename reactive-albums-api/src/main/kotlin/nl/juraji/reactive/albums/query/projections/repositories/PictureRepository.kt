@@ -21,8 +21,7 @@ interface PictureRepository : JpaRepository<PictureProjection, String> {
     fun existsByLocation(location: String): Boolean
     fun findPictureImageById(id: String): Optional<PictureImageProjection>
 
-    @Query("select p.id from PictureProjection p where p.location like concat(:directory, '%')")
-    fun findAllByDirectory(@Param("directory") directory: String): List<PictureLocationProjection>
+    fun findAllByLocationStartsWith(@Param("directory") directory: String): List<PictureLocationProjection>
 }
 
 @Service
@@ -38,6 +37,6 @@ class ReactivePictureRepository(
     fun findPictureImageById(id: String): Mono<PictureImageProjection> =
             fromOptional { it.findPictureImageById(id) }
 
-    fun findAllByDirectory(directory: String): Flux<PictureLocationProjection> =
-            fromIterator { it.findAllByDirectory(directory) }
+    fun findAllByLocationStartsWith(directory: String): Flux<PictureLocationProjection> =
+            fromIterator { it.findAllByLocationStartsWith(directory) }
 }

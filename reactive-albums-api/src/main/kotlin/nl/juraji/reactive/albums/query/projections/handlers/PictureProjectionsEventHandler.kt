@@ -1,22 +1,19 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
-import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
-import org.axonframework.queryhandling.QueryUpdateEmitter
 import org.springframework.stereotype.Service
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class PictureProjectionsEventHandler(
-        private val pictureRepository: PictureRepository,
-        @Suppress("SpringJavaInjectionPointsAutowiringInspection") private val queryUpdateEmitter: QueryUpdateEmitter,
+        private val pictureRepository: ReactivePictureRepository,
 ) {
 
     @EventSourcingHandler
@@ -28,65 +25,51 @@ class PictureProjectionsEventHandler(
                 pictureType = evt.pictureType
         )
 
-        saveAndEmit(projection)
+        pictureRepository
+                .save(projection)
+                .subscribe()
     }
 
     @EventSourcingHandler
     fun on(evt: PictureAttributesUpdatedEvent) {
-        updateAndEmit(evt.pictureId) { node ->
-            node.copy(
-                    fileSize = evt.fileSize ?: node.fileSize,
-                    lastModifiedTime = evt.lastModifiedTime ?: node.lastModifiedTime,
-                    imageWidth = evt.imageWidth ?: node.imageWidth,
-                    imageHeight = evt.imageHeight ?: node.imageHeight,
-                    contentHash = evt.contentHash ?: node.contentHash,
+        pictureRepository.update(evt.pictureId.identifier) {
+            it.copy(
+                    fileSize = evt.fileSize ?: it.fileSize,
+                    lastModifiedTime = evt.lastModifiedTime ?: it.lastModifiedTime,
+                    imageWidth = evt.imageWidth ?: it.imageWidth,
+                    imageHeight = evt.imageHeight ?: it.imageHeight,
+                    contentHash = evt.contentHash ?: it.contentHash,
             )
-        }
+        }.subscribe()
     }
 
     @EventSourcingHandler
     fun on(evt: TagAddedEvent) {
-        updateAndEmit(evt.pictureId) { node ->
-            val tags = node.tags.plus(TagProjection(
+        pictureRepository.update(evt.pictureId.identifier) {
+            val tags = it.tags.plus(TagProjection(
                     label = evt.label,
                     color = evt.color,
                     linkType = evt.linkType,
             ))
 
-            node.copy(tags = tags)
-        }
+            it.copy(tags = tags)
+        }.subscribe()
     }
 
     @EventSourcingHandler
     fun on(evt: TagRemovedEvent) {
-        updateAndEmit(evt.pictureId) { node ->
-            val tags = node.tags.filter { t -> t.label != evt.label }.toSet()
+        pictureRepository.update(evt.pictureId.identifier) {
+            val tags = it.tags.filter { t -> t.label != evt.label }.toSet()
 
-            node.copy(tags = tags)
-        }
+            it.copy(tags = tags)
+        }.subscribe()
     }
 
     @EventSourcingHandler
     fun on(evt: PictureDeletedEvent) {
-        deleteAndEmit(evt.pictureId)
-    }
-
-    private fun updateAndEmit(id: PictureId, update: (PictureProjection) -> PictureProjection) {
-        pictureRepository.findById(id.identifier)
-                .map { update(it) }
-                .ifPresent { saveAndEmit(it) }
-    }
-
-    private fun saveAndEmit(entity: PictureProjection) {
-        pictureRepository.runCatching { save(entity) }
-                .onSuccess { result -> queryUpdateEmitter.emit({ it.updateResponseType.matches(PictureProjection::class.java) }, result) }
-                .onFailure { logger.error("Failed save of ${entity.javaClass.name}", it) }
-    }
-
-    fun deleteAndEmit(id: PictureId) {
-        pictureRepository.runCatching { deleteById(id.identifier) }
-                .onSuccess { queryUpdateEmitter.complete { it.updateResponseType.matches(PictureProjection::class.java) } }
-                .onFailure { logger.error("Failed to delete node with id $id: ${it.message}") }
+        pictureRepository
+                .deleteById(evt.pictureId.identifier)
+                .subscribe()
     }
 
     companion object : LoggerCompanion()
