@@ -1,7 +1,7 @@
 package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import org.axonframework.test.aggregate.AggregateTestFixture
 import org.junit.jupiter.api.BeforeEach
@@ -39,7 +39,7 @@ internal class PictureAggregateTest {
                                 location = location,
                                 pictureType = PictureType.JPEG
                         ),
-                        PictureAnalysisRequestedEvent(
+                        AnalysisRequestedEvent(
                                 pictureId = pictureId,
                                 location = location,
                         )

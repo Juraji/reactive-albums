@@ -2,9 +2,9 @@ package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.commands.UpdatePictureAttributesCommand
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAttributesUpdatedEvent
+import nl.juraji.reactive.albums.domain.pictures.commands.UpdateContentHashCommand
+import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -30,11 +30,11 @@ class AnalyzePictureContentSaga {
 
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
-    fun on(evt: PictureAnalysisRequestedEvent) {
+    fun on(evt: AnalysisRequestedEvent) {
         imageService.runCatching { createContentHash(evt.location) }
                 .onSuccess {
                     commandGateway.send<Unit>(
-                            UpdatePictureAttributesCommand(
+                            UpdateContentHashCommand(
                                     pictureId = evt.pictureId,
                                     contentHash = it
                             )
@@ -45,7 +45,7 @@ class AnalyzePictureContentSaga {
 
     @EndSaga
     @SagaEventHandler(associationProperty = "pictureId")
-    fun onEvent(evt: PictureAttributesUpdatedEvent) {
+    fun onEvent(evt: ContentHashUpdatedEvent) {
         logger.debug("Image content analyzed for ${evt.pictureId}")
     }
 

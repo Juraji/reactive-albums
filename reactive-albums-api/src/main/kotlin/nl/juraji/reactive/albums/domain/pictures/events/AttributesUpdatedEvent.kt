@@ -2,10 +2,13 @@ package nl.juraji.reactive.albums.domain.pictures.events
 
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import org.axonframework.serialization.Revision
-import java.nio.file.Path
+import java.time.LocalDateTime
 
 @Revision("1.0")
-data class PictureAnalysisRequestedEvent(
+data class AttributesUpdatedEvent(
         override val pictureId: PictureId,
-        val location: Path,
+        val fileSize: Long?,
+        val lastModifiedTime: LocalDateTime?,
+        val imageWidth: Int?,
+        val imageHeight: Int?,
 ) : PictureEvent

@@ -31,14 +31,32 @@ class PictureProjectionsEventHandler(
     }
 
     @EventSourcingHandler
-    fun on(evt: PictureAttributesUpdatedEvent) {
+    fun on(evt: AttributesUpdatedEvent) {
         pictureRepository.update(evt.pictureId.identifier) {
             it.copy(
                     fileSize = evt.fileSize ?: it.fileSize,
                     lastModifiedTime = evt.lastModifiedTime ?: it.lastModifiedTime,
                     imageWidth = evt.imageWidth ?: it.imageWidth,
                     imageHeight = evt.imageHeight ?: it.imageHeight,
-                    contentHash = evt.contentHash ?: it.contentHash,
+            )
+        }.subscribe()
+    }
+
+    @EventSourcingHandler
+    fun on(evt: ContentHashUpdatedEvent) {
+        pictureRepository.update(evt.pictureId.identifier) {
+            it.copy(
+                    contentHash = evt.contentHash
+            )
+        }.subscribe()
+    }
+
+    @EventSourcingHandler
+    fun on(evt: ThumbnailLocationUpdatedEvent) {
+        pictureRepository.update(evt.pictureId.identifier) {
+            it.copy(
+                    thumbnailLocation = evt.thumbnailLocation.toString(),
+                    thumbnailType = evt.thumbnailType
             )
         }.subscribe()
     }

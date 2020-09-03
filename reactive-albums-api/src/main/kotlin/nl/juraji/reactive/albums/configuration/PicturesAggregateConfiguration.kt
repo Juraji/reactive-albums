@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
+import java.nio.file.Path
+import java.nio.file.Paths
 
 @ConstructorBinding
 @ConfigurationProperties(prefix = "picture-aggregate")
@@ -18,9 +20,10 @@ data class PicturesAggregateConfiguration(
         val thumbnailType: String,
         val hashingSampleSize: Int,
         val autoCropTolerance: Float,
-        val duplicateSimilarity: Float
+        val duplicateSimilarity: Float,
 ) {
     val thumbnailMimeType: MediaType = MediaType.parseMediaType(thumbnailType)
+    val thumbnailPath: Path = Paths.get(thumbnailLocation)
 
     @Bean("pictureSnapshotTriggerDefinition")
     fun pictureSnapshotTriggerDefinition(snapshotter: Snapshotter): SnapshotTriggerDefinition =

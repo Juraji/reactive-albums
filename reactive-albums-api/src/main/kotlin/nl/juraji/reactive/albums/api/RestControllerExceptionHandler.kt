@@ -2,7 +2,6 @@ package nl.juraji.reactive.albums.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nl.juraji.reactive.albums.domain.ValidationException
-import nl.juraji.reactive.albums.query.projections.handlers.DuplicateEntityException
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler
@@ -24,13 +23,12 @@ class RestControllerExceptionHandler(
         return exchange.response.writeWith(Mono.create {
             val result: ApiErrorResult = when (ex) {
                 is ValidationException -> handleValidationException(ex)
-                is DuplicateEntityException -> handleDuplicateEntityException(ex)
                 is NoSuchEntityException -> handleNoSuchEntityException(ex)
                 is IncorrectResultSizeDataAccessException -> handleIncorrectResultSizeDataAccessException(ex)
                 else -> handleDefault(ex)
             }
 
-            val bufferFactory: DataBufferFactory = exchange.response.bufferFactory();
+            val bufferFactory: DataBufferFactory = exchange.response.bufferFactory()
             it.success(bufferFactory.wrap(objectMapper.writeValueAsBytes(result)))
         })
     }
@@ -40,14 +38,8 @@ class RestControllerExceptionHandler(
         return ApiErrorResult(status = HttpStatus.BAD_REQUEST, message = ex.localizedMessage)
     }
 
-    fun handleDuplicateEntityException(ex: DuplicateEntityException): ApiErrorResult {
-        val msg = ex.localizedMessage ?: "${ex.entityName} already exists with id ${ex.entityId.identifier}"
-        logger.trace(msg, ex)
-        return ApiErrorResult(status = HttpStatus.CONFLICT, message = msg)
-    }
-
     fun handleNoSuchEntityException(ex: NoSuchEntityException): ApiErrorResult {
-        val msg = ex.localizedMessage ?: "${ex.entityName} not found by id ${ex.entityId.identifier}"
+        val msg = ex.localizedMessage ?: "${ex.entityName} not found by id ${ex.entityId}"
         logger.trace(msg, ex)
         return ApiErrorResult(status = HttpStatus.NOT_FOUND, message = msg)
     }

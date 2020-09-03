@@ -26,18 +26,20 @@ class ImageService(
         return image.width to image.height
     }
 
-    fun createThumbnail(source: Path, target: Path, size: Int, pictureType: MediaType): Path {
-        fileSystemService.createDirectories(target.parent)
-        fileSystemService.deleteIfExists(target)
+    fun createThumbnail(source: Path, targetDirectory: Path, name: String, size: Int, pictureType: MediaType): Path {
+        val targetFile = targetDirectory.resolve("$name.image")
+
+        fileSystemService.createDirectories(targetDirectory)
+        fileSystemService.deleteIfExists(targetFile)
 
         val image = readImage(source)
         val scaledImage = Scalr.resize(image, Scalr.Method.ULTRA_QUALITY, size)
 
-        if (!ImageIO.write(scaledImage, pictureType.subtype, target.toFile())) {
-            throw IOException("Unable to write thumbnail as $pictureType to $target")
+        if (!ImageIO.write(scaledImage, pictureType.subtype, targetFile.toFile())) {
+            throw IOException("Unable to write thumbnail as $pictureType to $targetFile")
         }
 
-        return target
+        return targetFile
     }
 
     fun createContentHash(source: Path): BitSet {

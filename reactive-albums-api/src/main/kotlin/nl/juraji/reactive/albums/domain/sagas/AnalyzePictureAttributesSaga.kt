@@ -1,9 +1,9 @@
 package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.pictures.commands.UpdatePictureAttributesCommand
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAttributesUpdatedEvent
+import nl.juraji.reactive.albums.domain.pictures.commands.UpdateAttributesCommand
+import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.AttributesUpdatedEvent
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.LoggerCompanion
@@ -34,13 +34,13 @@ class AnalyzePictureAttributesSaga {
 
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
-    fun on(evt: PictureAnalysisRequestedEvent) {
+    fun on(evt: AnalysisRequestedEvent) {
         logger.debug("Analyzing attributes for ${evt.pictureId} at ${evt.location}")
 
         val fileAttributes = fileSystemService.readAttributes(evt.location)
         val (imageWidth, imageHeight) = imageService.getImageDimensions(evt.location)
 
-        val command = UpdatePictureAttributesCommand(
+        val command = UpdateAttributesCommand(
                 pictureId = evt.pictureId,
                 fileSize = fileAttributes.size(),
                 lastModifiedTime = LocalDateTime.ofInstant(fileAttributes.lastModifiedTime().toInstant(), ZoneId.systemDefault()),
@@ -53,7 +53,7 @@ class AnalyzePictureAttributesSaga {
 
     @EndSaga
     @SagaEventHandler(associationProperty = "pictureId")
-    fun on(evt: PictureAttributesUpdatedEvent) {
+    fun on(evt: AttributesUpdatedEvent) {
         logger.debug("File attributes analyzed for ${evt.pictureId}")
     }
 

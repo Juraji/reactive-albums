@@ -3,6 +3,7 @@ package nl.juraji.reactive.albums.query.projections.repositories
 import nl.juraji.reactive.albums.query.projections.PictureImageProjection
 import nl.juraji.reactive.albums.query.projections.PictureLocationProjection
 import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.PictureThumbnailProjection
 import nl.juraji.reactive.albums.util.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
@@ -20,6 +21,7 @@ import java.util.*
 interface PictureRepository : JpaRepository<PictureProjection, String> {
     fun existsByLocation(location: String): Boolean
     fun findPictureImageById(id: String): Optional<PictureImageProjection>
+    fun findPictureThumbnailById(id: String): Optional<PictureThumbnailProjection>
 
     fun findAllByLocationStartsWith(@Param("directory") directory: String): List<PictureLocationProjection>
 }
@@ -36,6 +38,9 @@ class ReactivePictureRepository(
 
     fun findPictureImageById(id: String): Mono<PictureImageProjection> =
             fromOptional { it.findPictureImageById(id) }
+
+    fun findPictureThumbnailById(id: String): Mono<PictureThumbnailProjection> =
+            fromOptional { it.findPictureThumbnailById(id) }
 
     fun findAllByLocationStartsWith(directory: String): Flux<PictureLocationProjection> =
             fromIterator { it.findAllByLocationStartsWith(directory) }

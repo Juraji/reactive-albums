@@ -24,7 +24,7 @@ class PictureAggregate() {
     @CommandHandler
     constructor(cmd: CreatePictureCommand) : this() {
         val displayName = cmd.displayName ?: cmd.location.fileName.toString()
-        val pictureType = PictureType.byContentType(cmd.contentType)
+        val pictureType = PictureType.of(cmd.contentType)
 
         Validate.isNotNull(pictureType) { "Unsupported file type for $displayName" }
 
@@ -37,23 +37,43 @@ class PictureAggregate() {
                 )
         )
 
-        AggregateLifecycle.apply(PictureAnalysisRequestedEvent(
+        AggregateLifecycle.apply(AnalysisRequestedEvent(
                 pictureId = cmd.pictureId,
                 location = cmd.location,
         ))
     }
 
     @CommandHandler
-    fun handle(cmd: UpdatePictureAttributesCommand) {
+    fun handle(cmd: UpdateAttributesCommand) {
 
         AggregateLifecycle.apply(
-                PictureAttributesUpdatedEvent(
+                AttributesUpdatedEvent(
                         pictureId = pictureId,
                         fileSize = cmd.fileSize,
                         lastModifiedTime = cmd.lastModifiedTime,
                         imageWidth = cmd.imageWidth,
                         imageHeight = cmd.imageHeight,
-                        contentHash = cmd.contentHash,
+                )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: UpdateContentHashCommand) {
+        AggregateLifecycle.apply(
+                ContentHashUpdatedEvent(
+                        pictureId = pictureId,
+                        contentHash = cmd.contentHash
+                )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: UpdateThumbnailLocationCommand) {
+        AggregateLifecycle.apply(
+                ThumbnailLocationUpdatedEvent(
+                        pictureId = pictureId,
+                        thumbnailLocation = cmd.thumbnailLocation,
+                        thumbnailType = cmd.thumbnailType,
                 )
         )
     }

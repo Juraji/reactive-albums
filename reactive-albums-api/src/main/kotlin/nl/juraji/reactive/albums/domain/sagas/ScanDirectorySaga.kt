@@ -39,7 +39,7 @@ class ScanDirectorySaga {
         val directoryFiles = fileSystemService.listFiles(evt.location);
 
         if (!evt.firstTime) {
-            pictureRepository.findAllByDirectory(evt.location.toString())
+            pictureRepository.findAllByLocationStartsWith(evt.location.toString())
                     .map { it.id to Paths.get(it.location) }
                     .filter { (_, location) -> directoryFiles.none { f -> f === location } }
                     .forEach { (pictureId) ->

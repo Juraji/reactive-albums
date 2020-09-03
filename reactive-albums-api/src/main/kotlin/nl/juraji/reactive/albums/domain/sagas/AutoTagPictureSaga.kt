@@ -3,7 +3,7 @@ package nl.juraji.reactive.albums.domain.sagas
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
-import nl.juraji.reactive.albums.domain.pictures.events.PictureAnalysisRequestedEvent
+import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagAddedEvent
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import nl.juraji.reactive.albums.util.extensions.toHexColor
@@ -24,7 +24,7 @@ class AutoTagPictureSaga {
 
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
-    fun on(evt: PictureAnalysisRequestedEvent) {
+    fun on(evt: AnalysisRequestedEvent) {
         evt.location.parent.forEach {
             val label = it.fileName.toString()
             val color = label.toHexColor()

@@ -10,12 +10,12 @@ enum class PictureType(val contentType: String, val typeName: String, val mediaT
     TIFF("image/tiff", "tiff", MediaType("image", "tiff"));
 
     companion object {
-        fun byContentType(contentType: String): PictureType? {
+        fun of(contentType: String): PictureType? {
             return values().firstOrNull { pType -> pType.contentType == contentType }
         }
 
-        fun byTypeName(typeName: String): PictureType? {
-            return values().firstOrNull { pictureType -> pictureType.typeName.equals(typeName, true) }
+        fun of(mediaType: MediaType): PictureType? {
+            return values().firstOrNull { pType -> pType.mediaType == mediaType }
         }
     }
 }
