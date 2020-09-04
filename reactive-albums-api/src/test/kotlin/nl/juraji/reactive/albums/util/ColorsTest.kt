@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test
 
 internal class ColorsTest {
 
-    private val c1 = Color(34, 119, 94)
-    private val c2 = Color(194, 211, 128)
-    private val c3 = Color(29, 195, 194)
+    private val c1 = RgbColor(34, 119, 94)
+    private val c2 = RgbColor(194, 211, 128)
+    private val c3 = RgbColor(29, 195, 194)
 
     @Test
     fun `Colors#isHexColor should determine if input is a hexadecimal color representation`() {
@@ -18,8 +18,8 @@ internal class ColorsTest {
 
     @Test
     fun `Colors#generateColor should generate colors based on a seed`() {
-        assertEquals(Color(249, 172, 189), Colors.generateColor("Some String"))
-        assertEquals(Color(249, 55, 121), Colors.generateColor("f93779"))
+        assertEquals(RgbColor(249, 172, 189), Colors.generateColor("Some String"))
+        assertEquals(RgbColor(249, 55, 121), Colors.generateColor("f93779"))
     }
 
     @Test
@@ -53,5 +53,15 @@ internal class ColorsTest {
         assertEquals("22775e", c1.toHexString())
         assertEquals("c2d380", c2.toHexString())
         assertEquals("1dc3c2", c3.toHexString())
+    }
+
+    @Test
+    fun `Color#toHsl should convert Color to a HslColor`() {
+        assertEquals(HslColor(162, 0.5555555555555557, 0.3), c1.toHsl())
+        assertEquals(HslColor(72, 0.4853801169590642, 0.6647058823529411), c2.toHsl())
+        assertEquals(HslColor(180, 0.7410714285714285, 0.4392156862745098), c3.toHsl())
+        assertEquals(HslColor(0, 0.0, 0.0), RgbColor(0, 0, 0).toHsl())
+        assertEquals(HslColor(0, 0.0, 0.5019607843137255), RgbColor(128, 128, 128).toHsl())
+        assertEquals(HslColor(0, 0.0, 1.0), RgbColor(255, 255, 255).toHsl())
     }
 }
