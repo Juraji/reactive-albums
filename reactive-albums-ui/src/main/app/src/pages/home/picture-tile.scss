@@ -8,4 +8,19 @@ $picture-tile-size: 200px;
     object-fit: contain;
     background-color: #333;
   }
+
+  .tag-orbs {
+    display: inline-block;
+
+    .tag-orb {
+      display: inline-block;
+      padding: .5rem;
+      border-radius: 50%;
+      margin-right: -.3rem;
+    }
+  }
+
+  .duplicate-count {
+    margin-left: .5rem;
+  }
 }
