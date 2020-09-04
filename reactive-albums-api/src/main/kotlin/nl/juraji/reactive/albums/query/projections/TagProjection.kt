@@ -8,6 +8,7 @@ import javax.persistence.Enumerated
 @Embeddable
 data class TagProjection(
         val label: String,
-        val color: String,
+        val labelColor: String,
+        val textColor: String,
         @Enumerated(EnumType.STRING) val linkType: TagLinkType,
 )

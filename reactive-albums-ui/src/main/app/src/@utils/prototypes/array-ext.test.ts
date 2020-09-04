@@ -1,4 +1,4 @@
-import install from '../array-ext';
+import install from './array-ext';
 
 install();
 

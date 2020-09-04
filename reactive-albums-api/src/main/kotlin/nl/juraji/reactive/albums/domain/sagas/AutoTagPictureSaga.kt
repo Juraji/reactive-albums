@@ -5,8 +5,8 @@ import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagAddedEvent
+import nl.juraji.reactive.albums.util.Colors
 import nl.juraji.reactive.albums.util.LoggerCompanion
-import nl.juraji.reactive.albums.util.extensions.toHexColor
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.*
@@ -27,13 +27,15 @@ class AutoTagPictureSaga {
     fun on(evt: AnalysisRequestedEvent) {
         evt.location.parent.forEach {
             val label = it.fileName.toString()
-            val color = label.toHexColor()
+            val labelColor = Colors.generateColor(label)
+            val textColor = Colors.contrastColor(labelColor)
 
             commandGateway.send<Unit>(
                     AddTagCommand(
                             pictureId = evt.pictureId,
                             label = label,
-                            color = color,
+                            labelColor = labelColor.toHexString(),
+                            textColor = textColor.toHexString(),
                             tagLinkType = TagLinkType.AUTO
                     )
             ).thenRun { SagaLifecycle.associateWith(TAG_ASSOCIATION, label) }

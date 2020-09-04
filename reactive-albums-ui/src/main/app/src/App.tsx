@@ -11,6 +11,7 @@ import { DirectoriesNavItem } from './pages/directories/directories-nav-item';
 
 const HomePage = lazy(() => import('./pages/home'));
 const DirectoriesPage = lazy(() => import('./pages/directories'));
+const PicturePage = lazy(() => import('./pages/picture'));
 
 const AppView: FC = () => (
   <BrowserRouter>
@@ -24,6 +25,7 @@ const AppView: FC = () => (
         <Switch>
           <Route exact path="/home" component={HomePage} />
           <Route exact path="/directories" component={DirectoriesPage} />
+          <Route exact path="/picture/:pictureId" component={PicturePage} />
           <DefaultRoute to="/home" />
         </Switch>
       </Suspense>

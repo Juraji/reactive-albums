@@ -66,7 +66,8 @@ class PictureProjectionsEventHandler(
         pictureRepository.update(evt.pictureId.identifier) {
             val tags = it.tags.plus(TagProjection(
                     label = evt.label,
-                    color = evt.color,
+                    labelColor = evt.labelColor,
+                    textColor = evt.textColor,
                     linkType = evt.linkType,
             ))
 

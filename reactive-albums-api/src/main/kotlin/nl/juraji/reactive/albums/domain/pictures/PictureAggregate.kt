@@ -3,7 +3,7 @@ package nl.juraji.reactive.albums.domain.pictures
 import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.pictures.events.*
-import nl.juraji.reactive.albums.util.extensions.isHexColor
+import nl.juraji.reactive.albums.util.Colors
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -81,14 +81,16 @@ class PictureAggregate() {
     @CommandHandler
     fun handle(cmd: AddTagCommand) {
         Validate.isTrue(cmd.label.isNotBlank()) { "Tag label should not be blank" }
-        Validate.isTrue(cmd.color.isHexColor()) { "Tag color should be a valid hexadecimal color" }
+        Validate.isTrue(Colors.isHexColor(cmd.labelColor)) { "Tag label color should be a valid hexadecimal color" }
+        Validate.isTrue(Colors.isHexColor(cmd.textColor)) { "Tag text color should be a valid hexadecimal color" }
         Validate.isTrue(tags.none { it.label == cmd.label }) { "Tag with label ${cmd.label} already exists on $displayName" }
 
         AggregateLifecycle.apply(
                 TagAddedEvent(
                         pictureId = pictureId,
                         label = cmd.label,
-                        color = cmd.color,
+                        labelColor = cmd.labelColor,
+                        textColor = cmd.textColor,
                         linkType = cmd.tagLinkType,
                 )
         )

@@ -8,6 +8,7 @@ import org.axonframework.serialization.Revision
 data class TagAddedEvent(
         override val pictureId: PictureId,
         val label: String,
-        val color: String,
+        val labelColor: String,
+        val textColor: String,
         val linkType: TagLinkType,
 ) : PictureEvent

@@ -1,12 +1,7 @@
 import { Page, Picture } from '@types';
 import { useCallback, useMemo, useState } from 'react';
-import { selectAllPictures } from './picture-store.slice';
-import { EntityState } from '@reduxjs/toolkit';
-import { useSelector } from '@hooks';
-
-export function usePicturesStoreState(): EntityState<Picture> {
-  return useSelector((state) => state.pictures.pictureStore);
-}
+import { selectAllPictures } from '../picture-store.slice';
+import { usePicturesStore } from './use-pictures-store';
 
 export interface PicturesPageResult {
   page: Page<Picture>;
@@ -41,7 +36,7 @@ export function usePicturesPage(): PicturesPageResult {
     [pageNo, size]
   );
 
-  const picturesStore = usePicturesStoreState();
+  const picturesStore = usePicturesStore();
   const { content, total } = useMemo(() => {
     const all = selectAllPictures(picturesStore);
     const filtered = applyFilter(all);

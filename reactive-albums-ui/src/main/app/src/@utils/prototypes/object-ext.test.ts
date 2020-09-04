@@ -1,4 +1,4 @@
-import install from '../object-ext';
+import install from './object-ext';
 
 install();
 
