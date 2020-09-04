@@ -2,8 +2,7 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
-import org.springframework.core.io.FileSystemResource
-import org.springframework.core.io.Resource
+import org.springframework.http.CacheControl
 import org.springframework.http.MediaType
 import org.springframework.http.ZeroCopyHttpOutputMessage
 import org.springframework.http.server.reactive.ServerHttpResponse
@@ -14,6 +13,7 @@ import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
 import reactor.kotlin.core.publisher.toMono
 import java.io.File
+import java.time.Duration
 
 
 @RestController
@@ -57,9 +57,12 @@ class PictureImageController(
     private fun writeFile(response: ServerHttpResponse, path: String, mediaType: MediaType): Mono<Void> {
         val zeroCopyResponse = response as ZeroCopyHttpOutputMessage
         response.getHeaders().contentType = mediaType
+        response.getHeaders().cacheControl = CacheControl
+                .maxAge(Duration.ofDays(7))
+                .cachePrivate()
+                .headerValue
 
-        val resource: Resource = FileSystemResource(path)
-        val file: File = resource.file
+        val file = File(path)
         return zeroCopyResponse.writeWith(file, 0, file.length())
     }
 }

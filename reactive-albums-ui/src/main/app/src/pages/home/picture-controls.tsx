@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import { Page, Picture } from '@types';
 import Navbar from 'react-bootstrap/Navbar';
 import { Conditional } from '@components';
 import Form from 'react-bootstrap/Form';
@@ -7,6 +6,7 @@ import { PAGINATION_SIZE_OPTIONS } from '../../config.json';
 import { useTranslation } from 'react-i18next';
 import Pagination from 'react-bootstrap/Pagination';
 import { useDebouncedValue } from '@hooks';
+import { PicturesPageResult } from '@reducers';
 
 interface PictureSearchFieldProps {
   onChange: (value: string) => void;
@@ -31,14 +31,12 @@ const PictureSearchField: FC<PictureSearchFieldProps> = ({ value, onChange }) =>
 };
 
 interface PictureControlsProps {
-  page: Page<Picture>;
-  onSelectPage: (page: number) => void;
-  onSelectPageSize: (page: number) => void;
-  onUpdateFilter: (value: string) => void;
+  pageResult: PicturesPageResult;
 }
 
-export const PictureControls: FC<PictureControlsProps> = ({ page, onSelectPage, onSelectPageSize, onUpdateFilter }) => {
+export const PictureControls: FC<PictureControlsProps> = ({ pageResult }) => {
   const { t } = useTranslation();
+  const { page, setFilter, setSize, setPage } = pageResult;
   const { totalItems, size, currentPage, first, last, totalPages, filter } = page;
 
   const sizeOpts = useMemo(
@@ -54,27 +52,21 @@ export const PictureControls: FC<PictureControlsProps> = ({ page, onSelectPage, 
   return (
     <Navbar variant="light" fixed="bottom" bg="light">
       <Form inline className="mr-2">
-        <PictureSearchField onChange={onUpdateFilter} value={filter} />
+        <PictureSearchField onChange={setFilter} value={filter} />
       </Form>
       <Conditional condition={totalItems > 0} orElse={<Navbar.Text>{t('home.pagination.no_items_found')}</Navbar.Text>}>
         <Form inline>
-          <Form.Control
-            as="select"
-            className="mr-2"
-            size="sm"
-            value={size}
-            onChange={(e) => onSelectPageSize(+e.target.value)}
-          >
+          <Form.Control as="select" className="mr-2" size="sm" value={size} onChange={(e) => setSize(+e.target.value)}>
             {sizeOpts}
           </Form.Control>
           <Pagination className="mb-0 mr-2">
-            <Pagination.First disabled={first} onClick={() => onSelectPage(0)} />
-            <Pagination.Prev disabled={first} onClick={() => onSelectPage(currentPage - 1)} />
+            <Pagination.First disabled={first} onClick={() => setPage(0)} />
+            <Pagination.Prev disabled={first} onClick={() => setPage(currentPage - 1)} />
             <Pagination.Item disabled>
               {t('home.pagination.current_page_label', { currentPage: currentPage + 1, totalPages })}
             </Pagination.Item>
-            <Pagination.Next disabled={last} onClick={() => onSelectPage(currentPage + 1)} />
-            <Pagination.Last disabled={last} onClick={() => onSelectPage(totalPages - 1)} />
+            <Pagination.Next disabled={last} onClick={() => setPage(currentPage + 1)} />
+            <Pagination.Last disabled={last} onClick={() => setPage(totalPages - 1)} />
           </Pagination>
         </Form>
       </Conditional>

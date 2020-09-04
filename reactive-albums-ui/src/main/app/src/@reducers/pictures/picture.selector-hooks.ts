@@ -8,7 +8,7 @@ export function usePicturesStoreState(): EntityState<Picture> {
   return useSelector((state) => state.pictures.pictureStore);
 }
 
-interface PicturesPageResult {
+export interface PicturesPageResult {
   page: Page<Picture>;
   setSize: (size: number) => void;
   setPage: (size: number) => void;
