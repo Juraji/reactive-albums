@@ -19,8 +19,8 @@ data class PicturesAggregateConfiguration(
         val thumbnailLocation: String,
         val thumbnailType: String,
         val hashingSampleSize: Int,
-        val autoCropTolerance: Float,
-        val duplicateSimilarity: Float,
+        val autoCropTolerance: Double,
+        val duplicateSimilarity: Double,
 ) {
     val thumbnailMimeType: MediaType = MediaType.parseMediaType(thumbnailType)
     val thumbnailPath: Path = Paths.get(thumbnailLocation)

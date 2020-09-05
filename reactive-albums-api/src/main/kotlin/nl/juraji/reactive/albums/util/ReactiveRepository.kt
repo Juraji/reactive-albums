@@ -1,5 +1,8 @@
 package nl.juraji.reactive.albums.util
 
+import nl.juraji.reactive.albums.util.extensions.deferFrom
+import nl.juraji.reactive.albums.util.extensions.deferFromIterable
+import nl.juraji.reactive.albums.util.extensions.deferFromOptional
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.publisher.DirectProcessor
@@ -42,20 +45,17 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
             .map { it.entity }
             .toMono()
 
-    protected fun <R> from(f: (T) -> R?): Mono<R> = Mono
-            .defer { Mono.justOrEmpty(f(repository)) }
-            .subscribeOn(scheduler)
+    protected fun <R> from(f: (T) -> R?): Mono<R> =
+            deferFrom(scheduler) { f(repository) }
 
-    protected fun <R> fromOptional(f: (T) -> Optional<R>): Mono<R> = Mono
-            .defer { Mono.justOrEmpty(f(repository)) }
-            .subscribeOn(scheduler)
+    protected fun <R> fromOptional(f: (T) -> Optional<R>): Mono<R> =
+            deferFromOptional(scheduler) { f(repository) }
 
-    protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> = Flux
-            .defer { Flux.fromIterable(f(repository)) }
-            .subscribeOn(scheduler)
+    protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> =
+            deferFromIterable(scheduler) { f(repository) }
 
     protected fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
-            from { rep -> transactionTemplate.execute { f(rep) } }
+            deferFrom(scheduler) { transactionTemplate.execute { f(repository) } }
 
 }
 

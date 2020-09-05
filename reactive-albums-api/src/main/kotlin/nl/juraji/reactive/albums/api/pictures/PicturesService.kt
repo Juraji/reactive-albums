@@ -26,18 +26,17 @@ class PicturesService(
         return ValidateAsync.all(
                 ValidateAsync.isFalse(pictureRepository.existsByLocation(location.toString())) { "A picture with location $location already exists" },
                 ValidateAsync.isTrue(fileSystemService.exists(location).toMono()) { "File at $location does not exist" }
-        ).flatMap {
-            val contentType = fileSystemService.readContentType(location)
-
-            val command = CreatePictureCommand(
-                    pictureId = PictureId(),
-                    location = location,
-                    contentType = contentType,
-                    displayName = displayName
-            )
-
-            commandGateway.send<PictureId>(command).toMono()
-                    .flatMap { pictureRepository.subscribeFirst { it.id == command.pictureId.identifier } }
-        }
+        )
+                .flatMap { fileSystemService.readContentType(location) }
+                .map { contentType ->
+                    CreatePictureCommand(
+                            pictureId = PictureId(),
+                            location = location,
+                            contentType = contentType,
+                            displayName = displayName
+                    )
+                }
+                .flatMap { commandGateway.send<PictureId>(it).toMono() }
+                .flatMap { id -> pictureRepository.subscribeFirst { it.id == id.identifier } }
     }
 }
