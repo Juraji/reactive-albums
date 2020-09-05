@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.domain.pictures
 
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
@@ -19,6 +20,7 @@ internal class PictureAggregateTest {
 
     @Test
     fun `should create picture`() {
+        val directoryId = DirectoryId("directory#1")
         val pictureId = PictureId("picture#1")
         val location = Paths.get("/test/location/picture.jpg")
 
@@ -28,7 +30,8 @@ internal class PictureAggregateTest {
                                 pictureId = pictureId,
                                 location = location,
                                 contentType = "image/jpeg",
-                                displayName = null
+                                displayName = null,
+                                directoryId = directoryId
                         )
                 )
                 .expectSuccessfulHandlerExecution()
@@ -37,7 +40,8 @@ internal class PictureAggregateTest {
                                 pictureId = pictureId,
                                 displayName = "picture.jpg",
                                 location = location,
-                                pictureType = PictureType.JPEG
+                                pictureType = PictureType.JPEG,
+                                directoryId = directoryId
                         ),
                         AnalysisRequestedEvent(
                                 pictureId = pictureId,

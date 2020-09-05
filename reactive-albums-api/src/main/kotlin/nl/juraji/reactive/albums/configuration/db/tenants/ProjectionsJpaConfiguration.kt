@@ -30,7 +30,7 @@ class ProjectionsJpaConfiguration(
 
     @Bean(name=["projectionsScheduler"])
     fun jdbcScheduler(): Scheduler =
-            Schedulers.fromExecutor(Executors.newFixedThreadPool(1))
+            Schedulers.fromExecutor(Executors.newFixedThreadPool(8))
 
     @Bean(name = ["projectionsDataSource"])
     fun dataSource(): DataSource {

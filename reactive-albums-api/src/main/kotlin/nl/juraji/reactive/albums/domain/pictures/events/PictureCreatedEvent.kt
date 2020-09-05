@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.domain.pictures.events
 
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import org.axonframework.serialization.Revision
@@ -11,4 +12,5 @@ data class PictureCreatedEvent(
         val displayName: String,
         val location: Path,
         val pictureType: PictureType,
+        val directoryId: DirectoryId,
 ) : PictureEvent

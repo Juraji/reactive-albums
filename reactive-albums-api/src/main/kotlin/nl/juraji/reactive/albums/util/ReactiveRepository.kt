@@ -23,16 +23,16 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
 
     fun findAll(): Flux<E> = fromIterator { it.findAll() }
 
-    fun save(instance: E): Mono<E> =
-            executeInTransaction { it.save(instance) }
-                    .doOnNext { updatesProcessor.onNext(ReactiveEvent.updated(it)) }
+    fun save(entity: E): Mono<E> =
+            executeInTransaction { it.save(entity) }
+                    .doOnNext { emitUpdate(EventType.UPDATE, it) }
 
     fun deleteById(id: ID): Mono<E> = findById(id).flatMap { delete(it) }
 
     fun delete(entity: E): Mono<E> =
             executeInTransaction { it.delete(entity) }
                     .map { entity }
-                    .doOnNext { updatesProcessor.onNext(ReactiveEvent.deleted(it)) }
+                    .doOnNext { emitUpdate(EventType.DELETE, it) }
 
     fun update(id: ID, update: (E) -> E): Mono<E> = findById(id).flatMap { save(update(it)) }
 
@@ -57,18 +57,16 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
     protected fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
             deferFrom(scheduler) { transactionTemplate.execute { f(repository) } }
 
-}
-
-data class ReactiveEvent<T>(
-        val type: ReactiveEventType,
-        val entity: T,
-) {
-    companion object {
-        fun <T> updated(ent: T) = ReactiveEvent(type = ReactiveEventType.UPDATE, entity = ent)
-        fun <T> deleted(ent: T) = ReactiveEvent(type = ReactiveEventType.DELETE, entity = ent)
+    private fun emitUpdate(type: EventType, entity: E) {
+        updatesProcessor.onNext(ReactiveEvent(type, entity))
     }
 }
 
-enum class ReactiveEventType {
+data class ReactiveEvent<T>(
+        val type: EventType,
+        val entity: T,
+)
+
+enum class EventType {
     UPDATE, DELETE
 }

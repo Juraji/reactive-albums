@@ -33,7 +33,8 @@ class PictureAggregate() {
                         pictureId = cmd.pictureId,
                         displayName = displayName,
                         location = cmd.location,
-                        pictureType = pictureType!!
+                        pictureType = pictureType!!,
+                        directoryId = cmd.directoryId
                 )
         )
 

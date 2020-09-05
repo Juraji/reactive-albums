@@ -1,11 +1,12 @@
 package nl.juraji.reactive.albums.processing
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryScanRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
-import nl.juraji.reactive.albums.query.projections.PictureLocationProjection
+import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.util.LoggerCompanion
@@ -22,7 +23,7 @@ import java.nio.file.Path
 
 @Service
 @ProcessingGroup(ProcessingGroups.DIRECTORY_SCANS)
-class DirectoryFilesProcessor(
+class DirectoryScanProcessor(
         private val commandGateway: CommandGateway,
         private val pictureRepository: ReactivePictureRepository,
         private val fileSystemService: FileSystemService,
@@ -35,15 +36,15 @@ class DirectoryFilesProcessor(
         val directoryFiles: Flux<Path> = fileSystemService
                 .listFiles(evt.location)
                 .cache()
-        val knownPictures: Flux<PictureLocationProjection> = pictureRepository
-                .findAllByParentLocation(evt.location.toString())
+        val knownPictures: Flux<PictureProjection> = pictureRepository
+                .findAllByDirectoryId(evt.directoryId.toString())
                 .cache()
 
         deleteMissingFiles(knownPictures, directoryFiles)
-        addNewFiles(knownPictures, directoryFiles)
+        addNewFiles(evt.directoryId, knownPictures, directoryFiles)
     }
 
-    private fun deleteMissingFiles(knownPictures: Flux<PictureLocationProjection>, directoryFiles: Flux<Path>) {
+    private fun deleteMissingFiles(knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>) {
         knownPictures
                 .filterWhen { picture ->
                     directoryFiles.any { location -> picture.parentLocation == location.toString() }.not()
@@ -56,7 +57,7 @@ class DirectoryFilesProcessor(
                 .subscribe { commandGateway.send<Unit>(it) }
     }
 
-    private fun addNewFiles(knownPictures: Flux<PictureLocationProjection>, directoryFiles: Flux<Path>) {
+    private fun addNewFiles(directoryId: DirectoryId, knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>) {
         directoryFiles
                 .filterWhen { location ->
                     knownPictures.any { pic -> pic.location == location.toString() }.not()
@@ -67,6 +68,7 @@ class DirectoryFilesProcessor(
                             pictureId = PictureId(),
                             location = location,
                             contentType = contentType,
+                            directoryId = directoryId
                     )
                 }
                 .subscribe { commandGateway.send<Unit>(it) }
