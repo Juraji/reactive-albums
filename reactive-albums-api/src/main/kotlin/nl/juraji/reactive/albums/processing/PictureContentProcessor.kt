@@ -4,6 +4,7 @@ import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.commands.UpdateContentHashCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.services.ImageService
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -17,7 +18,9 @@ class PictureContentProcessor(
 ) {
 
     @EventSourcingHandler
-    fun on (evt: AnalysisRequestedEvent){
+    fun on(evt: AnalysisRequestedEvent) {
+        logger.info("Analyzing image content of ${evt.pictureId}")
+
         imageService.createContentHash(evt.location)
                 .map {
                     UpdateContentHashCommand(
@@ -27,4 +30,6 @@ class PictureContentProcessor(
                 }
                 .subscribe { commandGateway.send<Unit>(it) }
     }
+
+    companion object : LoggerCompanion()
 }

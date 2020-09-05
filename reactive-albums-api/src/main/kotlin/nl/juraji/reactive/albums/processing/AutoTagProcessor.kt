@@ -5,6 +5,7 @@ import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.util.Colors
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -17,6 +18,8 @@ class AutoTagProcessor(
 ) {
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
+        logger.info("Generating tags for ${evt.pictureId}")
+
         evt.location.parent
                 .map { path ->
                     val label = path.fileName.toString()
@@ -33,4 +36,6 @@ class AutoTagProcessor(
                 }
                 .forEach { commandGateway.send<Unit>(it) }
     }
+
+    companion object : LoggerCompanion()
 }

@@ -6,6 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.domain.pictures.commands.UpdateThumbnailLocationCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.services.ImageService
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -20,7 +21,9 @@ class ThumbnailProcessor(
 ) {
 
     @EventSourcingHandler
-    fun on (evt: AnalysisRequestedEvent) {
+    fun on(evt: AnalysisRequestedEvent) {
+        logger.info("Generating thumbnail for ${evt.pictureId}")
+
         imageService.createThumbnail(pictureId = evt.pictureId, source = evt.location)
                 .map {
                     UpdateThumbnailLocationCommand(
@@ -31,4 +34,6 @@ class ThumbnailProcessor(
                 }
                 .subscribe { commandGateway.send<Unit>(it) }
     }
+
+    companion object : LoggerCompanion()
 }

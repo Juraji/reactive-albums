@@ -35,11 +35,6 @@ axon:
     general: jackson
     events: jackson
     messages: jackson
-  eventhandling:
-    processors:
-      picture-analysis:
-        threadCount: 8
-        initialSegmentCount: 8
 
 logging:
   level:

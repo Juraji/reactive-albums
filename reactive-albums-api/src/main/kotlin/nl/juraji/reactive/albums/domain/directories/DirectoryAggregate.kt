@@ -38,7 +38,6 @@ class DirectoryAggregate() {
                     DirectoryScanRequestedEvent(
                             directoryId = cmd.directoryId,
                             location = cmd.location,
-                            firstTime = true
                     )
             )
         }

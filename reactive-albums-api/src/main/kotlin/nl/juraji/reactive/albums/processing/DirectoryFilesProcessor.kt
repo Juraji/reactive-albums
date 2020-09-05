@@ -8,6 +8,7 @@ import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.query.projections.PictureLocationProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import nl.juraji.reactive.albums.services.FileSystemService
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -29,6 +30,8 @@ class DirectoryFilesProcessor(
 
     @EventSourcingHandler
     fun on(evt: DirectoryScanRequestedEvent) {
+        logger.info("Updating against directory ${evt.location}")
+
         val directoryFiles: Flux<Path> = fileSystemService
                 .listFiles(evt.location)
                 .cache()
@@ -43,14 +46,14 @@ class DirectoryFilesProcessor(
     private fun deleteMissingFiles(knownPictures: Flux<PictureLocationProjection>, directoryFiles: Flux<Path>) {
         knownPictures
                 .filterWhen { picture ->
-                    directoryFiles.any { location -> picture.parentLocation == location.toString() }
+                    directoryFiles.any { location -> picture.parentLocation == location.toString() }.not()
                 }
-                .map {picture->
+                .map { picture ->
                     DeletePictureCommand(
                             pictureId = PictureId(picture.id)
                     )
                 }
-                .subscribe{commandGateway.send<Unit>(it)}
+                .subscribe { commandGateway.send<Unit>(it) }
     }
 
     private fun addNewFiles(knownPictures: Flux<PictureLocationProjection>, directoryFiles: Flux<Path>) {
@@ -68,4 +71,6 @@ class DirectoryFilesProcessor(
                 }
                 .subscribe { commandGateway.send<Unit>(it) }
     }
+
+    companion object : LoggerCompanion()
 }

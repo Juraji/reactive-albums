@@ -8,5 +8,4 @@ import java.nio.file.Path
 data class DirectoryScanRequestedEvent(
         override val directoryId: DirectoryId,
         val location: Path,
-        val firstTime: Boolean = false
 ): DirectoryEvent

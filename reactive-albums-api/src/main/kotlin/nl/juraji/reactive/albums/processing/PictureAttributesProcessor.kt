@@ -5,6 +5,7 @@ import nl.juraji.reactive.albums.domain.pictures.commands.UpdateAttributesComman
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.services.ImageService
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -25,6 +26,8 @@ class PictureAttributesProcessor(
 
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
+        logger.info("Analyzing file attributes for ${evt.pictureId}")
+
         val fileAttributes = fileSystemService.readAttributes(evt.location)
         val imageDimensions = imageService.getImageDimensions(evt.location)
 
@@ -45,4 +48,6 @@ class PictureAttributesProcessor(
                 }
                 .subscribe { commandGateway.send<Unit>(it) }
     }
+
+    companion object : LoggerCompanion()
 }
