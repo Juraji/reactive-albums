@@ -23,7 +23,7 @@ interface PictureRepository : JpaRepository<PictureProjection, String> {
     fun findPictureImageById(id: String): Optional<PictureImageProjection>
     fun findPictureThumbnailById(id: String): Optional<PictureThumbnailProjection>
 
-    fun findAllByLocationStartsWith(@Param("directory") directory: String): List<PictureLocationProjection>
+    fun findAllByParentLocation(@Param("directory") directory: String): List<PictureLocationProjection>
 }
 
 @Service
@@ -42,6 +42,6 @@ class ReactivePictureRepository(
     fun findPictureThumbnailById(id: String): Mono<PictureThumbnailProjection> =
             fromOptional { it.findPictureThumbnailById(id) }
 
-    fun findAllByLocationStartsWith(directory: String): Flux<PictureLocationProjection> =
-            fromIterator { it.findAllByLocationStartsWith(directory) }
+    fun findAllByParentLocation(directory: String): Flux<PictureLocationProjection> =
+            fromIterator { it.findAllByParentLocation(directory) }
 }

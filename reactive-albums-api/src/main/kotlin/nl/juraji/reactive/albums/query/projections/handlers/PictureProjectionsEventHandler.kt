@@ -22,6 +22,7 @@ class PictureProjectionsEventHandler(
                 id = evt.pictureId.identifier,
                 displayName = evt.displayName,
                 location = evt.location.toString(),
+                parentLocation = evt.location.parent.toString(),
                 pictureType = evt.pictureType
         )
 

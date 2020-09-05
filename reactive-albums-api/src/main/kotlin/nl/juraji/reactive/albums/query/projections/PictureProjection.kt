@@ -16,6 +16,7 @@ data class PictureProjection(
         @Id val id: String,
         val displayName: String,
         val location: String,
+        val parentLocation: String,
         val pictureType: PictureType,
         val fileSize: Long? = null,
         val lastModifiedTime: LocalDateTime? = null,
@@ -39,6 +40,7 @@ interface PictureThumbnailProjection {
 }
 
 interface PictureLocationProjection {
-    val id: PictureId
+    val id: String
     val location: String
+    val parentLocation: String
 }
