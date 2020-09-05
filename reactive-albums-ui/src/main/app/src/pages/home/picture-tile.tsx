@@ -33,7 +33,7 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
       </Link>
       <Card.Body>
         <ul className="list-unstyled">
-          <li className="font-weight-bold">{picture.displayName}</li>
+          <li className="font-weight-bold text-ellipsis">{picture.displayName}</li>
           <li className="small">
             {picture.imageWidth} x {picture.imageHeight} ({fileSizeHuman})
           </li>

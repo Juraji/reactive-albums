@@ -4,3 +4,9 @@
   border-radius: 50%;
   padding: .65rem $btn-padding-x;
 }
+
+.text-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
