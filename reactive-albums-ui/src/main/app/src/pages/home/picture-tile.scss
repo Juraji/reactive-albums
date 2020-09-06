@@ -3,7 +3,7 @@ $picture-tile-size: 200px;
 .picture-tile {
   width: $picture-tile-size;
 
-  .card-img-top {
+  .picture-thumbnail {
     height: $picture-tile-size;
     object-fit: contain;
     background-color: #333;

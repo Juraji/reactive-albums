@@ -2,6 +2,7 @@ package nl.juraji.reactive.albums.domain
 
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 object Validate {
     fun isTrue(assertion: Boolean, message: () -> String): Boolean =
@@ -36,7 +37,7 @@ object ValidateAsync {
     fun <T : Any> isNotNull(value: Mono<T>, message: () -> String): Mono<Boolean> =
             value
                     .flatMap { success() }
-                    .switchIfEmpty(fail(message))
+                    .switchIfEmpty { fail(message) }
 
     fun all(vararg validations: Mono<Boolean>): Mono<Boolean> =
             Flux.fromArray(validations)

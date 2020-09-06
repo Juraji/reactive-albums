@@ -7,6 +7,7 @@ import './picture-tile.scss';
 import { Link } from 'react-router-dom';
 import Badge from 'react-bootstrap/Badge';
 import { Conditional } from '@components';
+import { RefreshCw } from 'react-feather';
 
 interface TagOrbProps {
   tag: Tag;
@@ -29,7 +30,7 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
   return (
     <Card className="picture-tile mb-4">
       <Link to={`/picture/${picture.id}`}>
-        <Card.Img variant="top" src={imageUrl} />
+        <Card.Img variant="top" src={imageUrl} className="picture-thumbnail" />
       </Link>
       <Card.Body>
         <ul className="list-unstyled">
