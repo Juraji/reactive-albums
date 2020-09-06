@@ -1,9 +1,5 @@
-.picture-view-card {
+.picture-view-image {
   display: block;
-  flex-direction: unset;
-
-  .card-img {
-    object-fit: contain;
-    max-height: calc(100vh - 5rem);
-  }
+  margin: 0 auto;
+  max-height: calc(100vh - 5rem);
 }
