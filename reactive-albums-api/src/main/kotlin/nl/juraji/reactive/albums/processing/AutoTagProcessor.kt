@@ -18,7 +18,7 @@ class AutoTagProcessor(
 ) {
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
-        logger.info("Generating tags for ${evt.pictureId}")
+        logger.debug("Generating tags for ${evt.pictureId}")
 
         evt.location.parent
                 .map { path ->
@@ -37,5 +37,5 @@ class AutoTagProcessor(
                 .forEach { commandGateway.send<Unit>(it) }
     }
 
-    companion object : LoggerCompanion()
+    companion object : LoggerCompanion(AutoTagProcessor::class)
 }

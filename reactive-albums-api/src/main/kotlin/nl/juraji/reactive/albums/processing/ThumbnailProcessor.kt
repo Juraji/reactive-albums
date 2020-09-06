@@ -22,7 +22,7 @@ class ThumbnailProcessor(
 
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
-        logger.info("Generating thumbnail for ${evt.pictureId}")
+        logger.debug("Generating thumbnail for ${evt.pictureId}")
 
         imageService.createThumbnail(pictureId = evt.pictureId, source = evt.location)
                 .map {
@@ -35,5 +35,5 @@ class ThumbnailProcessor(
                 .subscribe { commandGateway.send<Unit>(it) }
     }
 
-    companion object : LoggerCompanion()
+    companion object : LoggerCompanion(ThumbnailProcessor::class)
 }

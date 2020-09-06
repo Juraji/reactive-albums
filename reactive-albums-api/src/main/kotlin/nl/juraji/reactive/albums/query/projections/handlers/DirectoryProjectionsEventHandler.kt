@@ -6,8 +6,6 @@ import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregistered
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDirectoryRepository
-import nl.juraji.reactive.albums.util.LoggerCompanion
-import nl.juraji.reactive.albums.util.extensions.logErrors
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.springframework.stereotype.Service
@@ -29,16 +27,14 @@ class DirectoryProjectionsEventHandler(
 
         directoryRepository
                 .save(entity)
-                .logErrors(logger)
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
     fun on(evt: DirectoryUnregisteredEvent) {
         directoryRepository
                 .deleteById(evt.directoryId.identifier)
-                .logErrors(logger)
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -47,9 +43,6 @@ class DirectoryProjectionsEventHandler(
                 .update(evt.directoryId.identifier) {
                     it.copy(automaticScanEnabled = evt.automaticScanEnabled)
                 }
-                .logErrors(logger)
-                .subscribe()
+                .block()
     }
-
-    companion object : LoggerCompanion()
 }

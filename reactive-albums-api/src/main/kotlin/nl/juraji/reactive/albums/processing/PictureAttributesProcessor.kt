@@ -26,7 +26,7 @@ class PictureAttributesProcessor(
 
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
-        logger.info("Analyzing file attributes for ${evt.pictureId}")
+        logger.debug("Analyzing file attributes for ${evt.pictureId}")
 
         val fileAttributes = fileSystemService.readAttributes(evt.location)
         val imageDimensions = imageService.getImageDimensions(evt.location)
@@ -49,5 +49,5 @@ class PictureAttributesProcessor(
                 .subscribe { commandGateway.send<Unit>(it) }
     }
 
-    companion object : LoggerCompanion()
+    companion object : LoggerCompanion(PictureAttributesProcessor::class)
 }

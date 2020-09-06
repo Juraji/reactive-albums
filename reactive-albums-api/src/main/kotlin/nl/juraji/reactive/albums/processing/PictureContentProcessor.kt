@@ -19,7 +19,7 @@ class PictureContentProcessor(
 
     @EventSourcingHandler
     fun on(evt: AnalysisRequestedEvent) {
-        logger.info("Analyzing image content of ${evt.pictureId}")
+        logger.debug("Analyzing image content of ${evt.pictureId}")
 
         imageService.createContentHash(evt.location)
                 .map {
@@ -31,5 +31,5 @@ class PictureContentProcessor(
                 .subscribe { commandGateway.send<Unit>(it) }
     }
 
-    companion object : LoggerCompanion()
+    companion object : LoggerCompanion(PictureContentProcessor::class)
 }

@@ -2,7 +2,7 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
-import nl.juraji.reactive.albums.util.ReactiveEvent
+import nl.juraji.reactive.albums.query.projections.repositories.ReactiveEvent
 import nl.juraji.reactive.albums.util.extensions.ServerSentEventFlux
 import nl.juraji.reactive.albums.util.extensions.bufferLastIdentity
 import nl.juraji.reactive.albums.util.extensions.toServerSentEvents

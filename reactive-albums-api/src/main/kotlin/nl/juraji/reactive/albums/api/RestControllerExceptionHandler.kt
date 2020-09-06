@@ -52,6 +52,5 @@ class RestControllerExceptionHandler(
         return ApiErrorResult(status = HttpStatus.INTERNAL_SERVER_ERROR, message = ex.localizedMessage)
     }
 
-    companion object : LoggerCompanion() {
-    }
+    companion object : LoggerCompanion(RestControllerExceptionHandler::class)
 }

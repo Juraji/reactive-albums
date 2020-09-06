@@ -5,7 +5,6 @@ import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
-import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.springframework.stereotype.Service
@@ -29,8 +28,7 @@ class PictureProjectionsEventHandler(
 
         pictureRepository
                 .save(projection)
-                .doOnError { logger.error("Failed persisting picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -44,8 +42,7 @@ class PictureProjectionsEventHandler(
                             imageHeight = evt.imageHeight ?: it.imageHeight,
                     )
                 }
-                .doOnError { logger.error("Failed updating file attributes of picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -56,8 +53,7 @@ class PictureProjectionsEventHandler(
                             contentHash = evt.contentHash
                     )
                 }
-                .doOnError { logger.error("Failed updating content hash of picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -69,8 +65,7 @@ class PictureProjectionsEventHandler(
                             thumbnailType = evt.thumbnailType
                     )
                 }
-                .doOnError { logger.error("Failed updating thumbnail location of picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -86,8 +81,7 @@ class PictureProjectionsEventHandler(
 
                     it.copy(tags = tags)
                 }
-                .doOnError { logger.error("Failed adding tag to picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
@@ -97,17 +91,13 @@ class PictureProjectionsEventHandler(
                     val tags = it.tags.filter { t -> t.label != evt.label }.toSet()
                     it.copy(tags = tags)
                 }
-                .doOnError { logger.error("Failed removing tag from picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
 
     @EventSourcingHandler
     fun on(evt: PictureDeletedEvent) {
         pictureRepository
                 .deleteById(evt.pictureId.identifier)
-                .doOnError { logger.error("Failed deleting picture ${evt.pictureId}", it) }
-                .subscribe()
+                .block()
     }
-
-    companion object : LoggerCompanion()
 }

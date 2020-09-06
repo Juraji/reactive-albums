@@ -49,6 +49,5 @@ class MultiTenantFlywayMigrations(
                 .load()
     }
 
-    companion object : LoggerCompanion() {
-    }
+    companion object : LoggerCompanion(MultiTenantFlywayMigrations::class)
 }

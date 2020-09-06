@@ -31,7 +31,7 @@ class DirectoryScanProcessor(
 
     @EventSourcingHandler
     fun on(evt: DirectoryScanRequestedEvent) {
-        logger.info("Updating against directory ${evt.location}")
+        logger.debug("Updating against directory ${evt.location}")
 
         val directoryFiles: Flux<Path> = fileSystemService
                 .listFiles(evt.location)
@@ -74,5 +74,5 @@ class DirectoryScanProcessor(
                 .subscribe { commandGateway.send<Unit>(it) }
     }
 
-    companion object : LoggerCompanion()
+    companion object : LoggerCompanion(DirectoryScanProcessor::class)
 }

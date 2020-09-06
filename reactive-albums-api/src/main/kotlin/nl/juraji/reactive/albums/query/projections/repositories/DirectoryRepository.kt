@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.query.projections.repositories
 
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.util.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.repository.query.Param

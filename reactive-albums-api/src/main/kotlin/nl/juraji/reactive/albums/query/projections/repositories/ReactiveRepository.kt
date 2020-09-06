@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.util
+package nl.juraji.reactive.albums.query.projections.repositories
 
 import nl.juraji.reactive.albums.util.extensions.deferFrom
 import nl.juraji.reactive.albums.util.extensions.deferFromIterable

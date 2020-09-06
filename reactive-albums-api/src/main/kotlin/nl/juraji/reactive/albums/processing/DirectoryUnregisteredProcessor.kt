@@ -1,14 +1,17 @@
 package nl.juraji.reactive.albums.processing
 
+import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregisteredEvent
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.springframework.stereotype.Service
 
 @Service
+@ProcessingGroup(ProcessingGroups.DIRECTORY_SCANS)
 class DirectoryUnregisteredProcessor(
         private val commandGateway: CommandGateway,
         private val pictureRepository: ReactivePictureRepository,

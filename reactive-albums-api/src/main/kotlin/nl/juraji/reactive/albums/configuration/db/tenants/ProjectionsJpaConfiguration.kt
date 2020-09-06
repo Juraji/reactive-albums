@@ -13,6 +13,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.EnableTransactionManagement
 import reactor.core.scheduler.Scheduler
 import reactor.core.scheduler.Schedulers
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
@@ -28,9 +29,11 @@ class ProjectionsJpaConfiguration(
         private val multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
 
-    @Bean(name=["projectionsScheduler"])
-    fun jdbcScheduler(): Scheduler =
-            Schedulers.fromExecutor(Executors.newFixedThreadPool(8))
+    @Bean(name = ["projectionsScheduler"])
+    fun jdbcScheduler(): Scheduler {
+        val pool: ExecutorService = Executors.newFixedThreadPool(8) { Thread(it, "projections-scheduler") }
+        return Schedulers.fromExecutor(pool)
+    }
 
     @Bean(name = ["projectionsDataSource"])
     fun dataSource(): DataSource {
