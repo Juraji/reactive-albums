@@ -31,21 +31,22 @@ internal class RgbColorTest {
 
     @Test
     fun `luminance should calculate perceptive color luminance between 0 and 1`() {
-        assertEquals(0.0, RgbColor.BLACK.luminance())
-        assertEquals(1.0, RgbColor.WHITE.luminance())
-        assertEquals(0.14341884932604732, c1.luminance())
-        assertEquals(0.5961637793548558, c2.luminance())
-        assertEquals(0.43186466130331186, c3.luminance())
+        assertEquals(0f, RgbColor.BLACK.luminance())
+        assertEquals(1f, RgbColor.WHITE.luminance())
+        assertEquals(0.14341886f, c1.luminance())
+        assertEquals(0.5961638f, c2.luminance())
+        assertEquals(0.43186474f, c3.luminance())
     }
 
     @Test
     fun `contrast should calculate contrast ratio between two Colors`() {
-        assertEquals(3.868376986520946, c1.contrast(RgbColor.BLACK))
-        assertEquals(12.923275587097116, c2.contrast(RgbColor.BLACK))
-        assertEquals(9.637293226066236, c3.contrast(RgbColor.BLACK))
-        assertEquals(5.428633267433045, c1.contrast(RgbColor.WHITE))
-        assertEquals(1.6249750195660044, c2.contrast(RgbColor.WHITE))
-        assertEquals(2.179035078355897, c3.contrast(RgbColor.WHITE))
+        assertEquals(20.999998f, RgbColor.WHITE.contrast(RgbColor.BLACK))
+        assertEquals(3.8683772f, c1.contrast(RgbColor.BLACK))
+        assertEquals(12.923276f, c2.contrast(RgbColor.BLACK))
+        assertEquals(9.637295f, c3.contrast(RgbColor.BLACK))
+        assertEquals(5.4286327f, c1.contrast(RgbColor.WHITE))
+        assertEquals(1.624975f, c2.contrast(RgbColor.WHITE))
+        assertEquals(2.1790345f, c3.contrast(RgbColor.WHITE))
     }
 
     @Test
@@ -57,11 +58,11 @@ internal class RgbColorTest {
 
     @Test
     fun `toHsl should convert Color to the correct HslColor`() {
-        assertEquals(HslColor(162, 0.5555555555555557, 0.3), c1.toHsl())
-        assertEquals(HslColor(72, 0.4853801169590642, 0.6647058823529411), c2.toHsl())
-        assertEquals(HslColor(180, 0.7410714285714285, 0.4392156862745098), c3.toHsl())
-        assertEquals(HslColor(0, 0.0, 0.0), RgbColor(0, 0, 0).toHsl())
-        assertEquals(HslColor(0, 0.0, 0.5019607843137255), RgbColor(128, 128, 128).toHsl())
-        assertEquals(HslColor(0, 0.0, 1.0), RgbColor(255, 255, 255).toHsl())
+        assertEquals(HslColor(162, 0.5555555f, 0.3f), c1.toHsl())
+        assertEquals(HslColor(72, 0.48538008f, 0.6647059f), c2.toHsl())
+        assertEquals(HslColor(180, 0.74107146f, 0.4392157f), c3.toHsl())
+        assertEquals(HslColor(0, 0f, 0f), RgbColor(0, 0, 0).toHsl())
+        assertEquals(HslColor(0, 0f, 0.5019608f), RgbColor(128, 128, 128).toHsl())
+        assertEquals(HslColor(0, 0f, 1f), RgbColor(255, 255, 255).toHsl())
     }
 }

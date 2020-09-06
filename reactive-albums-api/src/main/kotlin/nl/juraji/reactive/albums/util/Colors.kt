@@ -10,28 +10,28 @@ data class RgbColor(
         val green: Int,
         val blue: Int,
 ) {
-    fun luminance(): Double {
+    fun luminance(): Float {
         // Formula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
-        val cmpLum: (Double) -> Double = { cmp ->
-            val p: Double = cmp / 255.0
-            if (p < 0.03928) p / 12.92
-            else ((p + 0.055) / 1.055).pow(2.4)
+        val cmpLum: (Float) -> Float = { cmp ->
+            val p: Float = cmp / 255f
+            if (p < 0.03928) p / 12.92f
+            else ((p + 0.055f) / 1.055f).pow(2.4f)
         }
 
-        val rLum = cmpLum(red.toDouble()) * 0.2126
-        val gLum = cmpLum(green.toDouble()) * 0.7152
-        val bLum = cmpLum(blue.toDouble()) * 0.0722
+        val rLum: Float = cmpLum(red.toFloat()) * 0.2126f
+        val gLum: Float = cmpLum(green.toFloat()) * 0.7152f
+        val bLum: Float = cmpLum(blue.toFloat()) * 0.0722f
 
         return rLum + gLum + bLum
     }
 
-    fun contrast(other: RgbColor): Double {
+    fun contrast(other: RgbColor): Float {
         // Formula: http://www.w3.org/TR/2008/REC-WCAG20-20081211/#contrast-ratiodef
-        val l1: Double = this.luminance() + 0.05
-        val l2: Double = other.luminance() + 0.05
-        val ratio: Double = l1 / l2
+        val l1: Float = this.luminance() + 0.05f
+        val l2: Float = other.luminance() + 0.05f
+        val ratio: Float = l1 / l2
 
-        return if (l2 > l1) 1.0 / ratio
+        return if (l2 > l1) 1f / ratio
         else ratio
     }
 
@@ -44,14 +44,14 @@ data class RgbColor(
     }
 
     fun toHsl(): HslColor {
-        val r: Double = red.toDouble() / 255.0
-        val g: Double = green.toDouble() / 255.0
-        val b: Double = blue.toDouble() / 255.0
-        val max: Double = max(r, max(g, b))
-        val min: Double = min(r, min(g, b))
-        val chroma: Double = max - min
+        val r: Float = red.toFloat() / 255f
+        val g: Float = green.toFloat() / 255f
+        val b: Float = blue.toFloat() / 255f
+        val max: Float = max(r, max(g, b))
+        val min: Float = min(r, min(g, b))
+        val chroma: Float = max - min
 
-        val lightness: Double = (max + min) / 2.0
+        val lightness: Float = (max + min) / 2f
 
         val hue = when (max) {
             r ->
@@ -62,15 +62,15 @@ data class RgbColor(
             else -> throw IllegalStateException("Max should match either red, green or blue")
         }
 
-        val saturation: Double = when {
-            lightness == 1.0 -> 0.0
-            lightness >= 0.5 -> chroma / (2.0 - (max + min))
+        val saturation: Float = when {
+            lightness == 1f -> 0f
+            lightness >= 0.5f -> chroma / (2f - (max + min))
             else -> chroma / (max + min)
         }
 
         return HslColor(
                 if (!hue.isNaN()) hue.roundToInt() else 0,
-                if (!saturation.isNaN()) saturation else 0.0,
+                if (!saturation.isNaN()) saturation else 0f,
                 lightness
         )
     }
@@ -102,6 +102,6 @@ data class RgbColor(
 
 data class HslColor(
         val hue: Int,
-        val saturation: Double,
-        val lightness: Double,
+        val saturation: Float,
+        val lightness: Float,
 )
