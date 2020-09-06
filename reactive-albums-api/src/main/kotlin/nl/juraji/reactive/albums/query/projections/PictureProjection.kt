@@ -24,7 +24,6 @@ data class PictureProjection(
         val imageHeight: Int? = null,
         val duplicateCount: Int = 0,
         @JsonIgnore val thumbnailLocation: String? = null,
-        @JsonIgnore val thumbnailType: PictureType? = null,
         @JsonIgnore @Lob val contentHash: BitSet? = null,
         @ElementCollection(fetch = FetchType.EAGER) val tags: Set<TagProjection> = emptySet(),
 )

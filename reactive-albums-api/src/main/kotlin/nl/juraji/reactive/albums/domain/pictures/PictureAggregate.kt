@@ -3,7 +3,7 @@ package nl.juraji.reactive.albums.domain.pictures
 import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.pictures.events.*
-import nl.juraji.reactive.albums.util.Colors
+import nl.juraji.reactive.albums.util.RgbColor
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -74,7 +74,6 @@ class PictureAggregate() {
                 ThumbnailLocationUpdatedEvent(
                         pictureId = pictureId,
                         thumbnailLocation = cmd.thumbnailLocation,
-                        thumbnailType = cmd.thumbnailType,
                 )
         )
     }
@@ -82,8 +81,8 @@ class PictureAggregate() {
     @CommandHandler
     fun handle(cmd: AddTagCommand) {
         Validate.isTrue(cmd.label.isNotBlank()) { "Tag label should not be blank" }
-        Validate.isTrue(Colors.isHexColor(cmd.labelColor)) { "Tag label color should be a valid hexadecimal color" }
-        Validate.isTrue(Colors.isHexColor(cmd.textColor)) { "Tag text color should be a valid hexadecimal color" }
+        Validate.isTrue(RgbColor.isHexColor(cmd.labelColor)) { "Tag label color should be a valid hexadecimal color" }
+        Validate.isTrue(RgbColor.isHexColor(cmd.textColor)) { "Tag text color should be a valid hexadecimal color" }
         Validate.isTrue(tags.none { it.label == cmd.label }) { "Tag with label ${cmd.label} already exists on $displayName" }
 
         AggregateLifecycle.apply(

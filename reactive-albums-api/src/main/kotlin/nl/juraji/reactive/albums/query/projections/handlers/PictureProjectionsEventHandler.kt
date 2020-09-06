@@ -49,9 +49,7 @@ class PictureProjectionsEventHandler(
     fun on(evt: ContentHashUpdatedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
-                    it.copy(
-                            contentHash = evt.contentHash
-                    )
+                    it.copy(contentHash = evt.contentHash)
                 }
                 .block()
     }
@@ -60,10 +58,7 @@ class PictureProjectionsEventHandler(
     fun on(evt: ThumbnailLocationUpdatedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
-                    it.copy(
-                            thumbnailLocation = evt.thumbnailLocation.toString(),
-                            thumbnailType = evt.thumbnailType
-                    )
+                    it.copy(thumbnailLocation = evt.thumbnailLocation.toString())
                 }
                 .block()
     }

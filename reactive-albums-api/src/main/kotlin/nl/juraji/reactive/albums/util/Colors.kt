@@ -5,30 +5,6 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-object Colors {
-    fun isHexColor(str: String): Boolean =
-            str.isNotBlank() && str.matches(Regex("^[a-f0-9]{6}$"))
-
-    fun generateColor(seed: String): RgbColor {
-        val seedColor: Int = if (isHexColor(seed)) Integer.valueOf(seed, 16) else seed.hashCode()
-
-        return RgbColor(
-                red = seedColor and 0xFF0000 shr 16,
-                green = seedColor and 0xFF00 shr 8,
-                blue = seedColor and 0xFF
-        )
-    }
-
-    fun contrastColor(color: RgbColor): RgbColor {
-        val cWhite = color.contrast(WHITE)
-        val cBlack = color.contrast(BLACK)
-        return if (cWhite > cBlack) WHITE.copy() else BLACK.copy()
-    }
-
-    val BLACK = RgbColor(0, 0, 0)
-    val WHITE = RgbColor(255, 255, 255)
-}
-
 data class RgbColor(
         val red: Int,
         val green: Int,
@@ -97,6 +73,30 @@ data class RgbColor(
                 if (!saturation.isNaN()) saturation else 0.0,
                 lightness
         )
+    }
+
+    fun contrastColor(): RgbColor {
+        val cWhite = this.contrast(WHITE)
+        val cBlack = this.contrast(BLACK)
+        return if (cWhite > cBlack) WHITE.copy() else BLACK.copy()
+    }
+
+    companion object {
+        val BLACK = RgbColor(0, 0, 0)
+        val WHITE = RgbColor(255, 255, 255)
+
+        fun isHexColor(str: String): Boolean =
+                str.isNotBlank() && str.matches(Regex("^[a-f0-9]{6}$"))
+
+        fun of(seed: String): RgbColor {
+            val seedColor: Int = if (isHexColor(seed)) Integer.valueOf(seed, 16) else seed.hashCode()
+
+            return RgbColor(
+                    red = seedColor and 0xFF0000 shr 16,
+                    green = seedColor and 0xFF00 shr 8,
+                    blue = seedColor and 0xFF
+            )
+        }
     }
 }
 

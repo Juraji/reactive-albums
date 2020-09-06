@@ -7,7 +7,6 @@ create table PictureProjection
     parentLocation    varchar(4096) not null,
     pictureType       varchar(255)  not null,
     thumbnailLocation varchar(4096),
-    thumbnailType     varchar(255),
     fileSize          bigint,
     lastModifiedTime  timestamp,
     imageHeight       integer,

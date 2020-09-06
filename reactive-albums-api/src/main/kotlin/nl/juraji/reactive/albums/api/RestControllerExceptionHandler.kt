@@ -4,53 +4,53 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import nl.juraji.reactive.albums.domain.ValidationException
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.util.LoggerCompanion
-import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.io.buffer.DataBufferFactory
-import org.springframework.dao.IncorrectResultSizeDataAccessException
+import org.springframework.core.annotation.Order
+import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.server.ServerWebExchange
+import org.springframework.web.server.WebExceptionHandler
 import reactor.core.publisher.Mono
+import java.io.FileNotFoundException
 
+@Order(-2)
 @Configuration
 class RestControllerExceptionHandler(
         private val objectMapper: ObjectMapper,
-) : ErrorWebExceptionHandler {
+) : WebExceptionHandler {
 
     override fun handle(exchange: ServerWebExchange, ex: Throwable): Mono<Void> {
-        exchange.response.headers.contentType = MediaType.APPLICATION_JSON;
-        return exchange.response.writeWith(Mono.create {
-            val result: ApiErrorResult = when (ex) {
-                is ValidationException -> handleValidationException(ex)
-                is NoSuchEntityException -> handleNoSuchEntityException(ex)
-                is IncorrectResultSizeDataAccessException -> handleIncorrectResultSizeDataAccessException(ex)
-                else -> handleDefault(ex)
+        return when (ex) {
+            is ValidationException -> handleException(exchange, ex, HttpStatus.UNPROCESSABLE_ENTITY)
+            is NoSuchEntityException -> handleException(exchange, ex, HttpStatus.NOT_FOUND)
+            is FileNotFoundException -> handleException(exchange, ex, HttpStatus.NOT_FOUND)
+            else -> {
+                logger.error("Error running request: ${exchange.request.path}", ex)
+                handleException(exchange, ex, HttpStatus.INTERNAL_SERVER_ERROR)
             }
-
-            val bufferFactory: DataBufferFactory = exchange.response.bufferFactory()
-            it.success(bufferFactory.wrap(objectMapper.writeValueAsBytes(result)))
-        })
+        }
     }
 
-    fun handleValidationException(ex: ValidationException): ApiErrorResult {
-        logger.trace(ex.localizedMessage, ex)
-        return ApiErrorResult(status = HttpStatus.BAD_REQUEST, message = ex.localizedMessage)
-    }
+    private fun handleException(exchange: ServerWebExchange, ex: Throwable, status: HttpStatus): Mono<Void> {
+        exchange.response.statusCode = status
 
-    fun handleNoSuchEntityException(ex: NoSuchEntityException): ApiErrorResult {
-        val msg = ex.localizedMessage ?: "${ex.entityName} not found by id ${ex.entityId}"
-        logger.trace(msg, ex)
-        return ApiErrorResult(status = HttpStatus.NOT_FOUND, message = msg)
-    }
+        return if (exchange.request.headers.accept.contains(MediaType.APPLICATION_JSON)) {
+            val body: Mono<DataBuffer> = Mono
+                    .just(ApiError(status = status.value(), message = ex.localizedMessage))
+                    .map { objectMapper.writeValueAsBytes(it) }
+                    .map { exchange.response.bufferFactory().wrap(it) }
 
-    fun handleIncorrectResultSizeDataAccessException(ex: IncorrectResultSizeDataAccessException): ApiErrorResult =
-            ApiErrorResult(status = HttpStatus.CONFLICT, message = ex.localizedMessage)
-
-    private fun handleDefault(ex: Throwable): ApiErrorResult {
-        logger.error("Unhandled error in Api", ex)
-        return ApiErrorResult(status = HttpStatus.INTERNAL_SERVER_ERROR, message = ex.localizedMessage)
+            exchange.response.writeWith(body)
+        } else {
+            exchange.response.setComplete()
+        }
     }
 
     companion object : LoggerCompanion(RestControllerExceptionHandler::class)
 }
+
+data class ApiError(
+        val status: Int,
+        val message: String,
+)

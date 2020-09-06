@@ -1,8 +1,6 @@
 package nl.juraji.reactive.albums.processing
 
-import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.domain.pictures.commands.UpdateThumbnailLocationCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
 import nl.juraji.reactive.albums.services.ImageService
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service
 class ThumbnailProcessor(
         private val commandGateway: CommandGateway,
         private val imageService: ImageService,
-        private val pictureConfiguration: PicturesAggregateConfiguration,
 ) {
 
     @EventSourcingHandler
@@ -29,7 +26,6 @@ class ThumbnailProcessor(
                     UpdateThumbnailLocationCommand(
                             pictureId = evt.pictureId,
                             thumbnailLocation = it,
-                            thumbnailType = PictureType.of(pictureConfiguration.thumbnailMimeType)!!,
                     )
                 }
                 .subscribe { commandGateway.send<Unit>(it) }

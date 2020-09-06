@@ -4,8 +4,8 @@ import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.AddTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.AnalysisRequestedEvent
-import nl.juraji.reactive.albums.util.Colors
 import nl.juraji.reactive.albums.util.LoggerCompanion
+import nl.juraji.reactive.albums.util.RgbColor
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -22,9 +22,9 @@ class AutoTagProcessor(
 
         evt.location.parent
                 .map { path ->
-                    val label = path.fileName.toString()
-                    val labelColor = Colors.generateColor(label)
-                    val textColor = Colors.contrastColor(labelColor)
+                    val label: String = path.fileName.toString()
+                    val labelColor: RgbColor = RgbColor.of(label)
+                    val textColor: RgbColor = labelColor.contrastColor()
 
                     AddTagCommand(
                             pictureId = evt.pictureId,
