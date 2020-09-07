@@ -1,8 +1,6 @@
-package nl.juraji.reactive.albums.processing
+package nl.juraji.reactive.albums.services.analysis
 
-import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
-import nl.juraji.reactive.albums.domain.directories.events.DirectoryScanRequestedEvent
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
@@ -11,8 +9,6 @@ import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureR
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.config.ProcessingGroup
-import org.axonframework.eventsourcing.EventSourcingHandler
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -22,30 +18,30 @@ import reactor.kotlin.extra.bool.not
 import java.nio.file.Path
 
 @Service
-@ProcessingGroup(ProcessingGroups.DIRECTORY_SCANS)
-class DirectoryScanProcessor(
-        private val commandGateway: CommandGateway,
+class DirectoryAnalysisService(
         private val pictureRepository: ReactivePictureRepository,
         private val fileSystemService: FileSystemService,
+        private val commandGateway: CommandGateway,
 ) {
 
-    @EventSourcingHandler
-    fun on(evt: DirectoryScanRequestedEvent) {
-        logger.debug("Updating against directory ${evt.location}")
+    fun analyzeDirectory(directoryId: DirectoryId, location: Path): Mono<Unit> {
+        logger.debug("Analyzing directory $directoryId ($location)")
 
         val directoryFiles: Flux<Path> = fileSystemService
-                .listFiles(evt.location)
+                .listFiles(location)
                 .cache()
         val knownPictures: Flux<PictureProjection> = pictureRepository
-                .findAllByDirectoryId(evt.directoryId.toString())
+                .findAllByDirectoryId(directoryId.identifier)
                 .cache()
 
-        deleteMissingFiles(knownPictures, directoryFiles)
-        addNewFiles(evt.directoryId, knownPictures, directoryFiles)
+        return Flux.concat(
+                deleteMissingFiles(knownPictures, directoryFiles),
+                addNewFiles(directoryId, knownPictures, directoryFiles)
+        ).last()
     }
 
-    private fun deleteMissingFiles(knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>) {
-        knownPictures
+    private fun deleteMissingFiles(knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>): Flux<Unit> {
+        return knownPictures
                 .filterWhen { picture ->
                     directoryFiles.any { location -> picture.parentLocation == location.toString() }.not()
                 }
@@ -54,11 +50,11 @@ class DirectoryScanProcessor(
                             pictureId = PictureId(picture.id)
                     )
                 }
-                .subscribe { commandGateway.send<Unit>(it) }
+                .map { commandGateway.sendAndWait<Unit>(it) }
     }
 
-    private fun addNewFiles(directoryId: DirectoryId, knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>) {
-        directoryFiles
+    private fun addNewFiles(directoryId: DirectoryId, knownPictures: Flux<PictureProjection>, directoryFiles: Flux<Path>): Flux<Unit> {
+        return directoryFiles
                 .filterWhen { location ->
                     knownPictures.any { pic -> pic.location == location.toString() }.not()
                 }
@@ -71,8 +67,8 @@ class DirectoryScanProcessor(
                             directoryId = directoryId
                     )
                 }
-                .subscribe { commandGateway.send<Unit>(it) }
+                .map { commandGateway.sendAndWait<Unit>(it) }
     }
 
-    companion object : LoggerCompanion(DirectoryScanProcessor::class)
+    companion object : LoggerCompanion(DirectoryAnalysisService::class)
 }

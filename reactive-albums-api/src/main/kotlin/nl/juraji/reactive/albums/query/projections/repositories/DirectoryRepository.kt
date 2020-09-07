@@ -21,7 +21,11 @@ class ReactiveDirectoryRepository(
         directoryRepository: DirectoryRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<DirectoryRepository, DirectoryProjection, String>(directoryRepository, scheduler, transactionTemplate) {
+) : ReactiveRepository<DirectoryRepository, DirectoryProjection, String>(
+        directoryRepository,
+        scheduler,
+        transactionTemplate
+) {
 
     fun existsByLocation(location: String): Mono<Boolean> =
             from { it.existsByLocation(location) }

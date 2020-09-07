@@ -1,6 +1,8 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
+import nl.juraji.reactive.albums.domain.duplicates.events.DuplicateLinkedEvent
+import nl.juraji.reactive.albums.domain.duplicates.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
@@ -8,6 +10,7 @@ import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureR
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -87,6 +90,22 @@ class PictureProjectionsEventHandler(
                     it.copy(tags = tags)
                 }
                 .block()
+    }
+
+    @EventSourcingHandler
+    fun on(evt: DuplicateLinkedEvent) {
+        Mono.zip(
+                pictureRepository.update(evt.sourceId.identifier) { it.copy(duplicateCount = it.duplicateCount + 1) },
+                pictureRepository.update(evt.targetId.identifier) { it.copy(duplicateCount = it.duplicateCount + 1) }
+        ).block()
+    }
+
+    @EventSourcingHandler
+    fun on(evt: DuplicateUnlinkedEvent) {
+        Mono.zip(
+                pictureRepository.update(evt.sourceId.identifier) { it.copy(duplicateCount = it.duplicateCount - 1) },
+                pictureRepository.update(evt.targetId.identifier) { it.copy(duplicateCount = it.duplicateCount - 1) }
+        ).block()
     }
 
     @EventSourcingHandler

@@ -4,7 +4,6 @@ import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCo
 import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryRegisteredEvent
-import nl.juraji.reactive.albums.domain.directories.events.DirectoryScanRequestedEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregisteredEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
 import org.axonframework.commandhandling.CommandHandler
@@ -32,15 +31,6 @@ class DirectoryAggregate() {
                         automaticScanEnabled = this.automaticScanEnabled
                 )
         )
-
-        if (this.automaticScanEnabled) {
-            AggregateLifecycle.apply(
-                    DirectoryScanRequestedEvent(
-                            directoryId = cmd.directoryId,
-                            location = cmd.location,
-                    )
-            )
-        }
     }
 
     @CommandHandler

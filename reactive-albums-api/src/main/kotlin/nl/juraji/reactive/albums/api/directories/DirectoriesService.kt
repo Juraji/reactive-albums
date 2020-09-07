@@ -22,10 +22,6 @@ class DirectoriesService(
         private val fileSystemService: FileSystemService,
         private val commandGateway: CommandGateway,
 ) {
-    init {
-        reactor.util.Loggers.useSl4jLoggers()
-    }
-
     fun registerDirectory(location: Path, recursive: Boolean): Flux<DirectoryProjection> {
         return ValidateAsync.all(
                 ValidateAsync.isFalse(directoryRepository.existsByLocation(location = location.toString())) { "Directory $location is already registered" },

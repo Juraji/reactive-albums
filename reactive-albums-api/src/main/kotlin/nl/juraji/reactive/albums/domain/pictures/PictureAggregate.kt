@@ -37,11 +37,6 @@ class PictureAggregate() {
                         directoryId = cmd.directoryId
                 )
         )
-
-        AggregateLifecycle.apply(AnalysisRequestedEvent(
-                pictureId = cmd.pictureId,
-                location = cmd.location,
-        ))
     }
 
     @CommandHandler

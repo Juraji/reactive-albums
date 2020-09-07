@@ -23,7 +23,11 @@ class ReactivePictureRepository(
         pictureRepository: PictureRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<PictureRepository, PictureProjection, String>(pictureRepository, scheduler, transactionTemplate) {
+) : ReactiveRepository<PictureRepository, PictureProjection, String>(
+        pictureRepository,
+        scheduler,
+        transactionTemplate
+) {
 
     fun findPictureImageById(id: String): Mono<PictureProjection> =
             fromOptional { it.findPictureImageById(id) }
