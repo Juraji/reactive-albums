@@ -43,13 +43,13 @@ export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
 
-  const [show, setShow, handleShow, handleClose] = useToggleState(false);
+  const [show, handleShow, handleClose] = useToggleState(false);
 
   const onSubmitForm = (e: RegisterDirectoryForm, { resetForm }: FormikHelpers<RegisterDirectoryForm>) => {
     dispatch(registerDirectory(e))
       .then(unwrapResult)
       .then((dirs: Directory[]) => {
-        setShow(false);
+        handleClose();
         addToast(<DirsRegisteredToast directories={dirs} />);
         resetForm();
       })

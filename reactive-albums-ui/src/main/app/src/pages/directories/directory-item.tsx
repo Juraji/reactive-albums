@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC } from 'react';
+import React, { ChangeEvent, FC, useState } from 'react';
 import { Directory } from '@types';
 import Card from 'react-bootstrap/Card';
 import { useTranslation } from 'react-i18next';
@@ -19,13 +19,13 @@ const DeleteDirectoryButton: FC<DeleteDirectoryConfirmProps> = ({ directory }) =
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const [show, setShow, handleShow, handleClose] = useToggleState(false);
-  const [recursive, setRecursive] = useToggleState(false);
+  const [show, handleShow, handleClose] = useToggleState(false);
+  const [recursive, setRecursive] = useState(false);
 
   const onUnregisterDirectory = () => {
     dispatch(unregisterDirectory({ directoryId: directory.id, recursive }))
       .then(unwrapResult)
-      .then(() => setShow(false));
+      .then(handleClose);
   };
 
   return (

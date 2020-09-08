@@ -8,7 +8,7 @@ interface ApiErrorResult {
 export function unwrapApiResponse<R>(response: AxiosResponse<R | ApiErrorResult>): R {
   const data: R | ApiErrorResult = response.data;
 
-  if ('message' in data && 'status' in data) {
+  if (!!data && 'message' in data && 'status' in data) {
     throw new Error(`[${data.status}] ${data.message}`);
   } else {
     return data;

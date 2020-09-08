@@ -1,11 +1,8 @@
 import { createAction } from '@reduxjs/toolkit';
 import { DuplicateMatch, Picture } from '@types';
 
-export const upsertPictures = createAction<Picture[]>('pictures/upsertPictures');
-export const deletePictures = createAction<string[]>('pictures/deletePictures');
+export const upsertEventPictures = createAction<Picture[]>('pictures/events/upsertPictures');
+export const deleteEventPictures = createAction<string[]>('pictures/events/deletePictures');
 
-export const upsertDuplicateMatches = createAction<DuplicateMatch[]>('pictures/upsertDuplicateMatches');
-export const deleteDuplicateMatches = createAction<string[]>('pictures/deleteDuplicateMatches');
-
-export const activatePicture = createAction<Picture>('pictures/activatePicture');
-export const deactivatePicture = createAction('pictures/deactivatePicture');
+export const upsertEventDuplicateMatches = createAction<DuplicateMatch[]>('pictures/events/upsertDuplicateMatches');
+export const deleteEventDuplicateMatches = createAction<string[]>('pictures/events/deleteDuplicateMatches');

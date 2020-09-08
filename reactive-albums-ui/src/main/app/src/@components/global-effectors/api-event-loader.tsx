@@ -2,12 +2,12 @@ import React, { FC } from 'react';
 import { useDispatch, useEventSource } from '@hooks';
 import { Directory, DuplicateMatch, Picture, ReactiveEvent, ReactiveEventType } from '@types';
 import {
-  deleteDirectories,
-  deleteDuplicateMatches,
-  deletePictures,
-  upsertDirectories,
-  upsertDuplicateMatches,
-  upsertPictures,
+  deleteEventDirectories,
+  deleteEventDuplicateMatches,
+  deleteEventPictures,
+  upsertEventDirectories,
+  upsertEventDuplicateMatches,
+  upsertEventPictures,
 } from '@reducers';
 
 type EventGrouping = Record<string, ReactiveEvent<any>[]>;
@@ -21,26 +21,26 @@ export const ApiEventLoader: FC = () => {
 
   const onDirectoryEvent = (events: ReactiveEvent<Directory>[]) => {
     const deleted = filterAndMap(events, 'DELETE', (e) => e.entity.id);
-    dispatch(deleteDirectories(deleted));
+    dispatch(deleteEventDirectories(deleted));
 
     const upserted = filterAndMap(events, 'UPDATE', (e) => e.entity);
-    dispatch(upsertDirectories(upserted));
+    dispatch(upsertEventDirectories(upserted));
   };
 
   const onPictureEvent = (events: ReactiveEvent<Picture>[]) => {
     const deleted = filterAndMap(events, 'DELETE', (e) => e.entity.id);
-    dispatch(deletePictures(deleted));
+    dispatch(deleteEventPictures(deleted));
 
     const upserted = filterAndMap(events, 'UPDATE', (e) => e.entity);
-    dispatch(upsertPictures(upserted));
+    dispatch(upsertEventPictures(upserted));
   };
 
   const onDuplicateMatchEvent = (events: ReactiveEvent<DuplicateMatch>[]) => {
     const deleted = filterAndMap(events, 'DELETE', (e) => e.entity.id);
-    dispatch(deleteDuplicateMatches(deleted));
+    dispatch(deleteEventDuplicateMatches(deleted));
 
     const upserted = filterAndMap(events, 'UPDATE', (e) => e.entity);
-    dispatch(upsertDuplicateMatches(upserted));
+    dispatch(upsertEventDuplicateMatches(upserted));
   };
 
   const onEvent = (data: string) => {

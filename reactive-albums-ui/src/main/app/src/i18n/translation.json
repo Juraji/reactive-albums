@@ -50,26 +50,47 @@
     "actions": {
       "rerun_attribute_analysis": "Rerun attribute analysis",
       "rerun_duplicate_analysis": "Rerun duplicate analysis",
-      "move_picture": "picture.actions.move_picture",
-      "delete_picture": "picture.actions.delete_picture"
+      "move_picture": "Move picture",
+      "delete_picture": "Delete picture",
+      "rerun_duplicate_analysis_success": "Duplicate analysis started",
+      "rerun_duplicate_analysis_failed": "Duplicate analysis failed"
     },
     "duplicates_list": {
       "title": "Duplicates",
       "unlink_all_button": {
-        "label": "Unlink all duplicates"
+        "label": "Unlink all duplicates",
+        "confirm": "Are you sure you want to unlink all {{- count}} duplicates from this picture?",
+        "success": "Unlinked all duplicates",
+        "failed": "Failed unlinking duplicates (partially)"
       },
       "delete_all_button": {
-        "label": "Delete all duplicates"
+        "label": "Delete all duplicates",
+        "confirm": "Are you sure you want to delete all {{- count}} duplicate pictures?",
+        "success": "Deleted all duplicates",
+        "failed": "Failed deleting duplicates (partially)"
       },
       "unlink_single_button": {
-        "label": "Unlink this duplicate"
+        "label": "Unlink this duplicate",
+        "confirm": "Are you sure you want to unlink duplicate {{- displayName}} from this picture?",
+        "success": "Duplicate unlinked",
+        "failed": "Failed unlinking duplicate"
       },
       "delete_single_button": {
-        "label": "Delete this duplicate"
-      },
-      "rescan_duplicates_button": {
-        "label": "Rescan duplicates"
+        "label": "Delete this duplicate",
+        "confirm": "Are you sure you want to delete {{- displayName}}?",
+        "success": "Duplicate deleted",
+        "failed": "Failed deleting duplicate"
       }
     }
+  },
+  "components": {
+    "confirm_modal": {
+      "default_header_title": "Confirm",
+      "default_confirm_label": "Confirm",
+      "default_cancel_label": "Cancel"
+    }
+  },
+  "common": {
+    "action_can_not_be_undone": "Note that this action can not be undone!"
   }
 }

@@ -1,9 +1,16 @@
 import { useCallback, useState } from 'react';
 
-export function useToggleState(initial = false): [boolean, (set: boolean) => void, () => void, () => void] {
+type UseToggleState = [
+  boolean, // Current state
+  () => void, // Set true fn
+  () => void, // Set false fn
+  (set: boolean) => void // Direct setter
+];
+
+export function useToggleState(initial = false): UseToggleState {
   const [state, setState] = useState(initial);
   const setTrueCallback = useCallback(() => setState(true), [setState]);
   const setFalseCallback = useCallback(() => setState(false), [setState]);
 
-  return [state, setState, setTrueCallback, setFalseCallback];
+  return [state, setTrueCallback, setFalseCallback, setState];
 }
