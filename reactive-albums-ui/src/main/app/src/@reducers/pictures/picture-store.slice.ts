@@ -1,5 +1,5 @@
 import { createEntityAdapter, createReducer } from '@reduxjs/toolkit';
-import { Picture } from '@types';
+import { Picture, PictureType } from '@types';
 import { deleteEventPictures, upsertEventPictures } from './picture.actions';
 import { fetchAllPictures } from './picture.thunks';
 
@@ -19,3 +19,13 @@ export const {
   selectTotal: selectTotalPictures,
   selectById: selectPictureById,
 } = pictureEntityAdapter.getSelectors();
+
+export const DUMMY_PICTURE: Picture = {
+  colors: [],
+  displayName: 'Picture not found!',
+  duplicateCount: 0,
+  id: 'dummy-picture',
+  location: 'unknown',
+  pictureType: PictureType.JPEG,
+  tags: [],
+};

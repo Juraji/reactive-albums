@@ -1,12 +1,13 @@
 import React, { FC, useMemo } from 'react';
 import { Picture, Tag } from '@types';
-import { useApiUrl, useFileSize, useHumanDate } from '@hooks';
+import { useApiUrl } from '@hooks';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
 import Badge from 'react-bootstrap/Badge';
 import { Conditional } from '@components';
 
 import './picture-tile.scss';
+import { useTranslation } from 'react-i18next';
 
 interface TagOrbProps {
   tag: Tag;
@@ -22,9 +23,8 @@ interface PictureTileProps {
 }
 
 export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
+  const { t } = useTranslation();
   const imageUrl = useApiUrl('pictures', picture.id, 'thumbnail');
-  const lastModified = useHumanDate(picture.lastModifiedTime);
-  const fileSizeHuman = useFileSize(picture.fileSize);
 
   return (
     <Card className="picture-tile mb-4">
@@ -35,9 +35,9 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
         <ul className="list-unstyled">
           <li className="font-weight-bold text-ellipsis">{picture.displayName}</li>
           <li className="small">
-            {picture.imageWidth} x {picture.imageHeight} ({fileSizeHuman})
+            {picture.imageWidth} x {picture.imageHeight} ({t('common.file_size', { fileSize: picture.fileSize })})
           </li>
-          <li className="small">{lastModified}&nbsp;</li>
+          <li className="small">{t('common.full_date', { isoDate: picture.lastModifiedTime })}&nbsp;</li>
         </ul>
         <div className="tag-orbs">
           {picture.tags.map((tag, index) => (

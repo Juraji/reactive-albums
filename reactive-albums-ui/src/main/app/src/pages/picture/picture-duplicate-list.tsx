@@ -53,9 +53,13 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
       <ListGroupItem className="duplicate-match-row">
         <div className="duplicate-match-details d-flex flex-row mb-1">
           <Link to={`/picture/${match.targetId}`}>
-            <img src={thumbnailUrl} className="duplicate-match-thumbnail mr-1" alt={targetPicture?.displayName} />
+            <img
+              src={thumbnailUrl}
+              className="img-thumbnail p-0 duplicate-match-thumbnail"
+              alt={targetPicture?.displayName}
+            />
           </Link>
-          <h6 className="duplicate-match-display-name text-ellipsis flex-grow-1">
+          <h6 className="duplicate-match-display-name text-ellipsis flex-grow-1 mx-1">
             <span>{targetPicture?.displayName}</span>
             <br />
             <small>{match.similarity}%</small>

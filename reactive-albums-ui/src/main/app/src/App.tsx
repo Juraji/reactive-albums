@@ -8,16 +8,19 @@ import Spinner from 'react-bootstrap/Spinner';
 import { ToastProvider } from 'react-toast-notifications';
 import { HomeNavItem } from './pages/home/home-nav-item';
 import { DirectoriesNavItem } from './pages/directories/directories-nav-item';
+import { DuplicatesNavItem } from './pages/duplicates/duplicates-nav-item';
 
 const HomePage = lazy(() => import('./pages/home'));
 const DirectoriesPage = lazy(() => import('./pages/directories'));
 const PicturePage = lazy(() => import('./pages/picture'));
+const DuplicatesPage = lazy(() => import('./pages/duplicates'));
 
 const AppView: FC = () => (
   <BrowserRouter>
     <NavigationBar>
       <HomeNavItem />
       <DirectoriesNavItem />
+      <DuplicatesNavItem />
     </NavigationBar>
     <ToastProvider autoDismiss={true} autoDismissTimeout={TOAST_TIMEOUT} components={{ Toast: BootstrapToastAdapter }}>
       <GlobalEffectors />
@@ -26,6 +29,7 @@ const AppView: FC = () => (
           <Route exact path="/home" component={HomePage} />
           <Route exact path="/directories" component={DirectoriesPage} />
           <Route exact path="/picture/:pictureId" component={PicturePage} />
+          <Route exact path="/duplicates" component={DuplicatesPage} />
           <DefaultRoute to="/home" />
         </Switch>
       </Suspense>

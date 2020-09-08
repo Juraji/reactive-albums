@@ -47,4 +47,17 @@ export default function () {
       return this.filter((t) => !!t);
     },
   });
+
+  Object.defineProperty(Array.prototype, 'partition', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: function <T, K extends number | string | symbol>(this: Array<T>, partitionBy: (t: T) => K): Record<K, T[]> {
+      return this.reduce((acc, next) => {
+        const key: K = partitionBy(next);
+        acc[key] = acc[key] ? [...acc[key], next] : [next];
+        return acc;
+      }, {} as Record<K, T[]>);
+    },
+  });
 }

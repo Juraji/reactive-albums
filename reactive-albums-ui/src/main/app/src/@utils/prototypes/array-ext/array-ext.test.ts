@@ -38,4 +38,42 @@ describe('Array', () => {
       expect([1, 2, 3].isEmpty()).toBeFalsy();
     });
   });
+
+  describe('filterNotNull', () => {
+    it('should filter on non-null and non-undefined values', () => {
+      expect([1, null, null, 2, undefined, 3, 4, null].filterNotNull()).toEqual([1, 2, 3, 4]);
+    });
+  });
+
+  describe('partition', () => {
+    it('should create a record of partitioned items', () => {
+      const arr = [
+        { key: 'a', value: '1' },
+        { key: 'b', value: '2' },
+        { key: 'b', value: '3' },
+        { key: 'a', value: '4' },
+        { key: 'c', value: '5' },
+        { key: 'a', value: '6' },
+        { key: 'b', value: '7' },
+        { key: 'a', value: '8' },
+      ];
+
+      const expected = {
+        a: [
+          { key: 'a', value: '1' },
+          { key: 'a', value: '4' },
+          { key: 'a', value: '6' },
+          { key: 'a', value: '8' },
+        ],
+        b: [
+          { key: 'b', value: '2' },
+          { key: 'b', value: '3' },
+          { key: 'b', value: '7' },
+        ],
+        c: [{ key: 'c', value: '5' }],
+      };
+
+      expect(arr.partition((v) => v.key)).toEqual(expected);
+    });
+  });
 });

@@ -91,6 +91,46 @@
     }
   },
   "common": {
-    "action_can_not_be_undone": "Note that this action can not be undone!"
+    "action_can_not_be_undone": "Note that this action can not be undone!",
+    "file_size": "{{- fileSize, fileSize}}",
+    "full_date": "{{- isoDate, isoDate}}"
+  },
+  "duplicates": {
+    "nav-item": {
+      "label": "Duplicates ({{- totalDuplicates}})"
+    },
+    "no_source_selected": "No source selected. Select a source picture from the list on the left.",
+    "match_group": {
+      "source_title": "Source: {{- displayName}}",
+      "source_sub_title": "{{- duplicateCount}} duplicates, on average {{- averageSimilarity, round2}}% similar",
+      "match_title": "Match: {{- displayName}}",
+      "match_unlink_button": {
+        "label": "Unlink",
+        "confirm": "Are you sure you want to unlink duplicate {{- displayName}} from this picture?",
+        "success": "Duplicate unlinked",
+        "failed": "Failed unlinking duplicate"
+      },
+      "match_delete_button": {
+        "label": "Delete",
+        "confirm": "Are you sure you want to delete {{- displayName}}?",
+        "success": "Duplicate deleted",
+        "failed": "Failed deleting duplicate"
+      },
+      "match_view_button": {
+        "label": "View"
+      },
+      "unlink_all_button": {
+        "label": "Unlink all duplicates",
+        "confirm": "Are you sure you want to unlink all {{- count}} duplicates from this picture?",
+        "success": "Unlinked all duplicates",
+        "failed": "Failed unlinking duplicates (partially)"
+      },
+      "delete_all_button": {
+        "label": "Delete all duplicates",
+        "confirm": "Are you sure you want to delete all {{- count}} duplicate pictures?",
+        "success": "Deleted all duplicates",
+        "failed": "Failed deleting duplicates (partially)"
+      }
+    }
   }
 }
