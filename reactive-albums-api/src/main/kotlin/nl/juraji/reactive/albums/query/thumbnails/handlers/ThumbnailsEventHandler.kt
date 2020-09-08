@@ -9,6 +9,7 @@ import nl.juraji.reactive.albums.services.ImageService
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
@@ -23,7 +24,8 @@ class ThumbnailsEventHandler(
                 .map {
                     Thumbnail(
                             id = evt.pictureId.identifier,
-                            thumbnail = it
+                            thumbnail = it,
+                            lastModifiedTime = LocalDateTime.now()
                     )
                 }
                 .flatMap { thumbnailRepository.save(it) }

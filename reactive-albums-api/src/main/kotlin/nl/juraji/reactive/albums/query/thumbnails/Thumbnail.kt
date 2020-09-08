@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.query.thumbnails
 
+import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.Lob
@@ -8,6 +9,7 @@ import javax.persistence.Lob
 data class Thumbnail(
         @Id val id: String,
         @Lob val thumbnail: ByteArray,
+        val lastModifiedTime: LocalDateTime
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
