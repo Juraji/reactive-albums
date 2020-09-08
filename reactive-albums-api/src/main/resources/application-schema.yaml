@@ -26,3 +26,8 @@ multi-tenancy:
       username: sa
       password: sa
       driver-class-name: org.h2.Driver
+    - tenantId: thumbnails
+      url: jdbc:h2:mem:albums-thumbnails-db
+      username: sa
+      password: sa
+      driver-class-name: org.h2.Driver

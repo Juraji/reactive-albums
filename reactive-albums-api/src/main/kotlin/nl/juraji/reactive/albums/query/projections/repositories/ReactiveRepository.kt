@@ -40,10 +40,8 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
 
     fun subscribe(filter: (E) -> Boolean): Flux<ReactiveEvent<E>> = updatesProcessor.filter { filter(it.entity) }
 
-    fun subscribeFirst(filter: (E) -> Boolean): Mono<E> = updatesProcessor
-            .filter { filter(it.entity) }
-            .map { it.entity }
-            .toMono()
+    fun subscribeFirst(filter: (E) -> Boolean): Mono<E> =
+            subscribe(filter).map { it.entity }.toMono()
 
     protected fun <R> from(f: (T) -> R?): Mono<R> =
             deferFrom(scheduler) { f(repository) }
@@ -54,7 +52,7 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
     protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> =
             deferFromIterable(scheduler) { f(repository) }
 
-    protected fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
+    private fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
             deferFrom(scheduler) { transactionTemplate.execute { f(repository) } }
 
     private fun emitUpdate(type: EventType, entity: E) {

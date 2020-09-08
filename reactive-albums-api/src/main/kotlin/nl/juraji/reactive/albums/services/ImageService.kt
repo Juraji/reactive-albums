@@ -1,18 +1,16 @@
 package nl.juraji.reactive.albums.services
 
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
-import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.util.extensions.coordinateSequence
 import nl.juraji.reactive.albums.util.extensions.deferFrom
 import nl.juraji.reactive.albums.util.extensions.then
 import org.imgscalr.Scalr
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import java.awt.image.BufferedImage
-import java.io.IOException
+import java.io.ByteArrayOutputStream
 import java.nio.file.Path
 import java.util.*
 import javax.imageio.ImageIO
@@ -21,7 +19,6 @@ import kotlin.math.sqrt
 
 @Service
 class ImageService(
-        private val fileSystemService: FileSystemService,
         private val pictureConfiguration: PicturesAggregateConfiguration,
         @Qualifier("IOScheduler") private val scheduler: Scheduler,
 ) {
@@ -30,21 +27,14 @@ class ImageService(
             readImage(location)
                     .map { Dimensions(it.width, it.height) }
 
-    fun createThumbnail(source: Path, pictureId: PictureId): Mono<Path> {
-        val fileType = pictureConfiguration.thumbnailMimeType
-        val targetFile = pictureConfiguration.thumbnailPath.resolve("${pictureId.identifier}.image")
-
-        val createDirectories = fileSystemService.createDirectories(pictureConfiguration.thumbnailPath)
-        val deleteIfExists = fileSystemService.deleteIfExists(targetFile)
-
-        return Mono.zip(createDirectories, deleteIfExists)
-                .flatMap { readImage(source) }
+    fun createThumbnail(source: Path): Mono<ByteArray> {
+        return readImage(source)
                 .map { Scalr.resize(it, Scalr.Method.ULTRA_QUALITY, pictureConfiguration.thumbnailSize) }
-                .map {
-                    if (!ImageIO.write(it, fileType.subtype, targetFile.toFile())) {
-                        throw IOException("Unable to write thumbnail as $fileType to $targetFile")
+                .map { image ->
+                    ByteArrayOutputStream().use { out ->
+                        ImageIO.write(image, "jpeg", out)
+                        out.toByteArray()
                     }
-                    targetFile
                 }
     }
 

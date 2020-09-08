@@ -24,6 +24,14 @@ multi-tenancy:
         enabled: true
         baseline-on-migrate: true
         locations: classpath:/db/migration/projections
+    - tenantId: thumbnails
+      url: jdbc:h2:file:./albums-thumbnails;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
+      username: albums
+      password: albums
+      flyway:
+        enabled: true
+        baseline-on-migrate: true
+        locations: classpath:/db/migration/thumbnails
 
 cors:
   maxAge: "3600"
@@ -35,6 +43,11 @@ axon:
     general: jackson
     events: jackson
     messages: jackson
+  eventhandling:
+    processors:
+      picture-analysis:
+        threadCount: 8
+        initialSegmentCount: 8
 
 logging:
   level:
@@ -44,8 +57,6 @@ picture-aggregate:
   color-palette-size: 5
   snapshot-trigger-threshold: 100
   thumbnail-size: 200
-  thumbnail-location: ./thumbnails
-  thumbnail-type: image/jpeg
   hashing-sample-size: 100
   duplicate-similarity: 0.82
   auto-crop-tolerance: 0.4

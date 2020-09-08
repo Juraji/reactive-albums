@@ -20,6 +20,8 @@ fun <T> Flux<T>.bufferLastIdentity(bufferingTimespan: Duration, identity: (T) ->
             }
 }
 
+fun <T> Flux<T>.toList(): List<T> = this.collectList().block() ?: emptyList()
+
 fun <T> deferFrom(scheduler: Scheduler, supplier: () -> T?): Mono<T> =
         Mono.defer { Mono.justOrEmpty(supplier()) }.subscribeOn(scheduler)
 

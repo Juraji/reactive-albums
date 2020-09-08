@@ -1,15 +1,12 @@
 package nl.juraji.reactive.albums.query.projections
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import nl.juraji.reactive.albums.domain.pictures.PictureType
-import nl.juraji.reactive.albums.util.serialization.BitsetAttributeConverter
 import java.time.LocalDateTime
-import java.util.*
-import javax.persistence.*
+import javax.persistence.ElementCollection
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.Id
 
-@Converts(
-        Convert(attributeName = "contentHash", converter = BitsetAttributeConverter::class)
-)
 @Entity
 data class PictureProjection(
         @Id val id: String,
@@ -23,7 +20,7 @@ data class PictureProjection(
         val imageWidth: Int? = null,
         val imageHeight: Int? = null,
         val duplicateCount: Int = 0,
-        @JsonIgnore val thumbnailLocation: String? = null,
-        @JsonIgnore @Lob val contentHash: BitSet? = null,
-        @ElementCollection(fetch = FetchType.EAGER) val tags: Set<TagProjection> = emptySet(),
+
+        @ElementCollection(fetch = FetchType.EAGER)
+        val tags: Set<TagProjection> = emptySet(),
 )

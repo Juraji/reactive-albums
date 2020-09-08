@@ -6,13 +6,11 @@ create table PictureProjection
     location          varchar(4096) not null,
     parentLocation    varchar(4096) not null,
     pictureType       varchar(255)  not null,
-    thumbnailLocation varchar(4096),
     fileSize          bigint,
     lastModifiedTime  timestamp,
     imageHeight       integer,
     imageWidth        integer,
     duplicateCount    integer,
-    contentHash       blob,
     primary key (id),
-    constraint uk_location unique (location)
+    constraint uk_picture_location unique (location)
 );

@@ -7,7 +7,7 @@ import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDirectoryRepository
 import org.axonframework.config.ProcessingGroup
-import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,7 +16,7 @@ class DirectoryProjectionsEventHandler(
         private val directoryRepository: ReactiveDirectoryRepository,
 ) {
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: DirectoryRegisteredEvent) {
         val entity = DirectoryProjection(
                 id = evt.directoryId.identifier,
@@ -30,14 +30,14 @@ class DirectoryProjectionsEventHandler(
                 .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: DirectoryUnregisteredEvent) {
         directoryRepository
                 .deleteById(evt.directoryId.identifier)
                 .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: DirectoryUpdatedEvent) {
         directoryRepository
                 .update(evt.directoryId.identifier) {

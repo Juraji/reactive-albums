@@ -6,16 +6,19 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 
 object Validate {
     fun isTrue(assertion: Boolean, message: () -> String): Boolean =
-            if (!assertion) throw ValidationException(message())
+            if (!assertion) fail(message)
             else true
 
     fun isFalse(assertion: Boolean, message: () -> String): Boolean =
-            if (assertion) throw ValidationException(message())
+            if (assertion) fail(message)
             else true
 
     fun isNotNull(value: Any?, message: () -> String): Boolean =
-            if (value == null) throw ValidationException(message())
+            if (value == null) fail(message)
             else true
+
+    fun fail(message: () -> String): Nothing =
+            throw ValidationException(message())
 }
 
 object ValidateAsync {

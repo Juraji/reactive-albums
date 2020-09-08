@@ -1,16 +1,13 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.duplicates.events.DuplicateLinkedEvent
-import nl.juraji.reactive.albums.domain.duplicates.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
 import org.axonframework.config.ProcessingGroup
-import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
-import reactor.core.publisher.Mono
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -18,7 +15,7 @@ class PictureProjectionsEventHandler(
         private val pictureRepository: ReactivePictureRepository,
 ) {
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: PictureCreatedEvent) {
         val projection = PictureProjection(
                 id = evt.pictureId.identifier,
@@ -34,7 +31,7 @@ class PictureProjectionsEventHandler(
                 .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: AttributesUpdatedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
@@ -48,25 +45,7 @@ class PictureProjectionsEventHandler(
                 .block()
     }
 
-    @EventSourcingHandler
-    fun on(evt: ContentHashUpdatedEvent) {
-        pictureRepository
-                .update(evt.pictureId.identifier) {
-                    it.copy(contentHash = evt.contentHash)
-                }
-                .block()
-    }
-
-    @EventSourcingHandler
-    fun on(evt: ThumbnailLocationUpdatedEvent) {
-        pictureRepository
-                .update(evt.pictureId.identifier) {
-                    it.copy(thumbnailLocation = evt.thumbnailLocation.toString())
-                }
-                .block()
-    }
-
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: TagAddedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
@@ -82,7 +61,7 @@ class PictureProjectionsEventHandler(
                 .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: TagRemovedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
@@ -92,23 +71,21 @@ class PictureProjectionsEventHandler(
                 .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: DuplicateLinkedEvent) {
-        Mono.zip(
-                pictureRepository.update(evt.sourceId.identifier) { it.copy(duplicateCount = it.duplicateCount + 1) },
-                pictureRepository.update(evt.targetId.identifier) { it.copy(duplicateCount = it.duplicateCount + 1) }
-        ).block()
+        pictureRepository
+                .update(evt.pictureId.identifier) { it.copy(duplicateCount = it.duplicateCount + 1) }
+                .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: DuplicateUnlinkedEvent) {
-        Mono.zip(
-                pictureRepository.update(evt.sourceId.identifier) { it.copy(duplicateCount = it.duplicateCount - 1) },
-                pictureRepository.update(evt.targetId.identifier) { it.copy(duplicateCount = it.duplicateCount - 1) }
-        ).block()
+        pictureRepository
+                .update(evt.pictureId.identifier) { it.copy(duplicateCount = it.duplicateCount - 1) }
+                .block()
     }
 
-    @EventSourcingHandler
+    @EventHandler
     fun on(evt: PictureDeletedEvent) {
         pictureRepository
                 .deleteById(evt.pictureId.identifier)

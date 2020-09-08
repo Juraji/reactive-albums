@@ -5,5 +5,5 @@ create table PictureProjection_tags
     textColor            varchar(6)   not null,
     label                varchar(255) not null,
     linkType             varchar(255) not null,
-    constraint fk_picture_projection_id foreign key (PictureProjection_id) references PictureProjection (id)
+    constraint fk_tags_picture_projection foreign key (PictureProjection_id) references PictureProjection (id)
 )

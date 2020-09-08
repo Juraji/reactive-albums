@@ -35,7 +35,6 @@ class ReactivePictureRepository(
     fun findPictureThumbnailById(id: String): Mono<PictureProjection> =
             fromOptional { it.findPictureThumbnailById(id) }
 
-    fun findAllByDirectoryId(directoryId: String): Flux<PictureProjection> {
-        return fromIterator { it.findAllByDirectoryId(directoryId) }
-    }
+    fun findAllByDirectoryId(directoryId: String): Flux<PictureProjection> =
+            fromIterator { it.findAllByDirectoryId(directoryId) }
 }

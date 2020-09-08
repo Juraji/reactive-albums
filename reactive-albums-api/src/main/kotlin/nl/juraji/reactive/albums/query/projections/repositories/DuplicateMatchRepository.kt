@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
-import reactor.core.publisher.Mono
+import reactor.core.publisher.Flux
 import reactor.core.scheduler.Scheduler
-import java.util.*
 
 interface DuplicateMatchRepository : JpaRepository<DuplicateMatchProjection, String> {
-    fun findBySourceIdOrTargetId(sourceId: String, targetId: String): Optional<DuplicateMatchProjection>
+    fun findAllByPictureId(pictureId: String): List<DuplicateMatchProjection>
+    fun findAllByTargetId(pictureId: String): List<DuplicateMatchProjection>
 }
 
 @Service
@@ -23,6 +23,10 @@ class ReactiveDuplicateMatchRepository(
         scheduler,
         transactionTemplate
 ) {
-    fun findBySourceIdOrTargetId(sourceId: String, targetId: String): Mono<DuplicateMatchProjection> =
-            fromOptional { it.findBySourceIdOrTargetId(sourceId, targetId) }
+
+    fun findAllByPictureId(pictureId: String): Flux<DuplicateMatchProjection> =
+            fromIterator { it.findAllByPictureId(pictureId) }
+
+    fun findAllByTargetId(pictureId: String): Flux<DuplicateMatchProjection> =
+            fromIterator { it.findAllByTargetId(pictureId) }
 }

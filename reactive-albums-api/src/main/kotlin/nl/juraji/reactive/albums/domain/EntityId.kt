@@ -1,7 +1,7 @@
 package nl.juraji.reactive.albums.domain
 
-abstract class EntityId(
-        open val identifier: String
-) {
-    override fun toString() = identifier
+import java.io.Serializable
+
+interface EntityId : Serializable {
+    val identifier: String
 }

@@ -2,7 +2,8 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
-import org.springframework.core.io.ClassPathResource
+import nl.juraji.reactive.albums.query.thumbnails.repositories.ReactiveThumbnailRepository
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,16 +16,16 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 @RestController
 class PictureImageController(
         private val pictureRepository: ReactivePictureRepository,
+        private val thumbnailRepository: ReactiveThumbnailRepository,
 ) {
 
     @GetMapping("/api/pictures/{pictureId}/thumbnail")
     fun getPictureThumbnail(
             @PathVariable("pictureId") pictureId: String,
-    ): Mono<Resource> = pictureRepository
-            .findPictureThumbnailById(pictureId)
-            .filter { it.thumbnailLocation != null }
-            .map { FileSystemResource(it.thumbnailLocation!!) as Resource }
-            .switchIfEmpty { Mono.just(ClassPathResource("/thumbnail-placeholder.gif") as Resource) }
+    ): Mono<Resource> = thumbnailRepository
+            .findById(pictureId)
+            .switchIfEmpty { Mono.error { NoSuchEntityException("Thumbnail", pictureId) } }
+            .map { ByteArrayResource(it.thumbnail) }
 
     @GetMapping("/api/pictures/{pictureId}/image")
     fun getPictures(
