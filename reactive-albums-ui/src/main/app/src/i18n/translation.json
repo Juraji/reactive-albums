@@ -45,5 +45,31 @@
       }
     },
     "no_directories_registered": "No directories registered. Use the + button below to register a directory."
+  },
+  "picture": {
+    "actions": {
+      "rerun_attribute_analysis": "Rerun attribute analysis",
+      "rerun_duplicate_analysis": "Rerun duplicate analysis",
+      "move_picture": "picture.actions.move_picture",
+      "delete_picture": "picture.actions.delete_picture"
+    },
+    "duplicates_list": {
+      "title": "Duplicates",
+      "unlink_all_button": {
+        "label": "Unlink all duplicates"
+      },
+      "delete_all_button": {
+        "label": "Delete all duplicates"
+      },
+      "unlink_single_button": {
+        "label": "Unlink this duplicate"
+      },
+      "delete_single_button": {
+        "label": "Delete this duplicate"
+      },
+      "rescan_duplicates_button": {
+        "label": "Rescan duplicates"
+      }
+    }
   }
 }

@@ -4,4 +4,6 @@ interface Array<T> {
   withinBounds(this: Array<T>, index: number, startExclusive?: boolean, endExclusive?: boolean): boolean;
 
   isEmpty(this: Array<T>): boolean;
+
+  filterNotNull<U = T extends undefined | null ? never : T>(this: Array<T>): U[];
 }

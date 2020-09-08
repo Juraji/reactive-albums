@@ -38,8 +38,7 @@ export interface Color {
 
 export interface DuplicateMatch {
   id: string;
-  source: Picture;
-  target: Picture;
+  pictureId: string;
+  targetId: string;
   similarity: number;
-  matchedAt: string;
 }

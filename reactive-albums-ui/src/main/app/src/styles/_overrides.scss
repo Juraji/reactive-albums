@@ -4,3 +4,9 @@
   margin-top: 4rem;
   z-index: $zindex-popover !important;
 }
+
+.btn {
+  > svg {
+    transform: scale(.8);
+  }
+}

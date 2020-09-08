@@ -55,13 +55,17 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
     private fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
             deferFrom(scheduler) { transactionTemplate.execute { f(repository) } }
 
-    private fun emitUpdate(type: EventType, entity: E) {
-        updatesProcessor.onNext(ReactiveEvent(type, entity))
-    }
+    private fun emitUpdate(type: EventType, entity: E) = updatesProcessor
+            .onNext(ReactiveEvent(
+                    type = type,
+                    entity = entity,
+                    entityType = entity?.let { it::class.simpleName } ?: "Entity"
+            ))
 }
 
 data class ReactiveEvent<T>(
         val type: EventType,
+        val entityType: String,
         val entity: T,
 )
 

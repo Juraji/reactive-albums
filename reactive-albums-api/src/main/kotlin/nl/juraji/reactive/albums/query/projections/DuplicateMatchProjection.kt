@@ -8,5 +8,5 @@ data class DuplicateMatchProjection(
         @Id val id: String,
         val pictureId: String,
         val targetId: String,
-        val similarity: Float,
+        val similarity: Int,
 )

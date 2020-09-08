@@ -27,7 +27,7 @@ interface PictureTagsProps {
 }
 
 export const PictureTags: FC<PictureTagsProps> = ({ picture }) => (
-  <Card>
+  <Card className="mb-2">
     <Card.Body>
       {picture.tags.map((tag, index) => (
         <PictureTag tag={tag} key={index} />

@@ -9,6 +9,7 @@ import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDuplicat
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
+import kotlin.math.roundToInt
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -22,7 +23,7 @@ class DuplicateMatchProjectionsEventHandler(
                 id = evt.matchId.identifier,
                 pictureId = evt.pictureId.identifier,
                 targetId = evt.targetId.identifier,
-                similarity = evt.similarity
+                similarity = (evt.similarity * 100.0).roundToInt()
         )
 
         duplicateMatchRepository

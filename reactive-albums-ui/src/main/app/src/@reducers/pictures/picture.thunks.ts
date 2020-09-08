@@ -1,10 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Picture } from '@types';
+import { DuplicateMatch, Picture } from '@types';
 import { unwrapApiResponse } from '@utils';
 
 export const fetchAllPictures = createAsyncThunk<Picture[]>('pictures/fetchAllPictures', () =>
   axios.get('/api/pictures').then(unwrapApiResponse)
+);
+
+export const fetchAllDuplicateMatches = createAsyncThunk<DuplicateMatch[]>('pictures/fetchAllDuplicateMatches', () =>
+  axios.get('/api/duplicate-matches').then(unwrapApiResponse)
 );
 
 interface AddPictureThunk {

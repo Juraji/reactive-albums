@@ -9,5 +9,5 @@ interface PictureViewProps {
 
 export const PictureView: FC<PictureViewProps> = ({ pictureId }) => {
   const imageUrl = useApiUrl('pictures', pictureId, 'image');
-  return <img className="border rounded picture-view-image" src={imageUrl} alt="Picture view" />;
+  return <img className="border rounded picture-view-image" src={imageUrl} alt="Preview" />;
 };

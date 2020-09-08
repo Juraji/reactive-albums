@@ -12,7 +12,7 @@ export const PictureDetails: FC<PictureDetailsProps> = ({ picture }) => {
   const fileSizeHuman = useFileSize(picture.fileSize);
 
   return (
-    <Card className="mb-3">
+    <Card className="mb-2">
       <Card.Header>
         <Card.Title>{picture.displayName}</Card.Title>
       </Card.Header>

@@ -2,12 +2,11 @@ import React, { FC, useMemo } from 'react';
 import { Picture, Tag } from '@types';
 import { useApiUrl, useFileSize, useHumanDate } from '@hooks';
 import Card from 'react-bootstrap/Card';
-
-import './picture-tile.scss';
 import { Link } from 'react-router-dom';
 import Badge from 'react-bootstrap/Badge';
 import { Conditional } from '@components';
-import { RefreshCw } from 'react-feather';
+
+import './picture-tile.scss';
 
 interface TagOrbProps {
   tag: Tag;
