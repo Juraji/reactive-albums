@@ -23,11 +23,11 @@ export function useEventSource(
 
     if (canEnable) {
       const es = new EventSource(authorizedEndpoint);
-      es.onmessage = (e) => onEvent(e.data);
-      es.onerror = (e) => console.error('[useEventSource] SSE error', e);
+      es.addEventListener('message', (e) => onEvent(e.data));
+      es.addEventListener('error', (e) => console.error('[useEventSource] SSE error', e));
 
       if (isDevelopmentEnv()) {
-        es.onopen = (e: Event) => console.log('[useEventSource] SSE opened', e);
+        es.addEventListener('open', (e: Event) => console.log('[useEventSource] SSE opened', e));
       }
 
       eventSourceRef.current = es;

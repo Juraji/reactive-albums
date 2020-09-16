@@ -29,7 +29,7 @@ class PictureCommandController(
                     matchId = DuplicateMatchId(matchId)
             )
 
-    @DeleteMapping("/api/pictures/{pictureId}/rescan-duplicates")
+    @DeleteMapping("/api/pictures/{pictureId}")
     fun deletePicture(
             @PathVariable("pictureId") pictureId: String,
     ): Mono<Void> =

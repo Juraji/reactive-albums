@@ -10,3 +10,11 @@ data class DuplicateMatchProjection(
         val targetId: String,
         val similarity: Int,
 )
+
+data class DuplicateMatchView(
+        val id: String,
+        val pictureId: String,
+        val targetId: String,
+        val similarity: Int,
+        val target: PictureProjection
+)

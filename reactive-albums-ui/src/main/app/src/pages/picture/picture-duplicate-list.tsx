@@ -1,16 +1,22 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
-import { DuplicateMatch } from '@types';
+import { DuplicateMatch, DuplicateMatchView, ReactiveEvent } from '@types';
 import { Conditional } from '@components';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
 import { useTranslation } from 'react-i18next';
 import Badge from 'react-bootstrap/Badge';
-import { deletePicture, unlinkDuplicateMatch, usePicture, usePictureDuplicates } from '@reducers';
+import {
+  addActivePictureDuplicateMatch,
+  deletePicture,
+  removeActivePictureDuplicateMatch,
+  unlinkDuplicateMatch,
+  useActivePictureDuplicates,
+} from '@reducers';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { Scissors, Trash } from 'react-feather';
-import { useApiUrl, useDispatch, useToggleState } from '@hooks';
+import { useApiUrl, useDispatch, useEventSource, useToggleState } from '@hooks';
 
 import './picture-duplicate-list.scss';
 import { Link } from 'react-router-dom';
@@ -19,11 +25,11 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
 
 interface DuplicateMatchRowProps {
-  match: DuplicateMatch;
+  match: DuplicateMatchView;
 }
 
 export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
-  const targetPicture = usePicture(match.targetId);
+  const targetPicture = match.target;
   const thumbnailUrl = useApiUrl('pictures', match.targetId, 'thumbnail');
   const { t } = useTranslation();
   const { addToast } = useToasts();
@@ -49,7 +55,7 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
   }
 
   return (
-    <>
+    <Conditional condition={!!targetPicture}>
       <ListGroupItem className="duplicate-match-row">
         <div className="duplicate-match-details d-flex flex-row mb-1">
           <Link to={`/picture/${match.targetId}`}>
@@ -87,7 +93,7 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
         <p>{t('picture.duplicates_list.delete_single_button.confirm', targetPicture)}</p>
         <span className="text-danger">{t('common.action_can_not_be_undone')}</span>
       </ConfirmModal>
-    </>
+    </Conditional>
   );
 };
 
@@ -96,10 +102,28 @@ interface PictureDuplicateListProps {
 }
 
 export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId }) => {
-  const matches = usePictureDuplicates(pictureId);
+  const matches = useActivePictureDuplicates();
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
+
+  const onDuplicateMatchesEvent = useCallback(
+    (msg: string) => {
+      const evt: ReactiveEvent<DuplicateMatchView> = JSON.parse(msg);
+
+      switch (evt.type) {
+        case 'UPDATE':
+          dispatch(addActivePictureDuplicateMatch(evt.entity));
+          break;
+        case 'DELETE':
+          dispatch(removeActivePictureDuplicateMatch({ id: evt.entity.id }));
+          break;
+      }
+    },
+    [dispatch]
+  );
+
+  useEventSource(`/events/duplicate-matches/${pictureId}`, {}, [pictureId], onDuplicateMatchesEvent);
 
   const [isShowUnlinkAllConfirm, showUnlinkAllConfirm, hideUnlinkAllConfirm] = useToggleState(false);
   const [isShowDeleteAllConfirm, showDeleteAllConfirm, hideDeleteAllConfirm] = useToggleState(false);

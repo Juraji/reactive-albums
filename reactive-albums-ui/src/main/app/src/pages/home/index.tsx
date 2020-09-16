@@ -4,7 +4,7 @@ import './index.scss';
 import { PictureControls } from './picture-controls';
 import { PictureTile } from './picture-tile';
 import Container from 'react-bootstrap/Container';
-import { usePicturesPage } from './@hooks/use-pictures-page';
+import { usePicturesPage } from '@reducers';
 
 const HomePage: FC = () => {
   const [pageNumber, setPageNumber] = useState(0);

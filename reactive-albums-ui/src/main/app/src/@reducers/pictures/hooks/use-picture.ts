@@ -1,20 +1,16 @@
-import { DuplicateMatch, Picture } from '@types';
-import { usePicturesStore } from './use-pictures-store';
-import { useDuplicateMatchesStore } from './use-duplicate-matches-store';
-import { useMemo } from 'react';
-import { selectPictureById } from '../picture-store.slice';
-import { selectAllDuplicateMatches } from '../duplicates-store.slice';
+import { Picture } from '@types';
+import { useEffect, useState } from 'react';
+import { useDispatch } from '@hooks';
+import { fetchPictureById } from '@reducers';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 export function usePicture(pictureId: string): Picture | undefined {
-  const picturesStore = usePicturesStore();
+  const dispatch = useDispatch();
+  const [picture, setPicture] = useState<Picture | undefined>();
 
-  return useMemo(() => selectPictureById(picturesStore, pictureId), [picturesStore, pictureId]);
-}
+  useEffect(() => {
+    dispatch(fetchPictureById({ pictureId })).then(unwrapResult).then(setPicture);
+  }, [pictureId, dispatch, setPicture]);
 
-export function usePictureDuplicates(pictureId: string): DuplicateMatch[] {
-  const duplicateMatchesStore = useDuplicateMatchesStore();
-  return useMemo(() => selectAllDuplicateMatches(duplicateMatchesStore).filter((m) => m.pictureId === pictureId), [
-    duplicateMatchesStore,
-    pictureId,
-  ]);
+  return picture;
 }

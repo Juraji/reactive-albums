@@ -2,7 +2,6 @@ import React, { FC, useMemo, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import { useGroupedDuplicateMatches } from '@reducers';
 import { SourcePicturesSelect } from './source-pictures-select';
 import { MatchGroup } from './match-group';
 import { Conditional } from '@components';
@@ -10,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 const DuplicatesPage: FC = () => {
   const { t } = useTranslation();
-  const { sourcePictureIds, matchGroups } = useGroupedDuplicateMatches();
-  const [activeMatchGroupId, setActiveMatchGroupId] = useState(sourcePictureIds[0]);
+  const { sourcePictureIds, matchGroups } = { sourcePictureIds: [], matchGroups: {} as Record<string, any> };
+  const [activeMatchGroupId, setActiveMatchGroupId] = useState<string>(sourcePictureIds[0]);
   const activeMatchGroup = useMemo(() => matchGroups[activeMatchGroupId], [matchGroups, activeMatchGroupId]);
 
   return (

@@ -42,3 +42,7 @@ export interface DuplicateMatch {
   targetId: string;
   similarity: number;
 }
+
+export interface DuplicateMatchView extends DuplicateMatch {
+  target: Picture;
+}

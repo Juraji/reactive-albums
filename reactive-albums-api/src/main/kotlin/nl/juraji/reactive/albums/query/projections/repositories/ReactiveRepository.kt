@@ -14,7 +14,7 @@ import reactor.core.scheduler.Scheduler
 import reactor.kotlin.core.publisher.toMono
 import java.util.*
 
-abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
+abstract class ReactiveRepository<T : JpaRepository<E, ID>, E: Any, ID>(
         private val repository: T,
         private val scheduler: Scheduler,
         private val transactionTemplate: TransactionTemplate,
@@ -60,18 +60,22 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
             deferTo(scheduler) { transactionTemplate.execute { f(repository) } }
 
     private fun emitUpdate(type: EventType, entity: E) = updatesProcessor
-            .onNext(ReactiveEvent(
-                    type = type,
-                    entity = entity,
-                    entityType = entity?.let { it::class.simpleName } ?: "Entity"
-            ))
+            .onNext(ReactiveEvent.of(type, entity))
 }
 
 data class ReactiveEvent<T>(
         val type: EventType,
         val entityType: String,
         val entity: T,
-)
+) {
+    companion object {
+        fun <U: Any> of(type: EventType, entity: U) = ReactiveEvent(
+                type = type,
+                entityType = entity::class.simpleName ?: "Entity",
+                entity = entity,
+        )
+    }
+}
 
 enum class EventType {
     UPDATE, DELETE
