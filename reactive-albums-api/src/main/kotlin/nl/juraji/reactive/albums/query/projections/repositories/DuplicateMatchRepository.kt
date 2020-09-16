@@ -43,4 +43,6 @@ class DuplicateMatchRepository(
 
     fun findInverseMatchByMatchId(matchId: String): Mono<DuplicateMatchProjection> =
             fromOptional { it.findInverseMatchByMatchId(matchId) }
+
+    fun count(): Mono<Long> = from { it.count() }
 }

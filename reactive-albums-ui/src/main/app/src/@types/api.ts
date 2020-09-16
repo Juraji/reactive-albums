@@ -5,3 +5,15 @@ export interface ReactiveEvent<T> {
   entityType: string;
   entity: T;
 }
+
+export interface Page<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  numberOfElements: number;
+  number: number;
+  size: number;
+  last: boolean;
+  first: boolean;
+  empty: boolean;
+}

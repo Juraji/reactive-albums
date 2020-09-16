@@ -1,4 +1,4 @@
-export class Page<T> {
+export class PageDeprecated<T> {
   public readonly totalPages: number;
   public readonly first: boolean;
   public readonly last: boolean;

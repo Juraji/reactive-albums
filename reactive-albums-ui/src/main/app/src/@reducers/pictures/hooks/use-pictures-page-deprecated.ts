@@ -1,16 +1,16 @@
-import { Page, Picture } from '@types';
+import { PageDeprecated, Picture } from '@types';
 import { useCallback, useMemo, useState } from 'react';
 import { selectAllPictures } from '../picture-store.slice';
 import { usePicturesStore } from './use-pictures-store';
 
 export interface PicturesPageResult {
-  page: Page<Picture>;
+  page: PageDeprecated<Picture>;
   setSize: (size: number) => void;
   setPage: (size: number) => void;
   setFilter: (value: string) => void;
 }
 
-export function usePicturesPage(): PicturesPageResult {
+export function usePicturesPageDeprecated(): PicturesPageResult {
   const [size, setSize] = useState(50);
   const [pageNo, setPage] = useState(0);
   const [filter, setFilter] = useState('');
@@ -45,7 +45,7 @@ export function usePicturesPage(): PicturesPageResult {
     return { content: paged, total: filtered.length };
   }, [picturesStore, applyPaging, applyFilter]);
 
-  const page = useMemo(() => new Page<Picture>(content, pageNo, total, size, filter), [
+  const page = useMemo(() => new PageDeprecated<Picture>(content, pageNo, total, size, filter), [
     content,
     total,
     pageNo,

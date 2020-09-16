@@ -6,19 +6,24 @@ import { PAGINATION_SIZE_OPTIONS } from '../../config.json';
 import { useTranslation } from 'react-i18next';
 import Pagination from 'react-bootstrap/Pagination';
 import { useDebouncedValue } from '@hooks';
-import { PicturesPageResult } from '@reducers';
+import { Page, Picture } from '@types';
 
 interface PictureSearchFieldProps {
-  onChange: (value: string) => void;
-  value: string;
+  onChange: (value: string | undefined) => void;
 }
 
-const PictureSearchField: FC<PictureSearchFieldProps> = ({ value, onChange }) => {
+const PictureSearchField: FC<PictureSearchFieldProps> = ({ onChange }) => {
   const { t } = useTranslation();
-  const [input, setInput] = useState(value);
+  const [input, setInput] = useState<string>('');
   const debouncedInput = useDebouncedValue(input, 500);
 
-  useEffect(() => onChange(debouncedInput), [debouncedInput, onChange]);
+  useEffect(() => {
+    if (!debouncedInput || debouncedInput.length === 0) {
+      onChange(undefined);
+    } else {
+      onChange(debouncedInput);
+    }
+  }, [debouncedInput, onChange]);
 
   return (
     <Form.Control
@@ -31,42 +36,55 @@ const PictureSearchField: FC<PictureSearchFieldProps> = ({ value, onChange }) =>
 };
 
 interface PictureControlsProps {
-  pageResult: PicturesPageResult;
+  pageResult: Page<Picture>;
+  onPageNumberChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+  onFilterChange: (value: string | undefined) => void;
 }
 
-export const PictureControls: FC<PictureControlsProps> = ({ pageResult }) => {
+export const PictureControls: FC<PictureControlsProps> = ({
+  pageResult,
+  onPageNumberChange,
+  onPageSizeChange,
+  onFilterChange,
+}) => {
   const { t } = useTranslation();
-  const { page, setFilter, setSize, setPage } = pageResult;
-  const { totalItems, size, currentPage, first, last, totalPages, filter } = page;
+  const { empty, first, last, number, size, totalElements, totalPages } = pageResult;
 
   const sizeOpts = useMemo(
     () =>
       PAGINATION_SIZE_OPTIONS.map((option, i) => (
         <option key={i} value={option}>
-          {t('home.pagination.page_size_label', { option, totalItems })}
+          {t('home.pagination.page_size_label', { option, totalElements })}
         </option>
       )),
-    [totalItems, t]
+    [totalElements, t]
   );
 
   return (
     <Navbar variant="light" fixed="bottom" bg="light">
       <Form inline className="mr-2">
-        <PictureSearchField onChange={setFilter} value={filter} />
+        <PictureSearchField onChange={onFilterChange} />
       </Form>
-      <Conditional condition={totalItems > 0} orElse={<Navbar.Text>{t('home.pagination.no_items_found')}</Navbar.Text>}>
+      <Conditional condition={!empty} orElse={<Navbar.Text>{t('home.pagination.no_items_found')}</Navbar.Text>}>
         <Form inline>
-          <Form.Control as="select" className="mr-2" size="sm" value={size} onChange={(e) => setSize(+e.target.value)}>
+          <Form.Control
+            as="select"
+            className="mr-2"
+            size="sm"
+            value={size}
+            onChange={(e) => onPageSizeChange(+e.target.value)}
+          >
             {sizeOpts}
           </Form.Control>
           <Pagination className="mb-0 mr-2">
-            <Pagination.First disabled={first} onClick={() => setPage(0)} />
-            <Pagination.Prev disabled={first} onClick={() => setPage(currentPage - 1)} />
+            <Pagination.First disabled={first} onClick={() => onPageNumberChange(0)} />
+            <Pagination.Prev disabled={first} onClick={() => onPageNumberChange(number - 1)} />
             <Pagination.Item disabled>
-              {t('home.pagination.current_page_label', { currentPage: currentPage + 1, totalPages })}
+              {t('home.pagination.current_page_label', { currentPage: number + 1, totalPages })}
             </Pagination.Item>
-            <Pagination.Next disabled={last} onClick={() => setPage(currentPage + 1)} />
-            <Pagination.Last disabled={last} onClick={() => setPage(totalPages - 1)} />
+            <Pagination.Next disabled={last} onClick={() => onPageNumberChange(number + 1)} />
+            <Pagination.Last disabled={last} onClick={() => onPageNumberChange(totalPages - 1)} />
           </Pagination>
         </Form>
       </Conditional>

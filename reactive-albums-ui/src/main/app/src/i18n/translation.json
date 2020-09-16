@@ -4,12 +4,15 @@
       "label": "Home"
     },
     "pagination": {
-      "page_size_label": "{{- option}} of {{- totalItems}} Pictures",
+      "page_size_label": "{{- option}} of {{- totalElements}} Pictures",
       "current_page_label": "Page {{- currentPage}} of {{- totalPages}}",
       "no_items_found": "No Items found",
       "filter": {
         "placeholder": "Search..."
       }
+    },
+    "use-pictures-page": {
+      "fetch-failed": "Failed fetching pictures: {{- message}}"
     }
   },
   "navigation": {

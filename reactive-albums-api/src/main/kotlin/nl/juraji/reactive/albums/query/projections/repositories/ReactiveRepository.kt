@@ -1,8 +1,10 @@
 package nl.juraji.reactive.albums.query.projections.repositories
 
-import nl.juraji.reactive.albums.util.extensions.deferTo
 import nl.juraji.reactive.albums.util.extensions.deferIterableTo
 import nl.juraji.reactive.albums.util.extensions.deferOptionalTo
+import nl.juraji.reactive.albums.util.extensions.deferTo
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.publisher.DirectProcessor
@@ -22,6 +24,8 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E, ID>(
     fun findById(id: ID): Mono<E> = fromOptional { it.findById(id) }
 
     fun findAll(): Flux<E> = fromIterator { it.findAll() }
+
+    fun findAll(pageable: Pageable): Mono<Page<E>> = from { it.findAll(pageable) }
 
     fun save(entity: E): Mono<E> =
             executeInTransaction { it.save(entity) }

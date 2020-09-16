@@ -1,8 +1,11 @@
-import { useMemo } from 'react';
-import { useDuplicateMatchesStore } from './use-duplicate-matches-store';
-import { selectTotalDuplicateMatches } from '../duplicates-store.slice';
+import { useEventSource } from '@hooks';
+import { useCallback, useState } from 'react';
 
 export function useTotalDuplicateCount(): number {
-  const duplicateMatchesStore = useDuplicateMatchesStore();
-  return useMemo(() => selectTotalDuplicateMatches(duplicateMatchesStore), [duplicateMatchesStore]);
+  const [duplicateMatchCount, setDuplicateMatchCount] = useState(0);
+  const msgHandler = useCallback((msg: string) => setDuplicateMatchCount(+msg), [setDuplicateMatchCount]);
+
+  useEventSource('/events/duplicate-match-count', {}, [], msgHandler);
+
+  return duplicateMatchCount;
 }
