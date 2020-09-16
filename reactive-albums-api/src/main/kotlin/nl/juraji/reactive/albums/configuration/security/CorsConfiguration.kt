@@ -24,7 +24,7 @@ class WebFluxCorsConfigurer(
     override fun addCorsMappings(corsRegistry: CorsRegistry) {
         corsRegistry.addMapping("/**")
                 .allowedOrigins(*corsConfiguration.origins.toTypedArray())
-                .allowedMethods("POST", "GET", "OPTIONS", "DELETE")
+                .allowedMethods("GET", "PUT", "POST", "OPTIONS", "DELETE")
                 .maxAge(corsConfiguration.maxAge)
     }
 }

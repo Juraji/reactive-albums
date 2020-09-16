@@ -11,8 +11,8 @@ import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
 import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
-import nl.juraji.reactive.albums.query.projections.repositories.ContentHashRepository
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.SyncContentHashRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -28,20 +28,20 @@ import java.util.*
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
 class DuplicatesCommandHandler(
         @Qualifier("pictureAggregateRepository") repository: Repository<PictureAggregate>,
-        private val contentHashRepository: ContentHashRepository,
-        private val duplicateMatchRepository: ReactiveDuplicateMatchRepository,
+        private val syncContentHashRepository: SyncContentHashRepository,
+        private val duplicateMatchRepository: DuplicateMatchRepository,
         private val configuration: PicturesAggregateConfiguration,
         private val commandGateway: CommandGateway,
 ) : ExternalCommandHandler<PictureAggregate>(repository) {
 
     @CommandHandler
     fun handle(cmd: ScanDuplicatesCommand) = execute(cmd.pictureId) {
-        val contentHash = cmd.contentHash ?: contentHashRepository
+        val contentHash = cmd.contentHash ?: syncContentHashRepository
                 .findById(cmd.pictureId.identifier)
                 .map { it.contentHash }
                 .orElseGet { Validate.fail { "No content hash available for ${cmd.pictureId}" } }
 
-        contentHashRepository.findAll()
+        syncContentHashRepository.findAll()
                 .filter { it.pictureId != cmd.pictureId.identifier }
                 .map { compareHashes(contentHash, it.pictureId, it.contentHash) }
                 .filter { (_, similarity) -> similarity >= configuration.duplicateSimilarity }

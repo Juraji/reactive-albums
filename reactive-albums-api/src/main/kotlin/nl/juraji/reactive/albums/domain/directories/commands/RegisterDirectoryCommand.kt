@@ -5,5 +5,5 @@ import java.nio.file.Path
 
 data class RegisterDirectoryCommand(
         override val directoryId: DirectoryId,
-        val location: Path
+        val location: Path,
 ) : DirectoryCommand(directoryId)

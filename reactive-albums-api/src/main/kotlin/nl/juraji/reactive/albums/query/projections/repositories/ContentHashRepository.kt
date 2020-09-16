@@ -9,15 +9,15 @@ import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.scheduler.Scheduler
 
 @Repository
-interface ContentHashRepository : JpaRepository<ContentHashProjection, String>
+interface SyncContentHashRepository : JpaRepository<ContentHashProjection, String>
 
 @Service
-class ReactiveContentHashRepository(
-        contentHashRepository: ContentHashRepository,
+class ContentHashRepository(
+        syncContentHashRepository: SyncContentHashRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<ContentHashRepository, ContentHashProjection, String>(
-        contentHashRepository,
+) : ReactiveRepository<SyncContentHashRepository, ContentHashProjection, String>(
+        syncContentHashRepository,
         scheduler,
         transactionTemplate
 )

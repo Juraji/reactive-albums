@@ -5,7 +5,7 @@ import nl.juraji.reactive.albums.domain.pictures.events.DuplicateLinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class DuplicateMatchProjectionsEventHandler(
-        private val duplicateMatchRepository: ReactiveDuplicateMatchRepository,
+        private val duplicateMatchRepository: DuplicateMatchRepository,
 ) {
 
     @EventHandler

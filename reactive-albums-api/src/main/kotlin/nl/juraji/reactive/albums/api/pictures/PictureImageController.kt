@@ -1,7 +1,7 @@
 package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
-import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.query.thumbnails.repositories.ReactiveThumbnailRepository
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
@@ -18,7 +18,7 @@ import java.time.Duration
 
 @RestController
 class PictureImageController(
-        private val pictureRepository: ReactivePictureRepository,
+        private val pictureRepository: PictureRepository,
         private val thumbnailRepository: ReactiveThumbnailRepository,
 ) {
 

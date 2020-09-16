@@ -12,29 +12,29 @@ import reactor.core.scheduler.Scheduler
 import java.util.*
 
 @Repository
-interface PictureRepository : JpaRepository<PictureProjection, String> {
+interface SyncPictureRepository : JpaRepository<PictureProjection, String> {
     fun findPictureImageById(id: String): Optional<PictureProjection>
     fun findPictureThumbnailById(id: String): Optional<PictureProjection>
     fun findAllByDirectoryId(directoryId: String): List<PictureProjection>
+    fun findByLocation(path: String): Optional<PictureProjection>
 }
 
 @Service
-class ReactivePictureRepository(
-        pictureRepository: PictureRepository,
+class PictureRepository(
+        syncPictureRepository: SyncPictureRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<PictureRepository, PictureProjection, String>(
-        pictureRepository,
+) : ReactiveRepository<SyncPictureRepository, PictureProjection, String>(
+        syncPictureRepository,
         scheduler,
         transactionTemplate
 ) {
 
-    fun findPictureImageById(id: String): Mono<PictureProjection> =
-            fromOptional { it.findPictureImageById(id) }
+    fun findPictureImageById(id: String): Mono<PictureProjection> = fromOptional { it.findPictureImageById(id) }
 
-    fun findPictureThumbnailById(id: String): Mono<PictureProjection> =
-            fromOptional { it.findPictureThumbnailById(id) }
+    fun findPictureThumbnailById(id: String): Mono<PictureProjection> = fromOptional { it.findPictureThumbnailById(id) }
 
-    fun findAllByDirectoryId(directoryId: String): Flux<PictureProjection> =
-            fromIterator { it.findAllByDirectoryId(directoryId) }
+    fun findAllByDirectoryId(directoryId: String): Flux<PictureProjection> = fromIterator { it.findAllByDirectoryId(directoryId) }
+
+    fun findByLocation(path: String): Mono<PictureProjection> = fromOptional { it.findByLocation(path) }
 }

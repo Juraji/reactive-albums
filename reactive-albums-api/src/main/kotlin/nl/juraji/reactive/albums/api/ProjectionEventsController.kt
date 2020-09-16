@@ -1,9 +1,9 @@
 package nl.juraji.reactive.albums.api
 
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDirectoryRepository
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveEvent
-import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.util.extensions.ServerSentEventFlux
 import nl.juraji.reactive.albums.util.extensions.bufferLastIdentity
 import nl.juraji.reactive.albums.util.extensions.toServerSentEvents
@@ -14,9 +14,9 @@ import java.time.Duration
 
 @RestController
 class ProjectionEventsController(
-        private val directoryRepository: ReactiveDirectoryRepository,
-        private val pictureRepository: ReactivePictureRepository,
-        private val duplicateMatchRepository: ReactiveDuplicateMatchRepository,
+        private val directoryRepository: DirectoryRepository,
+        private val pictureRepository: PictureRepository,
+        private val duplicateMatchRepository: DuplicateMatchRepository,
 ) {
 
     @GetMapping("/api/events")

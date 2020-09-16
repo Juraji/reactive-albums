@@ -4,7 +4,7 @@ import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
-import nl.juraji.reactive.albums.query.projections.repositories.ReactivePictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class PictureProjectionsEventHandler(
-        private val pictureRepository: ReactivePictureRepository,
+        private val pictureRepository: PictureRepository,
 ) {
 
     @EventHandler

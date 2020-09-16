@@ -4,7 +4,7 @@ import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.query.projections.ContentHashProjection
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveContentHashRepository
+import nl.juraji.reactive.albums.query.projections.repositories.ContentHashRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
@@ -14,7 +14,7 @@ import reactor.kotlin.core.publisher.switchIfEmpty
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class ContentHashProjectionsEventHandler(
-        private val contentHashRepository: ReactiveContentHashRepository,
+        private val contentHashRepository: ContentHashRepository,
 ) {
 
     @EventHandler

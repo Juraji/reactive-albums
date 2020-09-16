@@ -10,19 +10,19 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 
-interface DirectoryRepository : JpaRepository<DirectoryProjection, String> {
+interface SyncDirectoryRepository : JpaRepository<DirectoryProjection, String> {
     fun existsByLocation(location: String): Boolean
-
     fun findAllByLocationStartsWith(@Param("parentLocation") parentLocation: String): List<DirectoryProjection>
+    fun findAllByAutomaticScanEnabledIsTrue(): List<DirectoryProjection>
 }
 
 @Service
-class ReactiveDirectoryRepository(
-        directoryRepository: DirectoryRepository,
+class DirectoryRepository(
+        syncDirectoryRepository: SyncDirectoryRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<DirectoryRepository, DirectoryProjection, String>(
-        directoryRepository,
+) : ReactiveRepository<SyncDirectoryRepository, DirectoryProjection, String>(
+        syncDirectoryRepository,
         scheduler,
         transactionTemplate
 ) {
@@ -32,4 +32,7 @@ class ReactiveDirectoryRepository(
 
     fun findAllByLocationStartsWith(parentLocation: String): Flux<DirectoryProjection> =
             fromIterator { it.findAllByLocationStartsWith(parentLocation) }
+
+    fun findAllByAutomaticScanEnabledIsTrue(): Flux<DirectoryProjection> =
+            fromIterator { it.findAllByAutomaticScanEnabledIsTrue() }
 }

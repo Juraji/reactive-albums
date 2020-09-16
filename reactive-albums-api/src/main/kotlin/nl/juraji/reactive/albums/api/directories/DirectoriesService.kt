@@ -6,7 +6,7 @@ import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCo
 import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDirectoryRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.services.FileSystemService
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ import java.nio.file.Path
 
 @Service
 class DirectoriesService(
-        private val directoryRepository: ReactiveDirectoryRepository,
+        private val directoryRepository: DirectoryRepository,
         private val fileSystemService: FileSystemService,
         private val commandGateway: CommandGateway,
 ) {

@@ -6,7 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveDuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono
 @Service
 class PicturesService(
         commandGateway: CommandGateway,
-        private val duplicateMatchRepository: ReactiveDuplicateMatchRepository,
+        private val duplicateMatchRepository: DuplicateMatchRepository,
 ) : CommandSenderService(commandGateway) {
 
     fun rescanDuplicates(pictureId: PictureId): Mono<Void> =

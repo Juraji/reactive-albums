@@ -67,9 +67,8 @@ export const DirectoryItem: FC<DirectoryItemProps> = ({ directory }) => {
   const setAutomaticScanEnabled = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(
       updateDirectory({
-        directory: directory.copy({
-          automaticScanEnabled: e.target.checked,
-        }),
+        directoryId: directory.id,
+        automaticScanEnabled: e.target.checked,
       })
     );
   };

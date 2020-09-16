@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
+import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
@@ -31,7 +32,7 @@ class ProjectionsJpaConfiguration(
 
     @Bean(name = ["projectionsScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(8) { Thread(it, "projections-scheduler") }
+        val pool: ExecutorService = Executors.newFixedThreadPool(8, NumberedThreadFactory("projections-scheduler"))
         return Schedulers.fromExecutor(pool)
     }
 

@@ -18,12 +18,14 @@ export const registerDirectory = createAsyncThunk<Directory[], RegisterDirectory
 );
 
 interface UpdateDirectoryThunk {
-  directory: Directory;
+  directoryId: string;
+  automaticScanEnabled?: boolean;
 }
 
 export const updateDirectory = createAsyncThunk<Directory, UpdateDirectoryThunk>(
   'directories/updateDirectory',
-  ({ directory }) => axios.put(`/api/directories/${directory.id}`, directory).then(unwrapApiResponse)
+  ({ directoryId, automaticScanEnabled }) =>
+    axios.put(`/api/directories/${directoryId}`, { automaticScanEnabled }).then(unwrapApiResponse)
 );
 
 interface UnregisterDirectoryThunk {

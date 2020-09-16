@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.query.projections.repositories
 
-import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
@@ -13,7 +12,7 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import java.util.*
 
-interface DuplicateMatchRepository : JpaRepository<DuplicateMatchProjection, String> {
+interface SyncDuplicateMatchRepository : JpaRepository<DuplicateMatchProjection, String> {
     fun findAllByPictureId(pictureId: String): List<DuplicateMatchProjection>
     fun findAllByTargetId(pictureId: String): List<DuplicateMatchProjection>
 
@@ -26,12 +25,12 @@ interface DuplicateMatchRepository : JpaRepository<DuplicateMatchProjection, Str
 }
 
 @Service
-class ReactiveDuplicateMatchRepository(
-        duplicateMatchRepository: DuplicateMatchRepository,
+class DuplicateMatchRepository(
+        syncDuplicateMatchRepository: SyncDuplicateMatchRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<DuplicateMatchRepository, DuplicateMatchProjection, String>(
-        duplicateMatchRepository,
+) : ReactiveRepository<SyncDuplicateMatchRepository, DuplicateMatchProjection, String>(
+        syncDuplicateMatchRepository,
         scheduler,
         transactionTemplate
 ) {

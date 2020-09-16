@@ -2,7 +2,7 @@ package nl.juraji.reactive.albums.services
 
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import nl.juraji.reactive.albums.util.extensions.coordinateSequence
-import nl.juraji.reactive.albums.util.extensions.deferFrom
+import nl.juraji.reactive.albums.util.extensions.deferTo
 import nl.juraji.reactive.albums.util.extensions.then
 import org.imgscalr.Scalr
 import org.springframework.beans.factory.annotation.Qualifier
@@ -20,7 +20,7 @@ import kotlin.math.sqrt
 @Service
 class ImageService(
         private val pictureConfiguration: PicturesAggregateConfiguration,
-        @Qualifier("IOScheduler") private val scheduler: Scheduler,
+        @Qualifier("fileIoScheduler") private val scheduler: Scheduler,
 ) {
 
     fun getImageDimensions(location: Path): Mono<Dimensions> =
@@ -72,7 +72,7 @@ class ImageService(
             (distance / 510.0) > tolerance
         }
 
-        return deferFrom(scheduler) {
+        return deferTo(scheduler) {
             val baseline = rgbaComponents(source.getRGB(0, 0))
             var topY = Int.MAX_VALUE
             var topX = Int.MAX_VALUE
@@ -99,7 +99,7 @@ class ImageService(
     }
 
     fun cropCenteredSquare(image: BufferedImage): Mono<BufferedImage> =
-            deferFrom(scheduler) {
+            deferTo(scheduler) {
                 val imageWidth: Int = image.width
                 val imageHeight: Int = image.height
                 val shortestEdge = min(imageWidth, imageHeight)
@@ -111,7 +111,7 @@ class ImageService(
             }
 
     private fun readImage(location: Path): Mono<BufferedImage> =
-            deferFrom(scheduler) { ImageIO.read(location.toFile()) }
+            deferTo(scheduler) { ImageIO.read(location.toFile()) }
 }
 
 data class Dimensions(

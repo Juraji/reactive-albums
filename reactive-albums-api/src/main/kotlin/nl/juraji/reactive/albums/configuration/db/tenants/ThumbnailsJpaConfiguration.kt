@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
+import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
@@ -31,7 +32,7 @@ class ThumbnailsJpaConfiguration(
 
     @Bean(name = ["thumbnailsScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(4) { Thread(it, "thumbnails-scheduler") }
+        val pool: ExecutorService = Executors.newFixedThreadPool(4, NumberedThreadFactory("thumbnails-scheduler"))
         return Schedulers.fromExecutor(pool)
     }
 

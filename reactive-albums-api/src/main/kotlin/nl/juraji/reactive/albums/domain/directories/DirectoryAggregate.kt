@@ -28,7 +28,7 @@ class DirectoryAggregate() {
                         directoryId = cmd.directoryId,
                         location = cmd.location,
                         displayName = displayName,
-                        automaticScanEnabled = this.automaticScanEnabled
+                        automaticScanEnabled = this.automaticScanEnabled,
                 )
         )
     }

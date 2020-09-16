@@ -20,13 +20,13 @@ fun <T> Flux<T>.bufferLastIdentity(bufferingTimespan: Duration, identity: (T) ->
             }
 }
 
-fun <T> Flux<T>.toList(): List<T> = this.collectList().block() ?: emptyList()
+fun Mono<Boolean>.filterIsTrue() = this.filter { it }
 
-fun <T> deferFrom(scheduler: Scheduler, supplier: () -> T?): Mono<T> =
+fun <T> deferTo(scheduler: Scheduler, supplier: () -> T?): Mono<T> =
         Mono.defer { Mono.justOrEmpty(supplier()) }.subscribeOn(scheduler)
 
-fun <T> deferFromOptional(scheduler: Scheduler, supplier: () -> Optional<T>): Mono<T> =
+fun <T> deferOptionalTo(scheduler: Scheduler, supplier: () -> Optional<T>): Mono<T> =
         Mono.defer { Mono.justOrEmpty(supplier()) }.subscribeOn(scheduler)
 
-fun <T> deferFromIterable(scheduler: Scheduler, supplier: () -> Iterable<T>): Flux<T> =
+fun <T> deferIterableTo(scheduler: Scheduler, supplier: () -> Iterable<T>): Flux<T> =
         Flux.defer { Flux.fromIterable(supplier()) }.subscribeOn(scheduler)
