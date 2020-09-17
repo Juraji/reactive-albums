@@ -112,7 +112,7 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
       const evt: ReactiveEvent<DuplicateMatch> = JSON.parse(msg);
 
       switch (evt.type) {
-        case 'UPDATE':
+        case 'UPSERT':
           dispatch(addActivePictureDuplicateMatch(evt.entity));
           break;
         case 'DELETE':

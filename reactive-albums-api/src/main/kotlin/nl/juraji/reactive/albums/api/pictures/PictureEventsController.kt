@@ -40,7 +40,7 @@ class PictureEventsController(
         }
 
         return Flux.merge(
-                duplicateMatchRepository.findAllByPictureId(pictureId).flatMap(fetchPicture).map { ReactiveEvent.of(EventType.UPDATE, it) },
+                duplicateMatchRepository.findAllByPictureId(pictureId).flatMap(fetchPicture).map { ReactiveEvent.of(EventType.UPSERT, it) },
                 duplicateMatchRepository.subscribe { it.pictureId == pictureId }
                         .flatMap { evt ->
                             if (evt.type == EventType.DELETE) Mono.just(evt)

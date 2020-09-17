@@ -14,7 +14,7 @@ import reactor.core.scheduler.Scheduler
 import reactor.kotlin.core.publisher.toMono
 import java.util.*
 
-abstract class ReactiveRepository<T : JpaRepository<E, ID>, E: Any, ID>(
+abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
         private val repository: T,
         private val scheduler: Scheduler,
         private val transactionTemplate: TransactionTemplate,
@@ -29,7 +29,7 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E: Any, ID>(
 
     fun save(entity: E): Mono<E> =
             executeInTransaction { it.save(entity) }
-                    .doOnNext { emitUpdate(EventType.UPDATE, it) }
+                    .doOnNext { emitUpdate(EventType.UPSERT, it) }
 
     fun deleteById(id: ID): Mono<E> = findById(id).flatMap { delete(it) }
 
@@ -69,7 +69,7 @@ data class ReactiveEvent<T>(
         val entity: T,
 ) {
     companion object {
-        fun <U: Any> of(type: EventType, entity: U) = ReactiveEvent(
+        fun <U : Any> of(type: EventType, entity: U) = ReactiveEvent(
                 type = type,
                 entityType = entity::class.simpleName ?: "Entity",
                 entity = entity,
@@ -78,5 +78,5 @@ data class ReactiveEvent<T>(
 }
 
 enum class EventType {
-    UPDATE, DELETE
+    CREATE, UPSERT, DELETE
 }

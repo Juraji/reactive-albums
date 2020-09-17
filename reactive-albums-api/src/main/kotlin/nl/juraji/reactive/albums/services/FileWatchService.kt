@@ -65,7 +65,7 @@ class FileWatchService(
         val directoryId = DirectoryId(event.entity.id)
         val path: Path = Paths.get(event.entity.location)
 
-        if (eType == EventType.UPDATE && automaticScanEnabled) {
+        if (eType == EventType.UPSERT && automaticScanEnabled) {
             this.registerPath(directoryId, path)
         } else {
             this.unregisterPath(directoryId)

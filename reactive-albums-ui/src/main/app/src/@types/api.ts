@@ -1,4 +1,4 @@
-export type ReactiveEventType = 'UPDATE' | 'DELETE';
+export type ReactiveEventType = 'UPSERT' | 'DELETE';
 
 export interface ReactiveEvent<T> {
   type: ReactiveEventType;
