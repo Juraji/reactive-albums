@@ -1,10 +1,10 @@
 import { useSelector } from '@hooks';
-import { DuplicateMatchView, Picture } from '@types';
+import { DuplicateMatch, Picture } from '@types';
 
 export function useActivePicture(): Picture | undefined {
   return useSelector((state) => state.pictures.activePicture.picture);
 }
 
-export function useActivePictureDuplicates(): DuplicateMatchView[] {
+export function useActivePictureDuplicates(): DuplicateMatch[] {
   return useSelector((state) => state.pictures.activePicture.duplicates);
 }

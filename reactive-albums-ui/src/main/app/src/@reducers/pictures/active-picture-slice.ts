@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { DuplicateMatchView, Picture } from '@types';
+import { DuplicateMatch, Picture } from '@types';
 import { activatePictureById } from './picture.thunks';
 import {
   addActivePictureDuplicateMatch,
@@ -9,7 +9,7 @@ import {
 
 export interface ActivePictureState {
   picture?: Picture;
-  duplicates: DuplicateMatchView[];
+  duplicates: DuplicateMatch[];
 }
 
 const initialState: ActivePictureState = {

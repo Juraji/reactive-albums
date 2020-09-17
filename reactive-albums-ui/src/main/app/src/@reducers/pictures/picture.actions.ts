@@ -1,9 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
-import { DuplicateMatchView } from '@types';
+import { DuplicateMatch } from '@types';
 
-export const addActivePictureDuplicateMatch = createAction<DuplicateMatchView>(
-  'pictures/addActivePictureDuplicateMatch'
-);
+export const addActivePictureDuplicateMatch = createAction<DuplicateMatch>('pictures/addActivePictureDuplicateMatch');
 export const removeActivePictureDuplicateMatch = createAction<{ id: string }>(
   'pictures/removeActivePictureDuplicateMatch'
 );

@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
-import nl.juraji.reactive.albums.query.projections.DuplicateMatchView
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.EventType
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
@@ -33,25 +32,19 @@ class PictureEventsController(
     @GetMapping("/api/events/duplicate-matches/{pictureId}")
     fun getPictureDuplicateMatches(
             @PathVariable("pictureId") pictureId: String,
-    ): ServerSentEventFlux<ReactiveEvent<out Any>> {
-        val matchToView: (DuplicateMatchProjection) -> Mono<DuplicateMatchView> = { match ->
+    ): ServerSentEventFlux<ReactiveEvent<DuplicateMatchProjection>> {
+        val fetchPicture: (DuplicateMatchProjection) -> Mono<DuplicateMatchProjection> = { match ->
             pictureRepository.findById(match.targetId).map { target ->
-                DuplicateMatchView(
-                        id = match.id,
-                        pictureId = match.pictureId,
-                        targetId = match.targetId,
-                        similarity = match.similarity,
-                        target = target,
-                )
+                match.copy(target = target)
             }
         }
 
         return Flux.merge(
-                duplicateMatchRepository.findAllByPictureId(pictureId).flatMap(matchToView).map { ReactiveEvent.of(EventType.UPDATE, it) },
+                duplicateMatchRepository.findAllByPictureId(pictureId).flatMap(fetchPicture).map { ReactiveEvent.of(EventType.UPDATE, it) },
                 duplicateMatchRepository.subscribe { it.pictureId == pictureId }
                         .flatMap { evt ->
                             if (evt.type == EventType.DELETE) Mono.just(evt)
-                            else matchToView(evt.entity).map { ReactiveEvent.of(evt.type, it) }
+                            else fetchPicture(evt.entity).map { ReactiveEvent.of(evt.type, it) }
                         }
         )
                 .toServerSentEvents()

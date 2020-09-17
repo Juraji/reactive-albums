@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
-import { DuplicateMatch, DuplicateMatchView, ReactiveEvent } from '@types';
+import { DuplicateMatch, ReactiveEvent } from '@types';
 import { Conditional } from '@components';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
@@ -25,7 +25,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
 
 interface DuplicateMatchRowProps {
-  match: DuplicateMatchView;
+  match: DuplicateMatch;
 }
 
 export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
@@ -109,7 +109,7 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
 
   const onDuplicateMatchesEvent = useCallback(
     (msg: string) => {
-      const evt: ReactiveEvent<DuplicateMatchView> = JSON.parse(msg);
+      const evt: ReactiveEvent<DuplicateMatch> = JSON.parse(msg);
 
       switch (evt.type) {
         case 'UPDATE':
