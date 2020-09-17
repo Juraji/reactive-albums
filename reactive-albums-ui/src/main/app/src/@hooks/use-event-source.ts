@@ -1,26 +1,16 @@
 import { DependencyList, useCallback, useEffect, useMemo, useRef } from 'react';
 import { isDevelopmentEnv } from '@utils';
 
-export function useEventSource(
-  endpoint: string,
-  params: Record<string, string> = {},
-  deps: DependencyList = [],
-  onEvent: (msg: string) => void
-) {
+export function useEventSource(onEvent: (msg: string) => void, endpoint: string, deps: DependencyList = []) {
   const eventSourceRef = useRef<EventSource>();
   const canEnable = useMemo(() => !deps.some((d) => !d), [deps]);
   const cleanUpCallback = useCallback(() => {
     const es = eventSourceRef.current;
-    if (!!es) {
+    if (!!es && es.readyState === EventSource.OPEN) {
       es.close();
       es.dispatchEvent(new Event('close'));
     }
   }, [eventSourceRef]);
-
-  const authorizedEndpoint = useMemo(() => {
-    const q = new URLSearchParams(params);
-    return `${window.origin}/api${endpoint}?${q.toString()}`;
-  }, [endpoint, params]);
 
   useEffect(() => {
     if (!!eventSourceRef.current) {
@@ -28,20 +18,18 @@ export function useEventSource(
     }
 
     if (canEnable) {
-      const es = new EventSource(authorizedEndpoint);
+      const es = new EventSource(endpoint);
       es.addEventListener('message', (e) => onEvent(e.data));
-      es.addEventListener('error', (e) => console.error(`[useEventSource(${authorizedEndpoint})] SSE error`, e));
+      es.addEventListener('error', (e) => console.error(`[useEventSource(${endpoint})] SSE error`, e));
 
       if (isDevelopmentEnv()) {
-        es.addEventListener('open', (e: Event) => console.log(`[useEventSource(${authorizedEndpoint})] SSE opened`, e));
-        es.addEventListener('close', (e: Event) =>
-          console.log(`[useEventSource(${authorizedEndpoint})] SSE closed`, e)
-        );
+        es.addEventListener('open', (e: Event) => console.log(`[useEventSource(${endpoint})] SSE opened`, e));
+        es.addEventListener('close', (e: Event) => console.log(`[useEventSource(${endpoint})] SSE closed`, e));
       }
 
       eventSourceRef.current = es;
     }
 
     return cleanUpCallback;
-  }, [authorizedEndpoint, canEnable, eventSourceRef, cleanUpCallback, onEvent]);
+  }, [endpoint, canEnable, eventSourceRef, cleanUpCallback, onEvent]);
 }

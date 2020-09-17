@@ -123,7 +123,8 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
     [dispatch]
   );
 
-  useEventSource(`/events/duplicate-matches/${pictureId}`, {}, [pictureId], onDuplicateMatchesEvent);
+  const matchesEndpoint = useApiUrl('events', 'duplicate-matches', pictureId);
+  useEventSource(onDuplicateMatchesEvent, matchesEndpoint, [pictureId]);
 
   const [isShowUnlinkAllConfirm, showUnlinkAllConfirm, hideUnlinkAllConfirm] = useToggleState(false);
   const [isShowDeleteAllConfirm, showDeleteAllConfirm, hideDeleteAllConfirm] = useToggleState(false);

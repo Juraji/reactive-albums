@@ -24,9 +24,6 @@ class SyncFileSystemService {
     fun readAttributes(path: Path): BasicFileAttributes =
             Files.readAttributes(path, BasicFileAttributes::class.java)
 
-    fun createDirectories(path: Path): Path? =
-            Files.createDirectories(path)
-
     fun deleteIfExists(path: Path): Boolean =
             Files.deleteIfExists(path)
 
@@ -56,9 +53,6 @@ class FileSystemService(
 
     fun readAttributes(path: Path): Mono<BasicFileAttributes> =
             deferTo(scheduler) { syncFileSystemService.readAttributes(path) }
-
-    fun createDirectories(path: Path): Mono<Path> =
-            deferTo(scheduler) { syncFileSystemService.createDirectories(path) }
 
     fun deleteIfExists(path: Path): Mono<Boolean> =
             deferTo(scheduler) { syncFileSystemService.deleteIfExists(path) }

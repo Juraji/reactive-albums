@@ -60,23 +60,15 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
             deferTo(scheduler) { transactionTemplate.execute { f(repository) } }
 
     private fun emitUpdate(type: EventType, entity: E) = updatesProcessor
-            .onNext(ReactiveEvent.of(type, entity))
+            .onNext(ReactiveEvent(type, entity))
 }
 
-data class ReactiveEvent<T>(
+data class ReactiveEvent<T : Any>(
         val type: EventType,
-        val entityType: String,
         val entity: T,
-) {
-    companion object {
-        fun <U : Any> of(type: EventType, entity: U) = ReactiveEvent(
-                type = type,
-                entityType = entity::class.simpleName ?: "Entity",
-                entity = entity,
-        )
-    }
-}
+        val entityType: String = entity::class.simpleName ?: "Entity",
+)
 
 enum class EventType {
-    CREATE, UPSERT, DELETE
+    UPSERT, DELETE
 }

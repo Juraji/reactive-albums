@@ -41,5 +41,6 @@ export interface DuplicateMatch {
   pictureId: string;
   targetId: string;
   similarity: number;
+  picture?: Picture;
   target?: Picture;
 }

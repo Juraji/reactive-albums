@@ -9,5 +9,6 @@ data class DuplicateMatchProjection(
         val pictureId: String,
         val targetId: String,
         val similarity: Int,
+        @Transient val picture: PictureProjection? = null,
         @Transient val target: PictureProjection? = null,
 )
