@@ -3,8 +3,10 @@ package nl.juraji.reactive.albums.domain.tags
 import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.tags.commands.CreateTagCommand
 import nl.juraji.reactive.albums.domain.tags.commands.DeleteTagCommand
+import nl.juraji.reactive.albums.domain.tags.commands.UpdateTagCommand
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
 import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
+import nl.juraji.reactive.albums.domain.tags.events.TagUpdatedEvent
 import nl.juraji.reactive.albums.util.RgbColor
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -31,6 +33,24 @@ class TagAggregate() {
                         label = cmd.label,
                         tagColor = tagColor,
                         textColor = textColor,
+                )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: UpdateTagCommand) {
+        if (cmd.label != null) {
+            Validate.isFalse(cmd.label.isBlank()) { "Tag label may not be blank" }
+        }
+
+        Validate.isFalse(cmd.label == null && cmd.tagColor == null && cmd.textColor == null) { "No properties are updated" }
+
+        AggregateLifecycle.apply(
+                TagUpdatedEvent(
+                        tagId = tagId,
+                        label = cmd.label,
+                        tagColor = cmd.tagColor,
+                        textColor = cmd.textColor
                 )
         )
     }

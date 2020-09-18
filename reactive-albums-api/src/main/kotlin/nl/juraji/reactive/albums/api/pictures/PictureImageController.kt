@@ -38,7 +38,7 @@ class PictureImageController(
     fun getPictures(
             @PathVariable("pictureId") pictureId: String,
     ): Mono<Resource> = pictureRepository
-            .findPictureImageById(pictureId)
+            .findById(pictureId)
             .switchIfEmpty { Mono.error(NoSuchEntityException("Picture", pictureId)) }
             .map { FileSystemResource(it.location) }
 

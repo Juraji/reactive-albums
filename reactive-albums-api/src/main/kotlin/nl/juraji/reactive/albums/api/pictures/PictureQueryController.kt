@@ -22,10 +22,10 @@ class PictureQueryController(
             @RequestParam(name = "page", defaultValue = DEFAULT_PAGE_NO) page: Int,
             @RequestParam(name = "size", defaultValue = DEFAULT_PAGE_SIZE) size: Int,
             @RequestParam(name = "filter", required = false) filter: String?,
-    ): Mono<Page<PictureProjection>> = if (filter.isNullOrBlank()) {
-        pictureRepository.findAll(PageRequest.of(page, size))
-    } else {
-        pictureRepository.findAllByLocationContainsIgnoreCase(filter, PageRequest.of(page, size))
+    ): Mono<Page<PictureProjection>> = when {
+        filter.isNullOrBlank() -> pictureRepository.findAll(PageRequest.of(page, size))
+        filter.startsWith("tag:") -> pictureRepository.findAllByTagStartsWithIgnoreCase(filter.substring(4), PageRequest.of(page, size))
+        else -> pictureRepository.findAllByLocationContainsIgnoreCase(filter, PageRequest.of(page, size))
     }
 
     @GetMapping("/api/pictures/{pictureId}")

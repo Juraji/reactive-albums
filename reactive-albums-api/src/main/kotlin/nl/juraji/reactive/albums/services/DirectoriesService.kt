@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.api.directories
+package nl.juraji.reactive.albums.services
 
 import nl.juraji.reactive.albums.domain.ValidateAsync
 import nl.juraji.reactive.albums.domain.directories.DirectoryId

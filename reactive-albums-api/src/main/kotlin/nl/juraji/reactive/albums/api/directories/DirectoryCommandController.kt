@@ -2,6 +2,7 @@ package nl.juraji.reactive.albums.api.directories
 
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
+import nl.juraji.reactive.albums.services.DirectoriesService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono

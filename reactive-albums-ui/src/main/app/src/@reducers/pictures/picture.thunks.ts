@@ -27,7 +27,7 @@ interface UnlinkDuplicateMatchThunk extends PictureThunk {
 export const unlinkDuplicateMatch = createAsyncThunk<unknown, UnlinkDuplicateMatchThunk>(
   'pictures/unlinkDuplicateMatch',
   ({ pictureId, matchId }) =>
-    axios.post(`/api/pictures/${pictureId}/unlink-duplicate-match/${matchId}`).then(unwrapApiResponse)
+    axios.delete(`/api/pictures/${pictureId}/duplicate-matches/${matchId}`).then(unwrapApiResponse)
 );
 
 export const deletePicture = createAsyncThunk<unknown, PictureThunk>('pictures/deletePicture', ({ pictureId }) =>

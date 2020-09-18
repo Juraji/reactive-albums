@@ -3,6 +3,7 @@ package nl.juraji.reactive.albums.query.projections.handlers
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
 import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
+import nl.juraji.reactive.albums.domain.tags.events.TagUpdatedEvent
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
@@ -25,6 +26,17 @@ class TagProjectionsEventHandler(
         )
 
         tagRepository.save(entity).block()
+    }
+
+    @EventHandler
+    fun on(evt: TagUpdatedEvent) {
+        tagRepository.update(evt.tagId.identifier) {
+            it.copy(
+                    label = evt.label ?: it.label,
+                    tagColor = evt.tagColor?.toString() ?: it.tagColor,
+                    textColor = evt.textColor?.toString() ?: it.textColor,
+            )
+        }
     }
 
     @EventHandler

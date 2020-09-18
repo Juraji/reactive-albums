@@ -1,11 +1,11 @@
-package nl.juraji.reactive.albums.api.pictures
+package nl.juraji.reactive.albums.services
 
 import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
+import nl.juraji.reactive.albums.domain.pictures.TagLinkType
+import nl.juraji.reactive.albums.domain.pictures.commands.*
+import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
@@ -33,5 +33,20 @@ class PicturesService(
 
     fun deletePicture(pictureId: PictureId): Mono<Void> =
             send(DeletePictureCommand(pictureId = pictureId))
+
+    fun linkTag(pictureId: String, tagId: String): Mono<Void> = send(
+            LinkTagCommand(
+                    pictureId = PictureId(pictureId),
+                    tagId = TagId(tagId),
+                    tagLinkType = TagLinkType.USER
+            )
+    )
+
+    fun unlinkTag(pictureId: String, tagId: String): Mono<Void> = send(
+            UnlinkTagCommand(
+                    pictureId = PictureId(pictureId),
+                    tagId = TagId(tagId),
+            )
+    )
 
 }
