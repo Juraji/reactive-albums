@@ -2,8 +2,8 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.configuration.PaginationDefaults.DEFAULT_PAGE_NO
 import nl.juraji.reactive.albums.configuration.PaginationDefaults.DEFAULT_PAGE_SIZE
-import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.projections.pictures.PictureProjection
+import nl.juraji.reactive.albums.projections.pictures.PictureRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.web.bind.annotation.GetMapping

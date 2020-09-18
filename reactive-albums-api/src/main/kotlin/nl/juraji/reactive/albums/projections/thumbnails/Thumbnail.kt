@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.query.thumbnails
+package nl.juraji.reactive.albums.projections.thumbnails
 
 import java.time.LocalDateTime
 import javax.persistence.Entity

@@ -1,6 +1,6 @@
-package nl.juraji.reactive.albums.query.projections.repositories
+package nl.juraji.reactive.albums.projections.pictures
 
-import nl.juraji.reactive.albums.query.projections.TagProjection
+import nl.juraji.reactive.albums.projections.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -9,15 +9,15 @@ import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.scheduler.Scheduler
 
 @Repository
-interface SyncTagRepository : JpaRepository<TagProjection, String>
+interface SyncContentHashRepository : JpaRepository<ContentHashProjection, String>
 
 @Service
-class TagRepository(
-        repository: SyncTagRepository,
+class ContentHashRepository(
+        syncContentHashRepository: SyncContentHashRepository,
         transactionTemplate: TransactionTemplate,
         @Qualifier("projectionsScheduler") scheduler: Scheduler,
-) : ReactiveRepository<SyncTagRepository, TagProjection, String>(
-        repository,
+) : ReactiveRepository<SyncContentHashRepository, ContentHashProjection, String>(
+        syncContentHashRepository,
         scheduler,
         transactionTemplate
 )

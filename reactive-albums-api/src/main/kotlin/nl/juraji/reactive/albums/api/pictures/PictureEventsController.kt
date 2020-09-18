@@ -1,10 +1,10 @@
 package nl.juraji.reactive.albums.api.pictures
 
-import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
-import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
-import nl.juraji.reactive.albums.query.projections.repositories.EventType
-import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveEvent
+import nl.juraji.reactive.albums.projections.pictures.DuplicateMatchProjection
+import nl.juraji.reactive.albums.projections.pictures.DuplicateMatchRepository
+import nl.juraji.reactive.albums.projections.EventType
+import nl.juraji.reactive.albums.projections.pictures.PictureRepository
+import nl.juraji.reactive.albums.projections.ReactiveEvent
 import nl.juraji.reactive.albums.util.extensions.ServerSentEventFlux
 import nl.juraji.reactive.albums.util.extensions.toServerSentEvents
 import org.springframework.web.bind.annotation.GetMapping

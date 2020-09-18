@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.query.projections
+package nl.juraji.reactive.albums.projections.pictures
 
 import nl.juraji.reactive.albums.util.serialization.BitsetAttributeConverter
 import java.util.*

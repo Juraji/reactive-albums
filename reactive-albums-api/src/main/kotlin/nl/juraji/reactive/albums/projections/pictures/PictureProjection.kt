@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.query.projections
+package nl.juraji.reactive.albums.projections.pictures
 
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType

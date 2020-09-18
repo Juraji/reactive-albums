@@ -1,11 +1,9 @@
-package nl.juraji.reactive.albums.query.projections.handlers
+package nl.juraji.reactive.albums.projections.pictures
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.DuplicateLinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
-import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
-import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service

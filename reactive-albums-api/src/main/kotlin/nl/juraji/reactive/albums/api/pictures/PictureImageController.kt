@@ -1,8 +1,8 @@
 package nl.juraji.reactive.albums.api.pictures
 
-import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
-import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
-import nl.juraji.reactive.albums.query.thumbnails.repositories.ReactiveThumbnailRepository
+import nl.juraji.reactive.albums.projections.NoSuchEntityException
+import nl.juraji.reactive.albums.projections.pictures.PictureRepository
+import nl.juraji.reactive.albums.projections.thumbnails.ReactiveThumbnailRepository
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource

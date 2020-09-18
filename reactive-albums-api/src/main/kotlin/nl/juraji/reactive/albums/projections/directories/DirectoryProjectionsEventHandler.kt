@@ -1,11 +1,9 @@
-package nl.juraji.reactive.albums.query.projections.handlers
+package nl.juraji.reactive.albums.projections.directories
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryRegisteredEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregisteredEvent
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
-import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service

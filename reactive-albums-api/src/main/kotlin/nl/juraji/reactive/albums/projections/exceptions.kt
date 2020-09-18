@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.query.projections.handlers
+package nl.juraji.reactive.albums.projections
 
 data class NoSuchEntityException(
         val entityName: String,

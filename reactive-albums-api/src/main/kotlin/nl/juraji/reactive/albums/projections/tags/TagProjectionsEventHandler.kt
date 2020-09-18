@@ -1,10 +1,8 @@
-package nl.juraji.reactive.albums.query.projections.handlers
+package nl.juraji.reactive.albums.projections.tags
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
 import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
-import nl.juraji.reactive.albums.query.projections.TagProjection
-import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service

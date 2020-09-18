@@ -1,6 +1,6 @@
-package nl.juraji.reactive.albums.query.projections.repositories
+package nl.juraji.reactive.albums.projections.pictures
 
-import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.projections.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

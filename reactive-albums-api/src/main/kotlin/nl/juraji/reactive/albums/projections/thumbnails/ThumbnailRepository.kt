@@ -1,7 +1,6 @@
-package nl.juraji.reactive.albums.query.thumbnails.repositories
+package nl.juraji.reactive.albums.projections.thumbnails
 
-import nl.juraji.reactive.albums.query.projections.repositories.ReactiveRepository
-import nl.juraji.reactive.albums.query.thumbnails.Thumbnail
+import nl.juraji.reactive.albums.projections.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository

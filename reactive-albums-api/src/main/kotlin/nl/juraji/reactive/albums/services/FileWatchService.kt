@@ -7,9 +7,13 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.AnalyzePictureMetaDataCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
-import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.repositories.*
+import nl.juraji.reactive.albums.projections.EventType
+import nl.juraji.reactive.albums.projections.ReactiveEvent
+import nl.juraji.reactive.albums.projections.directories.DirectoryProjection
+import nl.juraji.reactive.albums.projections.directories.DirectoryRepository
+import nl.juraji.reactive.albums.projections.pictures.PictureProjection
+import nl.juraji.reactive.albums.projections.pictures.PictureRepository
+import nl.juraji.reactive.albums.projections.pictures.SyncPictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.beans.factory.annotation.Qualifier

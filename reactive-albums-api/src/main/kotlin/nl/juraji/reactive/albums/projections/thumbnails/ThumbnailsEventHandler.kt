@@ -1,10 +1,8 @@
-package nl.juraji.reactive.albums.query.thumbnails.handlers
+package nl.juraji.reactive.albums.projections.thumbnails
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
-import nl.juraji.reactive.albums.query.thumbnails.Thumbnail
-import nl.juraji.reactive.albums.query.thumbnails.repositories.ReactiveThumbnailRepository
 import nl.juraji.reactive.albums.services.ImageService
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler

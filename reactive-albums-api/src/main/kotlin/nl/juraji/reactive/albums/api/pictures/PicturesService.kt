@@ -6,7 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
-import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
+import nl.juraji.reactive.albums.projections.pictures.DuplicateMatchRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
