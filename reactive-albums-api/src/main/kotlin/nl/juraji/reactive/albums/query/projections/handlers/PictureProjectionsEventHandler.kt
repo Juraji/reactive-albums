@@ -9,6 +9,7 @@ import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
+import reactor.kotlin.core.publisher.switchIfEmpty
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -49,22 +50,24 @@ class PictureProjectionsEventHandler(
 
     @EventHandler
     fun on(evt: TagLinkedEvent) {
-        pictureRepository
-                .update(evt.pictureId.identifier) { picture ->
-                    val tags: Set<TagLink> = picture.tags.plus(TagLink(tagId = evt.tagId.identifier, linkType = evt.linkType))
-                    picture.copy(tags = tags)
+        tagRepository.findById(evt.tagId.identifier)
+                .switchIfEmpty { tagRepository.subscribeFirst { it.id === evt.tagId.identifier } }
+                .flatMap { tag ->
+                    pictureRepository
+                            .update(evt.pictureId.identifier) { picture ->
+                                val tags: Set<TagLink> = picture.tags.plus(TagLink(tag = tag, linkType = evt.linkType))
+                                picture.copy(tags = tags)
+                            }
                 }
                 .block()
     }
 
     @EventHandler
     fun on(evt: TagUnlinkedEvent) {
-        pictureRepository
-                .update(evt.pictureId.identifier) {
-                    val tags: Set<TagLink> = it.tags.filter { t -> t.tagId != evt.tagId.identifier }.toSet()
-                    it.copy(tags = tags)
-                }
-                .block()
+        pictureRepository.update(evt.pictureId.identifier) {
+            val tags: Set<TagLink> = it.tags.filter { t -> t.tag.id != evt.tagId.identifier }.toSet()
+            it.copy(tags = tags)
+        }.block()
     }
 
     @EventHandler

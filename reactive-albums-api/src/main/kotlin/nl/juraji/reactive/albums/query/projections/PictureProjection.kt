@@ -26,5 +26,6 @@ data class PictureProjection(
 @Embeddable
 data class TagLink(
         val linkType: TagLinkType,
-        val tagId: String,
+        @ManyToOne(fetch = FetchType.EAGER)
+        val tag: TagProjection,
 )
