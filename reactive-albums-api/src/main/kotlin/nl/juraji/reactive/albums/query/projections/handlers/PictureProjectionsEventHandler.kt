@@ -3,8 +3,9 @@ package nl.juraji.reactive.albums.query.projections.handlers
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagProjection
+import nl.juraji.reactive.albums.query.projections.TagLink
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class PictureProjectionsEventHandler(
         private val pictureRepository: PictureRepository,
+        private val tagRepository: TagRepository,
 ) {
 
     @EventHandler
@@ -46,26 +48,20 @@ class PictureProjectionsEventHandler(
     }
 
     @EventHandler
-    fun on(evt: TagAddedEvent) {
+    fun on(evt: TagLinkedEvent) {
         pictureRepository
-                .update(evt.pictureId.identifier) {
-                    val tags = it.tags.plus(TagProjection(
-                            label = evt.label,
-                            labelColor = evt.labelColor,
-                            textColor = evt.textColor,
-                            linkType = evt.linkType,
-                    ))
-
-                    it.copy(tags = tags)
+                .update(evt.pictureId.identifier) { picture ->
+                    val tags: Set<TagLink> = picture.tags.plus(TagLink(tagId = evt.tagId.identifier, linkType = evt.linkType))
+                    picture.copy(tags = tags)
                 }
                 .block()
     }
 
     @EventHandler
-    fun on(evt: TagRemovedEvent) {
+    fun on(evt: TagUnlinkedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
-                    val tags = it.tags.filter { t -> t.label != evt.label }.toSet()
+                    val tags: Set<TagLink> = it.tags.filter { t -> t.tagId != evt.tagId.identifier }.toSet()
                     it.copy(tags = tags)
                 }
                 .block()

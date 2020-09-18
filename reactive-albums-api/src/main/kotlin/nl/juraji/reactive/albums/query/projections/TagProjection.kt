@@ -1,14 +1,13 @@
 package nl.juraji.reactive.albums.query.projections
 
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
-import javax.persistence.Embeddable
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
 
-@Embeddable
+@Entity
 data class TagProjection(
-        val label: String,
-        val labelColor: String,
+        @Id val id: String,
+        @Column(unique = true) val label: String,
+        val tagColor: String,
         val textColor: String,
-        @Enumerated(EnumType.STRING) val linkType: TagLinkType,
 )

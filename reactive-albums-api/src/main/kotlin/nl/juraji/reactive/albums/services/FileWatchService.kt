@@ -226,7 +226,7 @@ class DirectoryStateUpdateService(
 
                 // Add new files
                 files
-                        .filter { path -> knownPictures.any { it.location === path.toString() } }
+                        .filter { path -> !knownPictures.any { it.location === path.toString() } }
                         .map { path -> path to fileSystemService.readContentType(path) }
                         .forEach { (location, contentType) ->
                             commandGateway.send<Unit>(CreatePictureCommand(

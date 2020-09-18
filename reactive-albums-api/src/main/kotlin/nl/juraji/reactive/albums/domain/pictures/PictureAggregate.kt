@@ -4,7 +4,7 @@ import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.*
-import nl.juraji.reactive.albums.util.RgbColor
+import nl.juraji.reactive.albums.domain.tags.TagId
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.common.Assert
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -22,7 +22,7 @@ class PictureAggregate() {
     private lateinit var pictureId: PictureId
     private lateinit var displayName: String
     private lateinit var location: Path
-    private var tags: Set<TagEntity> = emptySet()
+    private var tags: Set<TagId> = emptySet()
     private var duplicates: Map<DuplicateMatchId, PictureId> = emptyMap()
 
     fun getLocation(): Path = this.location
@@ -80,30 +80,25 @@ class PictureAggregate() {
         )
     }
 
-    fun addTag(label: String, labelColor: String, textColor: String, tagLinkType: TagLinkType) {
-        Validate.isTrue(label.isNotBlank()) { "Tag label should not be blank" }
-        Validate.isTrue(RgbColor.isHexColor(labelColor)) { "Tag label color should be a valid hexadecimal color" }
-        Validate.isTrue(RgbColor.isHexColor(textColor)) { "Tag text color should be a valid hexadecimal color" }
-        Validate.isTrue(tags.none { it.label == label }) { "Tag with label $label already exists on $displayName" }
+    fun addTag(tagId: TagId, tagLinkType: TagLinkType) {
+        Validate.isFalse(tags.contains(tagId)) { "Tag with id $tagId is already present on $displayName" }
 
         AggregateLifecycle.apply(
-                TagAddedEvent(
+                TagLinkedEvent(
                         pictureId = this.pictureId,
-                        label = label,
-                        labelColor = labelColor,
-                        textColor = textColor,
+                        tagId = tagId,
                         linkType = tagLinkType,
                 )
         )
     }
 
-    fun removeTag(label: String) {
-        Validate.isTrue(tags.any { it.label == label }) { "Tag with label $label does not exist on $displayName" }
+    fun removeTag(tagId: TagId) {
+        Validate.isTrue(tags.contains(tagId)) { "Tag with id $tagId does not exist on $displayName" }
 
         AggregateLifecycle.apply(
-                TagRemovedEvent(
+                TagUnlinkedEvent(
                         pictureId = pictureId,
-                        label = label
+                        tagId = tagId
                 )
         )
     }
@@ -140,13 +135,13 @@ class PictureAggregate() {
     }
 
     @EventSourcingHandler
-    fun on(evt: TagAddedEvent) {
-        tags = tags.plus(TagEntity(evt.label))
+    fun on(evt: TagLinkedEvent) {
+        tags = tags.plus(evt.tagId)
     }
 
     @EventSourcingHandler
-    fun on(evt: TagRemovedEvent) {
-        tags = tags.minus(TagEntity(evt.label))
+    fun on(evt: TagUnlinkedEvent) {
+        tags = tags.minus(evt.tagId)
     }
 
     @EventSourcingHandler

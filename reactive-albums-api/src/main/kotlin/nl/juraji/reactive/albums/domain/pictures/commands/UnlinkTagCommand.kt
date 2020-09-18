@@ -1,8 +1,9 @@
 package nl.juraji.reactive.albums.domain.pictures.commands
 
 import nl.juraji.reactive.albums.domain.pictures.PictureId
+import nl.juraji.reactive.albums.domain.tags.TagId
 
-data class RemoveTagCommand(
+data class UnlinkTagCommand(
         override val pictureId: PictureId,
-        val label: String,
+        val tagId: TagId,
 ) : PictureCommand(pictureId)
