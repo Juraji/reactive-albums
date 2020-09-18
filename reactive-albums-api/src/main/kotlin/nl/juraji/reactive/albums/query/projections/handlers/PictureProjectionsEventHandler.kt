@@ -1,8 +1,11 @@
-package nl.juraji.reactive.albums.projections.pictures
+package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.*
-import nl.juraji.reactive.albums.projections.tags.TagRepository
+import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service

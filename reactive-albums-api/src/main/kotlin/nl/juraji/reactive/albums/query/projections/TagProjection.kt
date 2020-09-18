@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.projections.tags
+package nl.juraji.reactive.albums.query.projections
 
 import javax.persistence.Column
 import javax.persistence.Entity

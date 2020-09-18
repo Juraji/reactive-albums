@@ -5,7 +5,7 @@ import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregistered
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
-import nl.juraji.reactive.albums.projections.pictures.SyncPictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.SyncPictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup

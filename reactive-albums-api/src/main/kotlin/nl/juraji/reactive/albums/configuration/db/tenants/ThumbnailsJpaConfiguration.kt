@@ -53,7 +53,7 @@ class ThumbnailsJpaConfiguration(
     ): LocalContainerEntityManagerFactoryBean {
         return builder
                 .dataSource(dataSource)
-                .packages("nl.juraji.reactive.albums.projections.thumbnails")
+                .packages("nl.juraji.reactive.albums.query.thumbnails")
                 .persistenceUnit("thumbnails")
                 .build()
     }

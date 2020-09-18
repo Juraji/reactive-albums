@@ -2,7 +2,7 @@ package nl.juraji.reactive.albums.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import nl.juraji.reactive.albums.domain.ValidationException
-import nl.juraji.reactive.albums.projections.NoSuchEntityException
+import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order

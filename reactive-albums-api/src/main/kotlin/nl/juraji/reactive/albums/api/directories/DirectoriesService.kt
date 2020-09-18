@@ -5,8 +5,8 @@ import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
-import nl.juraji.reactive.albums.projections.directories.DirectoryProjection
-import nl.juraji.reactive.albums.projections.directories.DirectoryRepository
+import nl.juraji.reactive.albums.query.projections.DirectoryProjection
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.services.FileSystemService
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service

@@ -11,8 +11,8 @@ import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
 import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
-import nl.juraji.reactive.albums.projections.pictures.SyncContentHashRepository
-import nl.juraji.reactive.albums.projections.pictures.DuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.SyncContentHashRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.gateway.CommandGateway

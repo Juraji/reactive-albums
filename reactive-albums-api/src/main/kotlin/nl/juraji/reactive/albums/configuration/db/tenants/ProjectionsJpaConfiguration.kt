@@ -53,7 +53,7 @@ class ProjectionsJpaConfiguration(
     ): LocalContainerEntityManagerFactoryBean {
         return builder
                 .dataSource(dataSource)
-                .packages("nl.juraji.reactive.albums.projections")
+                .packages("nl.juraji.reactive.albums.query.projections")
                 .persistenceUnit("projections")
                 .build()
     }

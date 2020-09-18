@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.projections.directories
+package nl.juraji.reactive.albums.query.projections
 
 import javax.persistence.Entity
 import javax.persistence.Id
