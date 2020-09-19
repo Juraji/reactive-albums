@@ -34,22 +34,26 @@ class DirectoryAggregate() {
     }
 
     @CommandHandler
-    fun handle(cmd: UnregisterDirectoryCommand) {
+    fun handle(cmd: UnregisterDirectoryCommand): DirectoryId {
         AggregateLifecycle.apply(
                 DirectoryUnregisteredEvent(
                         directoryId = this.directoryId
                 )
         )
+
+        return directoryId
     }
 
     @CommandHandler
-    fun handle(cmd: UpdateDirectoryCommand) {
+    fun handle(cmd: UpdateDirectoryCommand): DirectoryId {
         AggregateLifecycle.apply(
                 DirectoryUpdatedEvent(
                         directoryId = this.directoryId,
                         automaticScanEnabled = cmd.automaticScanEnabled ?: this.automaticScanEnabled
                 )
         )
+
+        return directoryId
     }
 
     @EventSourcingHandler

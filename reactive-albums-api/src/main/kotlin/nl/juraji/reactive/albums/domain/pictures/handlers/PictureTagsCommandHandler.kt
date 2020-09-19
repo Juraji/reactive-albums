@@ -3,6 +3,7 @@ package nl.juraji.reactive.albums.domain.pictures.handlers
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.ExternalCommandHandler
 import nl.juraji.reactive.albums.domain.pictures.PictureAggregate
+import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.LinkTagCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkTagCommand
 import nl.juraji.reactive.albums.util.LoggerCompanion
@@ -16,10 +17,10 @@ import org.springframework.stereotype.Service
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
 class PictureTagsCommandHandler(
         @Qualifier("pictureAggregateRepository") repository: Repository<PictureAggregate>,
-) : ExternalCommandHandler<PictureAggregate>(repository) {
+) : ExternalCommandHandler<PictureAggregate, PictureId>(repository) {
 
     @CommandHandler
-    fun handle(cmd: LinkTagCommand) = execute(cmd.pictureId) {
+    fun handle(cmd: LinkTagCommand): PictureId = execute(cmd.pictureId) {
         addTag(
                 tagId = cmd.tagId,
                 tagLinkType = cmd.tagLinkType
@@ -27,7 +28,7 @@ class PictureTagsCommandHandler(
     }
 
     @CommandHandler
-    fun handle(cmd: UnlinkTagCommand) = execute(cmd.pictureId) {
+    fun handle(cmd: UnlinkTagCommand): PictureId = execute(cmd.pictureId) {
         removeTag(tagId = cmd.tagId)
     }
 

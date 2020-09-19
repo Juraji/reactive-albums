@@ -2,7 +2,6 @@ import { Page, Picture } from '@types';
 import { useEffect, useMemo, useState } from 'react';
 import { useApiUrl } from '@hooks';
 import axios from 'axios';
-import { unwrapApiResponse } from '@utils';
 import { useToasts } from 'react-toast-notifications';
 import { useTranslation } from 'react-i18next';
 
@@ -39,8 +38,7 @@ export function usePicturesPage(page: number, size: number, filterValue: string 
     if (!!requestUrl) {
       axios
         .get(requestUrl)
-        .then(unwrapApiResponse)
-        .then(setCurrentPage)
+        .then((r) => setCurrentPage(r.data))
         .catch((e) => addToast(t('home.use-pictures-page.fetch-failed', e)));
     }
   }, [requestUrl, setCurrentPage, addToast, t]);

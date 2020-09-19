@@ -1,35 +1,35 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { Picture } from '@types';
-import { unwrapApiResponse } from '@utils';
+import { createApiDeleteThunk, createApiGetThunk, createApiPostThunk } from '@utils';
 
 interface PictureThunk {
   pictureId: string;
 }
 
-export const activatePictureById = createAsyncThunk<Picture, PictureThunk>(
+export const activatePictureById = createApiGetThunk<Picture, PictureThunk>(
   'pictures/activatePicture',
-  ({ pictureId }) => axios.get(`/api/pictures/${pictureId}`).then(unwrapApiResponse)
+  ({ pictureId }) => `/api/pictures/${pictureId}`
 );
 
-export const fetchPictureById = createAsyncThunk<Picture, PictureThunk>('pictures/fetchPictureById', ({ pictureId }) =>
-  axios.get(`/api/pictures/${pictureId}`).then(unwrapApiResponse)
+export const fetchPictureById = createApiGetThunk<Picture, PictureThunk>(
+  'pictures/fetchPictureById',
+  ({ pictureId }) => `/api/pictures/${pictureId}`
 );
 
-export const rescanDuplicates = createAsyncThunk<unknown, PictureThunk>('pictures/rescanDuplicates', ({ pictureId }) =>
-  axios.post(`/api/pictures/${pictureId}/rescan-duplicates`).then(unwrapApiResponse)
+export const rescanDuplicates = createApiPostThunk<unknown, PictureThunk>(
+  'pictures/rescanDuplicates',
+  ({ pictureId }) => `/api/pictures/${pictureId}/rescan-duplicates`
 );
 
 interface UnlinkDuplicateMatchThunk extends PictureThunk {
   matchId: string;
 }
 
-export const unlinkDuplicateMatch = createAsyncThunk<unknown, UnlinkDuplicateMatchThunk>(
+export const unlinkDuplicateMatch = createApiDeleteThunk<unknown, UnlinkDuplicateMatchThunk>(
   'pictures/unlinkDuplicateMatch',
-  ({ pictureId, matchId }) =>
-    axios.delete(`/api/pictures/${pictureId}/duplicate-matches/${matchId}`).then(unwrapApiResponse)
+  ({ pictureId, matchId }) => `/api/pictures/${pictureId}/duplicate-matches/${matchId}`
 );
 
-export const deletePicture = createAsyncThunk<unknown, PictureThunk>('pictures/deletePicture', ({ pictureId }) =>
-  axios.delete(`/api/pictures/${pictureId}`).then(unwrapApiResponse)
+export const deletePicture = createApiDeleteThunk<unknown, PictureThunk>(
+  'pictures/deletePicture',
+  ({ pictureId }) => `/api/pictures/${pictureId}`
 );

@@ -11,25 +11,30 @@ export enum TagLinkType {
   USER = 'USER',
 }
 
-export interface Tag {
-  label: string;
-  labelColor: string;
-  textColor: string;
-  linkType: TagLinkType;
-}
-
 export interface Picture {
   id: string;
   displayName: string;
   location: string;
   pictureType: PictureType;
   duplicateCount: number;
-  tags: Tag[];
+  tags: TagLink[];
   colors: Color[];
   fileSize?: number;
   lastModifiedTime?: string;
   imageWidth?: number;
   imageHeight?: number;
+}
+
+export interface TagLink {
+  linkType: TagLinkType;
+  tag: Tag;
+}
+
+export interface Tag {
+  id: string;
+  label: string;
+  tagColor: string;
+  textColor: string;
 }
 
 export interface Color {

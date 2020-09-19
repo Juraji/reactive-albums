@@ -1,10 +1,9 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { unwrapApiResponse } from '@utils';
 import { Directory } from '@types';
+import { createApiDeleteThunk, createApiGetThunk, createApiPostThunk, createApiPutThunk } from '@utils';
 
-export const fetchAllDirectories = createAsyncThunk<Directory[]>('directories/fetchAllDirectories', () =>
-  axios.get('/api/directories').then(unwrapApiResponse)
+export const fetchAllDirectories = createApiGetThunk<Directory[]>(
+  'directories/fetchAllDirectories',
+  () => '/api/directories'
 );
 
 interface RegisterDirectoryThunk {
@@ -12,9 +11,9 @@ interface RegisterDirectoryThunk {
   recursive: boolean;
 }
 
-export const registerDirectory = createAsyncThunk<Directory[], RegisterDirectoryThunk>(
+export const registerDirectory = createApiPostThunk<Directory[], RegisterDirectoryThunk>(
   'directories/registerDirectory',
-  (body) => axios.post('/api/directories', body).then(unwrapApiResponse)
+  (p) => ({ url: '/api/directories', data: p })
 );
 
 interface UpdateDirectoryThunk {
@@ -22,10 +21,12 @@ interface UpdateDirectoryThunk {
   automaticScanEnabled?: boolean;
 }
 
-export const updateDirectory = createAsyncThunk<Directory, UpdateDirectoryThunk>(
+export const updateDirectory = createApiPutThunk<Directory, UpdateDirectoryThunk>(
   'directories/updateDirectory',
-  ({ directoryId, automaticScanEnabled }) =>
-    axios.put(`/api/directories/${directoryId}`, { automaticScanEnabled }).then(unwrapApiResponse)
+  ({ directoryId, automaticScanEnabled }) => ({
+    url: `/api/directories/${directoryId}`,
+    data: { automaticScanEnabled },
+  })
 );
 
 interface UnregisterDirectoryThunk {
@@ -33,8 +34,10 @@ interface UnregisterDirectoryThunk {
   recursive: boolean;
 }
 
-export const unregisterDirectory = createAsyncThunk<Directory, UnregisterDirectoryThunk>(
+export const unregisterDirectory = createApiDeleteThunk<Directory, UnregisterDirectoryThunk>(
   'directories/unregisterDirectory',
-  ({ directoryId, recursive }) =>
-    axios.delete(`/api/directories/${directoryId}`, { params: { recursive } }).then(unwrapApiResponse)
+  ({ directoryId, recursive }) => ({
+    url: `/api/directories/${directoryId}`,
+    params: { recursive },
+  })
 );

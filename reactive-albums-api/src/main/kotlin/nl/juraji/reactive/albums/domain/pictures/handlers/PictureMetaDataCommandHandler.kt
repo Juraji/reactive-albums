@@ -31,24 +31,18 @@ class PictureMetaDataCommandHandler(
         private val imageService: ImageService,
         private val fileSystemService: FileSystemService,
         private val commandGateway: CommandGateway,
-) : ExternalCommandHandler<PictureAggregate>(repository) {
+) : ExternalCommandHandler<PictureAggregate, PictureId>(repository) {
 
     @CommandHandler
-    fun handle(cmd: AnalyzePictureMetaDataCommand) {
-        execute(cmd.pictureId) {
-            val (fileSize, lastModifiedTime) = readFileAttributes(cmd.pictureId, getLocation())
-            setFileAttributes(fileSize, lastModifiedTime)
-        }
+    fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId = execute(cmd.pictureId) {
+        val (fileSize, lastModifiedTime) = readFileAttributes(cmd.pictureId, getLocation())
+        setFileAttributes(fileSize, lastModifiedTime)
 
-        execute(cmd.pictureId) {
-            val (width, height) = getImageDimensions(cmd.pictureId, getLocation())
-            setFileAttributes(imageWidth = width, imageHeight = height)
-        }
+        val (width, height) = getImageDimensions(cmd.pictureId, getLocation())
+        setFileAttributes(imageWidth = width, imageHeight = height)
 
-        execute(cmd.pictureId) {
-            val contentHash = analyzeImageContent(cmd.pictureId, getLocation())
-            setContentHash(contentHash)
-        }
+        val contentHash = analyzeImageContent(cmd.pictureId, getLocation())
+        setContentHash(contentHash)
     }
 
     @EventHandler

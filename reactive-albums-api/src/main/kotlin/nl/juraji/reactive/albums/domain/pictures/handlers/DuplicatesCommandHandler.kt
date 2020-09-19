@@ -32,10 +32,10 @@ class DuplicatesCommandHandler(
         private val duplicateMatchRepository: DuplicateMatchRepository,
         private val configuration: PicturesAggregateConfiguration,
         private val commandGateway: CommandGateway,
-) : ExternalCommandHandler<PictureAggregate>(repository) {
+) : ExternalCommandHandler<PictureAggregate, PictureId>(repository) {
 
     @CommandHandler
-    fun handle(cmd: ScanDuplicatesCommand) = execute(cmd.pictureId) {
+    fun handle(cmd: ScanDuplicatesCommand): PictureId = execute(cmd.pictureId) {
         val contentHash = cmd.contentHash ?: syncContentHashRepository
                 .findById(cmd.pictureId.identifier)
                 .map { it.contentHash }
@@ -52,7 +52,7 @@ class DuplicatesCommandHandler(
     }
 
     @CommandHandler
-    fun handle(cmd: UnlinkDuplicateCommand) = execute(cmd.pictureId) {
+    fun handle(cmd: UnlinkDuplicateCommand): PictureId = execute(cmd.pictureId) {
         unlinkDuplicate(cmd.matchId)
     }
 

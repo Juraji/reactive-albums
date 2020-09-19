@@ -35,14 +35,6 @@ data class RgbColor(
         else ratio
     }
 
-    fun toHexString(): String {
-        val r = Integer.toHexString(red).padStart(2, '0')
-        val g = Integer.toHexString(green).padStart(2, '0')
-        val b = Integer.toHexString(blue).padStart(2, '0')
-
-        return "$r$g$b"
-    }
-
     fun toHsl(): HslColor {
         val r: Float = red.toFloat() / 255f
         val g: Float = green.toFloat() / 255f
@@ -81,15 +73,23 @@ data class RgbColor(
         return if (cWhite > cBlack) WHITE.copy() else BLACK.copy()
     }
 
+    override fun toString(): String {
+        val r = Integer.toHexString(red).padStart(2, '0')
+        val g = Integer.toHexString(green).padStart(2, '0')
+        val b = Integer.toHexString(blue).padStart(2, '0')
+
+        return "#$r$g$b"
+    }
+
     companion object {
         val BLACK = RgbColor(0, 0, 0)
         val WHITE = RgbColor(255, 255, 255)
 
         fun isHexColor(str: String): Boolean =
-                str.isNotBlank() && str.matches(Regex("^[a-f0-9]{6}$"))
+                str.isNotBlank() && str.matches(Regex("^#?[a-f0-9]{6}$"))
 
         fun of(seed: String): RgbColor {
-            val seedColor: Int = if (isHexColor(seed)) Integer.valueOf(seed, 16) else seed.hashCode()
+            val seedColor: Int = if (isHexColor(seed)) Integer.valueOf(seed.trimStart('#'), 16) else seed.hashCode()
 
             return RgbColor(
                     red = seedColor and 0xFF0000 shr 16,

@@ -1,26 +1,7 @@
-import React, { FC, useMemo } from 'react';
-import { Picture, Tag } from '@types';
+import React, { FC } from 'react';
+import { Picture } from '@types';
 import Card from 'react-bootstrap/Card';
-
-interface TagProps {
-  tag: Tag;
-}
-
-const PictureTag: FC<TagProps> = ({ tag }) => {
-  const style = useMemo(
-    () => ({
-      backgroundColor: `#${tag.labelColor}`,
-      color: `#${tag.textColor}`,
-    }),
-    [tag]
-  );
-
-  return (
-    <span className="badge mr-1" style={style}>
-      {tag.label}
-    </span>
-  );
-};
+import { PictureTag } from '@components';
 
 interface PictureTagsProps {
   picture: Picture;
@@ -29,8 +10,8 @@ interface PictureTagsProps {
 export const PictureTags: FC<PictureTagsProps> = ({ picture }) => (
   <Card className="mb-2">
     <Card.Body>
-      {picture.tags.map((tag, index) => (
-        <PictureTag tag={tag} key={index} />
+      {picture.tags.map((tagLink, index) => (
+        <PictureTag tag={tagLink.tag} key={index} />
       ))}
     </Card.Body>
   </Card>

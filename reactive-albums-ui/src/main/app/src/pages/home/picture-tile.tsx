@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Picture, Tag } from '@types';
+import { Picture, TagLink } from '@types';
 import { useApiUrl } from '@hooks';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
@@ -10,12 +10,12 @@ import './picture-tile.scss';
 import { useTranslation } from 'react-i18next';
 
 interface TagOrbProps {
-  tag: Tag;
+  tagLink: TagLink;
 }
 
-export const TagOrb: FC<TagOrbProps> = ({ tag }) => {
-  const style = useMemo(() => ({ backgroundColor: `#${tag.labelColor}` }), [tag]);
-  return <div className="tag-orb" title={tag.label} style={style} />;
+export const TagOrb: FC<TagOrbProps> = ({ tagLink }) => {
+  const style = useMemo(() => ({ backgroundColor: `#${tagLink.tag.tagColor}` }), [tagLink]);
+  return <div className="tag-orb" title={tagLink.tag.label} style={style} />;
 };
 
 interface PictureTileProps {
@@ -40,8 +40,8 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
           <li className="small">{t('common.full_date', { isoDate: picture.lastModifiedTime })}&nbsp;</li>
         </ul>
         <div className="tag-orbs">
-          {picture.tags.map((tag, index) => (
-            <TagOrb tag={tag} key={index} />
+          {picture.tags.map((tagLink, index) => (
+            <TagOrb tagLink={tagLink} key={index} />
           ))}
         </div>
         <Conditional condition={picture.duplicateCount > 0}>

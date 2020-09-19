@@ -10,6 +10,7 @@ import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
+import java.time.Duration
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -51,7 +52,7 @@ class PictureProjectionsEventHandler(
     @EventHandler
     fun on(evt: TagLinkedEvent) {
         tagRepository.findById(evt.tagId.identifier)
-                .switchIfEmpty { tagRepository.subscribeFirst { it.id === evt.tagId.identifier } }
+                .switchIfEmpty { tagRepository.subscribeFirst(Duration.ofMinutes(1)) { it.id === evt.tagId.identifier } }
                 .flatMap { tag ->
                     pictureRepository
                             .update(evt.pictureId.identifier) { picture ->

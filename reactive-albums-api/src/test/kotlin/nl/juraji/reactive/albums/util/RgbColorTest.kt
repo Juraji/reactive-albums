@@ -12,6 +12,7 @@ internal class RgbColorTest {
     @Test
     fun `isHexColor should determine if input is a hexadecimal color representation`() {
         assertTrue(RgbColor.isHexColor("f93779"))
+        assertTrue(RgbColor.isHexColor("#f93779"))
         assertFalse(RgbColor.isHexColor("fx3779"))
         assertFalse(RgbColor.isHexColor("Not a color"))
     }
@@ -20,6 +21,7 @@ internal class RgbColorTest {
     fun `generateColor should generate colors based on a seed`() {
         assertEquals(RgbColor(249, 172, 189), RgbColor.of("Some String"))
         assertEquals(RgbColor(249, 55, 121), RgbColor.of("f93779"))
+        assertEquals(RgbColor(249, 55, 121), RgbColor.of("#f93779"))
     }
 
     @Test
@@ -51,9 +53,9 @@ internal class RgbColorTest {
 
     @Test
     fun `toHexString should convert Color to a hexadecimal representation`() {
-        assertEquals("22775e", c1.toHexString())
-        assertEquals("c2d380", c2.toHexString())
-        assertEquals("1dc3c2", c3.toHexString())
+        assertEquals("#22775e", c1.toString())
+        assertEquals("#c2d380", c2.toString())
+        assertEquals("#1dc3c2", c3.toString())
     }
 
     @Test

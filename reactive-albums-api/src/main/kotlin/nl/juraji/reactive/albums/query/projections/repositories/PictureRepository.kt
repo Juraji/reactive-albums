@@ -23,8 +23,8 @@ interface SyncPictureRepository : JpaRepository<PictureProjection, String> {
 
     @Query("""
         select p from PictureProjection p
-        join p.tags.tag t
-        where lower(t.label) like lower(concat(:tagLabel, '%')) 
+        join p.tags t
+        where lower(t.tag.label) like lower(concat(:tagLabel, '%')) 
     """)
     fun findAllByTagContainsIgnoreCase(@Param("tagLabel") tagLabel: String, pageable: Pageable): Page<PictureProjection>
 }

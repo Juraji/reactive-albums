@@ -2,8 +2,8 @@ create table TagProjection
 (
     id        varchar(64)  not null,
     label     varchar(255) not null,
-    tagColor  varchar(255) not null,
-    textColor varchar(255) not null,
+    tagColor  varchar(7) not null,
+    textColor varchar(7) not null,
     primary key (id),
     constraint uk_tag_projection_label unique (label)
 );

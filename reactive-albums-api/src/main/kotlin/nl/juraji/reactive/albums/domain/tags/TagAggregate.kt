@@ -38,11 +38,8 @@ class TagAggregate() {
     }
 
     @CommandHandler
-    fun handle(cmd: UpdateTagCommand) {
-        if (cmd.label != null) {
-            Validate.isFalse(cmd.label.isBlank()) { "Tag label may not be blank" }
-        }
-
+    fun handle(cmd: UpdateTagCommand): TagId {
+        Validate.ignoreWhen(cmd.label == null) { isFalse(cmd.label.isNullOrBlank()) { "Tag label may not be blank" } }
         Validate.isFalse(cmd.label == null && cmd.tagColor == null && cmd.textColor == null) { "No properties are updated" }
 
         AggregateLifecycle.apply(
@@ -53,11 +50,14 @@ class TagAggregate() {
                         textColor = cmd.textColor
                 )
         )
+
+        return tagId
     }
 
     @CommandHandler
-    fun handle(cmd: DeleteTagCommand) {
+    fun handle(cmd: DeleteTagCommand): TagId {
         AggregateLifecycle.apply(TagDeletedEvent(tagId = tagId))
+        return tagId
     }
 
     @EventSourcingHandler

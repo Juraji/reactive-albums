@@ -46,12 +46,14 @@ class PictureAggregate() {
     }
 
     @CommandHandler
-    fun handle(cmd: DeletePictureCommand) {
+    fun handle(cmd: DeletePictureCommand): PictureId {
         AggregateLifecycle.apply(
                 PictureDeletedEvent(
                         pictureId = cmd.pictureId
                 )
         )
+
+        return pictureId
     }
 
     fun setFileAttributes(

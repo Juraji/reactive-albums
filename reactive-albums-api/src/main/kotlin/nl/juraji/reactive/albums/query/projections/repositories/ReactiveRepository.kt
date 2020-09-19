@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import reactor.kotlin.core.publisher.toMono
+import java.time.Duration
 import java.util.*
 
 abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
@@ -44,8 +45,8 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
 
     fun subscribe(filter: (E) -> Boolean): Flux<ReactiveEvent<E>> = updatesProcessor.filter { filter(it.entity) }
 
-    fun subscribeFirst(filter: (E) -> Boolean): Mono<E> =
-            subscribe(filter).map { it.entity }.toMono()
+    fun subscribeFirst(timeout: Duration, filter: (E) -> Boolean): Mono<E> =
+            subscribe(filter).map { it.entity }.toMono().timeout(timeout)
 
     protected fun <R> from(f: (T) -> R?): Mono<R> =
             deferTo(scheduler) { f(repository) }

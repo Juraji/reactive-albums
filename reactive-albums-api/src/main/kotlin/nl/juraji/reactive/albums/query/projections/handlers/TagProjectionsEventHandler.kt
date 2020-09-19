@@ -21,8 +21,8 @@ class TagProjectionsEventHandler(
         val entity = TagProjection(
                 id = evt.tagId.identifier,
                 label = evt.label,
-                tagColor = evt.tagColor.toHexString(),
-                textColor = evt.textColor.toHexString(),
+                tagColor = evt.tagColor.toString(),
+                textColor = evt.textColor.toString(),
         )
 
         tagRepository.save(entity).block()
@@ -36,7 +36,7 @@ class TagProjectionsEventHandler(
                     tagColor = evt.tagColor?.toString() ?: it.tagColor,
                     textColor = evt.textColor?.toString() ?: it.textColor,
             )
-        }
+        }.block()
     }
 
     @EventHandler
