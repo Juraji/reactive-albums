@@ -147,7 +147,7 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
   }
 
   return (
-    <Conditional condition={!matches.isEmpty()}>
+    <Conditional condition={matches.isNotEmpty()}>
       <Card>
         <Card.Header>
           <Card.Title>

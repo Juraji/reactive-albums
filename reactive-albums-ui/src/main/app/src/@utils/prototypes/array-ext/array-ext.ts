@@ -39,6 +39,15 @@ export default function () {
     },
   });
 
+  Object.defineProperty(Array.prototype, 'isNotEmpty', {
+    configurable: false,
+    enumerable: false,
+    writable: false,
+    value: function <T>(this: Array<T>): boolean {
+      return this.length !== 0;
+    },
+  });
+
   Object.defineProperty(Array.prototype, 'filterNotNull', {
     configurable: false,
     enumerable: false,

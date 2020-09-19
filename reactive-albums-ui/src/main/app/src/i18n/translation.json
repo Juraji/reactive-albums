@@ -120,6 +120,7 @@
     }
   },
   "tags": {
+    "no_tags_available": "No tags added yet",
     "nav-item": {
       "label": "Manage Tags"
     },
