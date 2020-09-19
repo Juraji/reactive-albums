@@ -21,7 +21,7 @@ export const DirectoriesNavItem: FC = () => {
 
 const DirectoriesPage: FC = () => {
   const { t } = useTranslation();
-  const allDirectories = useDirectories();
+  const directories = useDirectories();
 
   return (
     <Container>
@@ -29,10 +29,10 @@ const DirectoriesPage: FC = () => {
 
       <div className="directories-list">
         <Conditional
-          condition={!allDirectories.isEmpty()}
+          condition={!directories.isEmpty()}
           orElse={<div className="text-muted mb-2">{t('directories.no_directories_registered')}</div>}
         >
-          {allDirectories.map((dir, idx) => (
+          {directories.map((dir, idx) => (
             <DirectoryItem key={idx} directory={dir} />
           ))}
         </Conditional>

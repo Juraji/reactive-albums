@@ -1,16 +1,14 @@
 import { Directory } from '@types';
-import { useEffect, useState } from 'react';
-import { fetchAllDirectories } from '@reducers';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { useDispatch } from '@hooks';
+import { useEffect } from 'react';
+import { fetchAllDirectories, selectAllDirectories } from '@reducers';
+import { useDispatch, useSelector } from '@hooks';
 
 export function useDirectories(): Directory[] {
   const dispatch = useDispatch();
-  const [directories, setDirectories] = useState<Directory[]>([]);
 
   useEffect(() => {
-    dispatch(fetchAllDirectories()).then(unwrapResult).then(setDirectories);
-  }, [dispatch, setDirectories]);
+    dispatch(fetchAllDirectories());
+  }, [dispatch]);
 
-  return directories;
+  return useSelector((state) => selectAllDirectories(state));
 }

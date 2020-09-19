@@ -27,7 +27,7 @@ interface UpdateTagThunk {
 }
 
 export const updateTag = createApiPutThunk<Tag, UpdateTagThunk>('tags/updateTag', ({ tag, patch }) => {
-  const changed = (p: string | undefined, t: string) => (!!p && p != t ? p : undefined);
+  const changed = (p: string | undefined, t: string) => (!!p && p !== t ? p : undefined);
   return {
     url: `/api/tags/${tag.id}`,
     params: {
