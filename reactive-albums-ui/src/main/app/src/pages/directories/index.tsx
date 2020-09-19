@@ -7,6 +7,7 @@ import { Conditional } from '@components';
 import { useDirectories } from '@reducers';
 import { Link, useLocation } from 'react-router-dom';
 import NavLink from 'react-bootstrap/NavLink';
+import Table from 'react-bootstrap/Table';
 
 export const DirectoriesNavItem: FC = () => {
   const { t } = useTranslation();
@@ -32,9 +33,13 @@ const DirectoriesPage: FC = () => {
           condition={!directories.isEmpty()}
           orElse={<div className="text-muted mb-2">{t('directories.no_directories_registered')}</div>}
         >
-          {directories.map((dir, idx) => (
-            <DirectoryItem key={idx} directory={dir} />
-          ))}
+          <Table>
+            <tbody>
+              {directories.map((dir, idx) => (
+                <DirectoryItem key={idx} directory={dir} />
+              ))}
+            </tbody>
+          </Table>
         </Conditional>
       </div>
       <RegisterDirectory />

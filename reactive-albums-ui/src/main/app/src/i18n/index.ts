@@ -18,13 +18,19 @@ function formatIso(iso: string | undefined, fmt: string): string {
   }
 }
 
+function bool(value: any, format: any): string {
+  const opts = format.split(':').slice(1);
+  return !!value ? opts[0] : opts[1];
+}
+
 i18next.use(initReactI18next).init({
   lng: 'nl',
   debug: isDevelopmentEnv(),
   resources: { nl: { translation } },
   interpolation: {
     format: (value, format) => {
-      if (value === null || value === undefined) {
+      // @ts-ignore
+      if (value == null || format == null) {
         return value;
       }
 
@@ -42,6 +48,9 @@ i18next.use(initReactI18next).init({
         case 'fileSize':
           return fileSize(value);
         default:
+          if (format.startsWith('bool:')) {
+            return bool(value, format);
+          }
           return value;
       }
     },

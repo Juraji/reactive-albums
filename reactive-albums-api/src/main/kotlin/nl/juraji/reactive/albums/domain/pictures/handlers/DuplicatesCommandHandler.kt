@@ -52,7 +52,7 @@ class DuplicatesCommandHandler(
     }
 
     @CommandHandler
-    fun handle(cmd: UnlinkDuplicateCommand): PictureId = execute(cmd.pictureId) {
+    fun handle(cmd: UnlinkDuplicateCommand): PictureId? = executeOptionally(cmd.pictureId) {
         unlinkDuplicate(cmd.matchId)
     }
 

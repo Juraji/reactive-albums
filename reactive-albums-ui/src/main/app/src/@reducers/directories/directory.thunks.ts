@@ -34,7 +34,7 @@ interface UnregisterDirectoryThunk {
   recursive: boolean;
 }
 
-export const unregisterDirectory = createApiDeleteThunk<Directory, UnregisterDirectoryThunk>(
+export const unregisterDirectory = createApiDeleteThunk<string[], UnregisterDirectoryThunk>(
   'directories/unregisterDirectory',
   ({ directoryId, recursive }) => ({
     url: `/api/directories/${directoryId}`,

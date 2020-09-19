@@ -38,13 +38,17 @@
     },
     "directory_item": {
       "info": {
-        "automatic_scan_enabled": "Automatic scan enabled"
+        "automatic_scan_enabled": "Automatic scan {{enabled, bool:enabled:disabled}}"
       },
-      "confirm_unregister": {
-        "modal_title": "Unregister directory",
-        "message": "Are you sure you want to unregister {{- displayName}}?",
-        "confirm_button": "Yes",
-        "recursive_label": "Also delete all sub directories"
+      "unregister_button": {
+        "unregister_success": "Directory unregistered",
+        "unregister_failed": "Failed unregister: {{message}}",
+        "confirm_unregister": {
+          "modal_title": "Unregister directory",
+          "message": "Are you sure you want to unregister {{- displayName}}?",
+          "confirm_button": "Yes",
+          "recursive_label": "Also delete all sub directories"
+        }
       }
     },
     "no_directories_registered": "No directories registered. Use the + button below to register a directory."

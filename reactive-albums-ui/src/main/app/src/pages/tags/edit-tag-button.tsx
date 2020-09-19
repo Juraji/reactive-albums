@@ -2,19 +2,19 @@ import React, { FC, ReactNode, useCallback, useMemo } from 'react';
 import { Tag } from '@types';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useToggleState } from '@hooks';
-import Modal from 'react-bootstrap/Modal';
 import { useTranslation } from 'react-i18next';
-import { Formik, FormikProps } from 'formik';
 import Form from 'react-bootstrap/Form';
-import { formikControlProps, formikIsFormValid } from '@utils';
 import { editTagFormSchema, EditTagFormValues } from './edit-tag-form-schema';
 import { ColorChangeHandler, SketchPicker } from 'react-color';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
 import { Crosshair } from 'react-feather';
 import { createTag, updateTag } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
+import { Formik, FormikProps } from 'formik';
+import Modal from 'react-bootstrap/Modal';
+import { formikControlProps, formikIsFormValid } from '@utils';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 interface TagColorFormGroupProps {
   label: string;
@@ -58,17 +58,15 @@ export const TagColorFormGroup: FC<TagColorFormGroupProps> = ({ label, value, on
   );
 };
 
-interface EditTagButtonProps {
-  icon: ReactNode;
-  tag?: Tag;
+interface EditTagModalProps {
+  tag: Tag | undefined;
+  hideEditModal: () => void;
 }
 
-export const EditTagButton: FC<EditTagButtonProps> = ({ icon, tag }) => {
+export const EditTagModal: FC<EditTagModalProps> = ({ hideEditModal, tag }) => {
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
-
-  const [isShowEditModal, showEditModal, hideEditModal] = useToggleState(false);
   const isCreate = useMemo(() => !tag?.id, [tag]);
 
   const modalHeader = useMemo(
@@ -106,58 +104,70 @@ export const EditTagButton: FC<EditTagButtonProps> = ({ icon, tag }) => {
   };
 
   return (
+    <Modal show onHide={hideEditModal}>
+      <Formik initialValues={initialValues} onSubmit={onFormSubmit} validationSchema={editTagFormSchema}>
+        {(formikBag: FormikProps<EditTagFormValues>) => (
+          <Form onSubmit={formikBag.handleSubmit}>
+            <Modal.Header closeButton>
+              <Modal.Title>{modalHeader}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group>
+                <Form.Label>{t('tags.edit_tag.form.label_field.label')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={formikBag.values.label || ''}
+                  placeholder={t('tags.edit_tag.form.label_field.placeholder')}
+                  tabIndex={1}
+                  {...formikControlProps(formikBag, 'label')}
+                />
+              </Form.Group>
+
+              <Row>
+                <Col sm={6}>
+                  <TagColorFormGroup
+                    label={t('tags.edit_tag.form.label_color_field.label')}
+                    value={formikBag.values.tagColor}
+                    onChange={(hex) => formikBag.setFieldValue('tagColor', hex, true)}
+                  />
+                </Col>
+                <Col sm={6}>
+                  <TagColorFormGroup
+                    label={t('tags.edit_tag.form.text_color_field.label')}
+                    value={formikBag.values.textColor}
+                    onChange={(hex) => formikBag.setFieldValue('textColor', hex, true)}
+                  />
+                </Col>
+              </Row>
+            </Modal.Body>
+            <Modal.Footer className="d-flex flex-row">
+              <span className="flex-grow-1">&nbsp;</span>
+              <Button type="submit" disabled={!formikIsFormValid(formikBag)}>
+                {t('tags.edit_tag.save_button_label')}
+              </Button>
+              <Button variant="secondary" onClick={hideEditModal}>
+                {t('tags.edit_tag.cancel_button_label')}
+              </Button>
+            </Modal.Footer>
+          </Form>
+        )}
+      </Formik>
+    </Modal>
+  );
+};
+
+interface EditTagButtonProps {
+  icon: ReactNode;
+  tag?: Tag;
+}
+
+export const EditTagButton: FC<EditTagButtonProps> = ({ icon, tag }) => {
+  const [isShowEditModal, showEditModal, hideEditModal] = useToggleState(false);
+
+  return (
     <>
       <Button onClick={showEditModal}>{icon}</Button>
-
-      <Modal show={isShowEditModal} onHide={hideEditModal}>
-        <Formik initialValues={initialValues} onSubmit={onFormSubmit} validationSchema={editTagFormSchema}>
-          {(formikBag: FormikProps<EditTagFormValues>) => (
-            <Form onSubmit={formikBag.handleSubmit}>
-              <Modal.Header closeButton>
-                <Modal.Title>{modalHeader}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form.Group>
-                  <Form.Label>{t('tags.edit_tag.form.label_field.label')}</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={formikBag.values.label || ''}
-                    placeholder={t('tags.edit_tag.form.label_field.placeholder')}
-                    tabIndex={1}
-                    {...formikControlProps(formikBag, 'label')}
-                  />
-                </Form.Group>
-
-                <Row>
-                  <Col sm={6}>
-                    <TagColorFormGroup
-                      label={t('tags.edit_tag.form.label_color_field.label')}
-                      value={formikBag.values.tagColor}
-                      onChange={(hex) => formikBag.setFieldValue('tagColor', hex, true)}
-                    />
-                  </Col>
-                  <Col sm={6}>
-                    <TagColorFormGroup
-                      label={t('tags.edit_tag.form.text_color_field.label')}
-                      value={formikBag.values.textColor}
-                      onChange={(hex) => formikBag.setFieldValue('textColor', hex, true)}
-                    />
-                  </Col>
-                </Row>
-              </Modal.Body>
-              <Modal.Footer className="d-flex flex-row">
-                <span className="flex-grow-1">&nbsp;</span>
-                <Button type="submit" disabled={!formikIsFormValid(formikBag)}>
-                  {t('tags.edit_tag.save_button_label')}
-                </Button>
-                <Button variant="secondary" onClick={hideEditModal}>
-                  {t('tags.edit_tag.cancel_button_label')}
-                </Button>
-              </Modal.Footer>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
+      {isShowEditModal ? <EditTagModal tag={tag} hideEditModal={hideEditModal} /> : null}
     </>
   );
 };

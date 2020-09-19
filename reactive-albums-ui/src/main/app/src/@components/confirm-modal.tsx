@@ -26,8 +26,8 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
   const onConfirmed = () => onConfirm();
   const onCanceled = () => onCancel();
 
-  return (
-    <Modal show={show} onHide={onCanceled}>
+  return show ? (
+    <Modal show onHide={onCanceled}>
       <Modal.Header closeButton>
         <Modal.Title>{headerTitle || t('components.confirm_modal.default_header_title')}</Modal.Title>
       </Modal.Header>
@@ -40,5 +40,5 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
         </Button>
       </Modal.Footer>
     </Modal>
-  );
+  ) : null;
 };

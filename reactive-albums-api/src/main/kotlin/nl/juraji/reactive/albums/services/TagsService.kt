@@ -46,7 +46,7 @@ class TagsService(
             .flatMap { send<TagId>(it) }
             .flatMap { id -> tagRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
 
-    fun deleteTag(tagId: String): Mono<TagId> = send(DeleteTagCommand(tagId = TagId(tagId)))
+    fun deleteTag(tagId: String): Mono<String> = send<TagId>(DeleteTagCommand(tagId = TagId(tagId))).map { it.identifier }
 
     companion object {
         val updateTimeout: Duration = Duration.ofSeconds(30)

@@ -13,7 +13,7 @@ export const tagStoreSlice = createReducer(tagStoreAdapter.getInitialState(), (b
   builder.addCase(fetchAllTags.fulfilled, tagStoreAdapter.upsertMany);
   builder.addCase(createTag.fulfilled, tagStoreAdapter.upsertOne);
   builder.addCase(updateTag.fulfilled, tagStoreAdapter.upsertOne);
-  builder.addCase(deleteTag.fulfilled, (state, action) => tagStoreAdapter.removeOne(state, action.meta.arg.id));
+  builder.addCase(deleteTag.fulfilled, tagStoreAdapter.removeOne);
 });
 
 const tagStoreSelectors = tagStoreAdapter.getSelectors<AppState>((s) => s.tags.tagStore);

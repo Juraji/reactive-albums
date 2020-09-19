@@ -13,9 +13,7 @@ export const directoryStoreSliceReducer = createReducer(directoryStoreAdapter.ge
   builder.addCase(fetchAllDirectories.fulfilled, directoryStoreAdapter.upsertMany);
   builder.addCase(registerDirectory.fulfilled, directoryStoreAdapter.upsertMany);
   builder.addCase(updateDirectory.fulfilled, directoryStoreAdapter.upsertOne);
-  builder.addCase(unregisterDirectory.fulfilled, (state, action) =>
-    directoryStoreAdapter.removeOne(state, action.payload.id)
-  );
+  builder.addCase(unregisterDirectory.fulfilled, directoryStoreAdapter.removeMany);
 });
 
 const directoryStoreSelectors = directoryStoreAdapter.getSelectors<AppState>((s) => s.directories.directoryStore);

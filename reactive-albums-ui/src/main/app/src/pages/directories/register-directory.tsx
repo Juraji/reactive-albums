@@ -62,49 +62,51 @@ export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
         <Plus />
       </Button>
 
-      <Modal show={show} onHide={handleClose} dialogClassName="register-directory-modal">
-        <Formik
-          initialValues={registerDirectoryFormInitialValues}
-          onSubmit={onSubmitForm}
-          validationSchema={registerDirectoryFormSchema}
-        >
-          {(formikBag: FormikProps<RegisterDirectoryForm>) => (
-            <Form noValidate onSubmit={formikBag.handleSubmit}>
-              <Modal.Header closeButton>
-                <Modal.Title>{t('directories.register_directories_button.modal_title')}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form.Group>
-                  <Form.Control
-                    placeholder={t('directories.register_directories_button.form.field_location.placeholder')}
-                    value={formikBag.values.location}
-                    {...formikControlProps(formikBag, 'location')}
-                  />
-                </Form.Group>
+      {show ? (
+        <Modal show={show} onHide={handleClose} dialogClassName="register-directory-modal">
+          <Formik
+            initialValues={registerDirectoryFormInitialValues}
+            onSubmit={onSubmitForm}
+            validationSchema={registerDirectoryFormSchema}
+          >
+            {(formikBag: FormikProps<RegisterDirectoryForm>) => (
+              <Form noValidate onSubmit={formikBag.handleSubmit}>
+                <Modal.Header closeButton>
+                  <Modal.Title>{t('directories.register_directories_button.modal_title')}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form.Group>
+                    <Form.Control
+                      placeholder={t('directories.register_directories_button.form.field_location.placeholder')}
+                      value={formikBag.values.location}
+                      {...formikControlProps(formikBag, 'location')}
+                    />
+                  </Form.Group>
 
-                <Form.Group className="mb-2">
-                  <Form.Check
-                    custom
-                    type="checkbox"
-                    id="register-directory-recursive"
-                    label={t('directories.register_directories_button.form.field_recursive.label')}
-                    checked={formikBag.values.recursive}
-                    {...formikControlProps(formikBag, 'recursive')}
-                  />
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                  {t('directories.register_directories_button.close-btn')}{' '}
-                </Button>
-                <Button type="submit" variant="primary" disabled={!formikIsFormValid(formikBag)}>
-                  {t('directories.register_directories_button.add-btn')}{' '}
-                </Button>
-              </Modal.Footer>
-            </Form>
-          )}
-        </Formik>
-      </Modal>
+                  <Form.Group className="mb-2">
+                    <Form.Check
+                      custom
+                      type="checkbox"
+                      id="register-directory-recursive"
+                      label={t('directories.register_directories_button.form.field_recursive.label')}
+                      checked={formikBag.values.recursive}
+                      {...formikControlProps(formikBag, 'recursive')}
+                    />
+                  </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleClose}>
+                    {t('directories.register_directories_button.close-btn')}{' '}
+                  </Button>
+                  <Button type="submit" variant="primary" disabled={!formikIsFormValid(formikBag)}>
+                    {t('directories.register_directories_button.add-btn')}{' '}
+                  </Button>
+                </Modal.Footer>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+      ) : null}
     </>
   );
 };

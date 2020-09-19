@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.domain
 
-import nl.juraji.reactive.albums.domain.pictures.PictureId
 import org.axonframework.modelling.command.Repository
 
 abstract class ExternalCommandHandler<A, ID : EntityId>(
@@ -11,4 +10,7 @@ abstract class ExternalCommandHandler<A, ID : EntityId>(
         repository.load(id.identifier).execute { it.apply(f) }
         return id
     }
+
+    protected fun executeOptionally(id: ID, f: A.() -> Unit): ID? =
+            this.runCatching { execute(id, f) }.map { id }.getOrNull()
 }

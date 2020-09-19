@@ -29,5 +29,5 @@ class TagCommandController(
     @DeleteMapping("/api/tags/{tagId}")
     fun deleteTag(
             @PathVariable("tagId") tagId: String,
-    ): Mono<TagId> = tagsService.deleteTag(tagId)
+    ): Mono<String> = tagsService.deleteTag(tagId)
 }

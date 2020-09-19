@@ -38,4 +38,4 @@ export const updateTag = createApiPutThunk<Tag, UpdateTagThunk>('tags/updateTag'
   };
 });
 
-export const deleteTag = createApiDeleteThunk<unknown, TagThunk>('tags/deleteTag', ({ id }) => `/api/tags/${id}`);
+export const deleteTag = createApiDeleteThunk<string, TagThunk>('tags/deleteTag', ({ id }) => `/api/tags/${id}`);
