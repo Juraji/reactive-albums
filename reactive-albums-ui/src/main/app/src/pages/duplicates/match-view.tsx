@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next';
 import './match-view.scss';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
-import { Scissors, Trash } from 'react-feather';
-import { ConfirmModal } from '../../@components/confirm-modal';
-import { deletePicture, unlinkDuplicateMatch } from '@reducers';
+import { Scissors } from 'react-feather';
+import { ConfirmModal, DeletePictureButton } from '@components';
+import { unlinkDuplicateMatch } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
 
@@ -21,19 +21,7 @@ interface MatchViewPictureProps {
 
 export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const { addToast } = useToasts();
   const imageUrl = useApiUrl('pictures', picture.id, 'image');
-
-  const [isShowDeleteConfirm, showDeleteConfirm, hideDeleteConfirm] = useToggleState(false);
-
-  const onDeletePictureConfirmed = () => {
-    dispatch(deletePicture({ pictureId: picture.id }))
-      .then(unwrapResult)
-      .then(() => addToast(t('duplicates.matches_view.delete_picture_success'), { appearance: 'success' }))
-      .catch(() => addToast(t('duplicates.matches_view.delete_picture_failed'), { appearance: 'error' }))
-      .finally(hideDeleteConfirm);
-  };
 
   return (
     <Card className="match-view-picture">
@@ -50,20 +38,9 @@ export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture }) => {
       </Card.Body>
       <Card.Footer>
         <ButtonGroup>
-          <Button
-            variant="danger"
-            onClick={showDeleteConfirm}
-            title={t('duplicates.matches_view.delete_picture_button')}
-          >
-            <Trash />
-          </Button>
+          <DeletePictureButton picture={picture} />
         </ButtonGroup>
       </Card.Footer>
-
-      <ConfirmModal show={isShowDeleteConfirm} onConfirm={onDeletePictureConfirmed} onCancel={hideDeleteConfirm}>
-        <p>{t('duplicates.matches_view.delete_picture_confirm', picture)}</p>
-        <span className="text-danger">{t('common.action_can_not_be_undone')}</span>
-      </ConfirmModal>
     </Card>
   );
 };
@@ -98,6 +75,7 @@ export const MatchesActionBar: FC<MatchesActionBarProps> = ({ match }) => {
           <Scissors />
         </Button>
       </ButtonGroup>
+
       <ConfirmModal show={isShowUnlinkConfirm} onConfirm={onUnlinkDuplicateConfirmed} onCancel={hideUnlinkConfirm}>
         {t('duplicates.matches_action_bar.unlink_duplicates_confirm', match)}
       </ConfirmModal>

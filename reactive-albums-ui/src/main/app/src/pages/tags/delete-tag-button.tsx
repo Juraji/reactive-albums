@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useDispatch, useToggleState } from '@hooks';
 import { Tag } from '@types';
 import { Trash } from 'react-feather';
-import { ConfirmModal } from '../../@components/confirm-modal';
+import { ConfirmModal } from '@components';
 import { useTranslation } from 'react-i18next';
 import { deleteTag } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -35,10 +35,12 @@ export const DeleteTagButton: FC<DeleteTagButtonProps> = ({ tag }) => {
         <Trash />
       </Button>
 
-      <ConfirmModal show={isShowDeleteConfirm} onConfirm={onDeleteConfirmed} onCancel={hideDeleteConfirm}>
-        <p>{t('tags.delete_tag_button.confirm', tag)}</p>
-        <span className="text-danger">{t('common.action_can_not_be_undone')}</span>
-      </ConfirmModal>
+      {isShowDeleteConfirm ? (
+        <ConfirmModal show onConfirm={onDeleteConfirmed} onCancel={hideDeleteConfirm}>
+          <p>{t('tags.delete_tag_button.confirm', tag)}</p>
+          <span className="text-danger">{t('common.action_can_not_be_undone')}</span>
+        </ConfirmModal>
+      ) : null}
     </>
   );
 };

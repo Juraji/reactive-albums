@@ -15,8 +15,7 @@ abstract class CommandSenderService(
             commandGateway.send<T>(cmd).toMono()
                     .switchIfEmpty(Mono.just(defaultValue))
 
-    fun <T> sendAndCatch(cmd: Any): Mono<Result<T>> =
+    fun <T> sendAndCatch(cmd: Any): Mono<T> =
             commandGateway.send<T>(cmd).toMono()
-                    .onErrorContinue { t, _ -> Result.failure<T>(t) }
-                    .map { Result.success(it) }
+                    .onErrorContinue { _, _ -> Mono.empty<T>() }
 }

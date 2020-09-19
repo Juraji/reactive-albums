@@ -1,7 +1,7 @@
 import React, { FC, useCallback } from 'react';
 import Card from 'react-bootstrap/Card';
 import { DuplicateMatch, ReactiveEvent } from '@types';
-import { Conditional } from '@components';
+import { Conditional, ConfirmModal, DeletePictureButton } from '@components';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
 import { useTranslation } from 'react-i18next';
@@ -17,12 +17,11 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { Scissors, Trash } from 'react-feather';
 import { useApiUrl, useDispatch, useEventSource, useToggleState } from '@hooks';
-
-import './picture-duplicate-list.scss';
 import { Link } from 'react-router-dom';
-import { ConfirmModal } from '../../@components/confirm-modal';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
+
+import './picture-duplicate-list.scss';
 
 interface DuplicateMatchRowProps {
   match: DuplicateMatch;
@@ -36,7 +35,6 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
   const dispatch = useDispatch();
 
   const [isShowUnlinkConfirm, showUnlinkConfirm, hideUnlinkConfirm] = useToggleState(false);
-  const [isShowDeleteConfirm, showDeleteConfirm, hideDeleteConfirm] = useToggleState(false);
 
   function onUnlinkDuplicateConfirmed() {
     dispatch(unlinkDuplicateMatch({ pictureId: match.pictureId, matchId: match.id }))
@@ -44,14 +42,6 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
       .then(() => addToast(t('picture.duplicates_list.unlink_single_button.success')))
       .catch(() => addToast(t('picture.duplicates_list.unlink_single_button.failed', { appearance: 'error' })));
     hideUnlinkConfirm();
-  }
-
-  function onDeleteDuplicateConfirmed() {
-    dispatch(deletePicture({ pictureId: match.targetId }))
-      .then(unwrapResult)
-      .then(() => addToast(t('picture.duplicates_list.delete_single_button.success')))
-      .catch(() => addToast(t('picture.duplicates_list.delete_single_button.failed', { appearance: 'error' })));
-    hideDeleteConfirm();
   }
 
   return (
@@ -74,24 +64,13 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
             <Button onClick={showUnlinkConfirm} title={t('picture.duplicates_list.unlink_single_button.label')}>
               <Scissors />
             </Button>
-            <Button
-              onClick={showDeleteConfirm}
-              title={t('picture.duplicates_list.delete_single_button.label')}
-              variant="danger"
-            >
-              <Trash />
-            </Button>
+            <DeletePictureButton picture={targetPicture!} />
           </ButtonGroup>
         </div>
       </ListGroupItem>
 
       <ConfirmModal show={isShowUnlinkConfirm} onConfirm={onUnlinkDuplicateConfirmed} onCancel={hideUnlinkConfirm}>
         {t('picture.duplicates_list.unlink_single_button.confirm', targetPicture)}
-      </ConfirmModal>
-
-      <ConfirmModal show={isShowDeleteConfirm} onConfirm={onDeleteDuplicateConfirmed} onCancel={hideDeleteConfirm}>
-        <p>{t('picture.duplicates_list.delete_single_button.confirm', targetPicture)}</p>
-        <span className="text-danger">{t('common.action_can_not_be_undone')}</span>
       </ConfirmModal>
     </Conditional>
   );

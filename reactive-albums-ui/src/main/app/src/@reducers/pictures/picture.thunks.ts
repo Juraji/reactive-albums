@@ -29,7 +29,14 @@ export const unlinkDuplicateMatch = createApiDeleteThunk<unknown, UnlinkDuplicat
   ({ pictureId, matchId }) => `/api/pictures/${pictureId}/duplicate-matches/${matchId}`
 );
 
-export const deletePicture = createApiDeleteThunk<unknown, PictureThunk>(
+interface DeletePictureThunk extends PictureThunk {
+  deletePhysicalFile?: boolean;
+}
+
+export const deletePicture = createApiDeleteThunk<unknown, DeletePictureThunk>(
   'pictures/deletePicture',
-  ({ pictureId }) => `/api/pictures/${pictureId}`
+  ({ pictureId, deletePhysicalFile }) => ({
+    url: `/api/pictures/${pictureId}`,
+    params: { deletePhysicalFile },
+  })
 );

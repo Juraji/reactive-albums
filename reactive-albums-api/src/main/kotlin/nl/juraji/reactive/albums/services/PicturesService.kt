@@ -17,22 +17,28 @@ class PicturesService(
         private val duplicateMatchRepository: DuplicateMatchRepository,
 ) : CommandSenderService(commandGateway) {
 
-    fun rescanDuplicates(pictureId: PictureId): Mono<Void> =
-            send(ScanDuplicatesCommand(pictureId = pictureId))
+    fun rescanDuplicates(pictureId: String): Mono<PictureId> = send(ScanDuplicatesCommand(pictureId = PictureId(pictureId)))
 
-    fun unlinkDuplicateMatch(pictureId: PictureId, matchId: DuplicateMatchId): Mono<Void> {
-        val sourceDuplicate = send<Void>(UnlinkDuplicateCommand(pictureId = pictureId, matchId = matchId))
+    fun unlinkDuplicateMatch(pictureId: String, matchId: String): Mono<Void> {
+        val sourceDuplicate = send<Void>(UnlinkDuplicateCommand(
+                pictureId = PictureId(pictureId),
+                matchId = DuplicateMatchId(matchId)
+        ))
 
         val targetDuplicate = duplicateMatchRepository
-                .findInverseMatchByMatchId(matchId = matchId.identifier)
+                .findInverseMatchByMatchId(matchId = matchId)
                 .map { UnlinkDuplicateCommand(pictureId = PictureId(it.pictureId), matchId = DuplicateMatchId(it.id)) }
                 .flatMap { sendAndCatch<Void>(it) }
 
         return sourceDuplicate.and(targetDuplicate)
     }
 
-    fun deletePicture(pictureId: PictureId): Mono<Void> =
-            send(DeletePictureCommand(pictureId = pictureId))
+    fun deletePicture(pictureId: String, deletePhysicalFile: Boolean): Mono<String> = send<PictureId>(
+            DeletePictureCommand(
+                    pictureId = PictureId(pictureId),
+                    deletePhysicalFile = deletePhysicalFile
+            )
+    ).map { it.identifier }
 
     fun linkTag(pictureId: String, tagId: String): Mono<Void> = send(
             LinkTagCommand(

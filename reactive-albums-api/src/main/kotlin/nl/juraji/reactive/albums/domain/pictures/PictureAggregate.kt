@@ -2,7 +2,6 @@ package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import org.axonframework.commandhandling.CommandHandler
@@ -43,17 +42,6 @@ class PictureAggregate() {
                         directoryId = cmd.directoryId
                 )
         )
-    }
-
-    @CommandHandler
-    fun handle(cmd: DeletePictureCommand): PictureId {
-        AggregateLifecycle.apply(
-                PictureDeletedEvent(
-                        pictureId = cmd.pictureId
-                )
-        )
-
-        return pictureId
     }
 
     fun setFileAttributes(
@@ -125,6 +113,14 @@ class PictureAggregate() {
                 DuplicateUnlinkedEvent(
                         pictureId = pictureId,
                         matchId = matchId
+                )
+        )
+    }
+
+    fun deletePicture() {
+        AggregateLifecycle.apply(
+                PictureDeletedEvent(
+                        pictureId = pictureId
                 )
         )
     }

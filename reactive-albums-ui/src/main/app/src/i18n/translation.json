@@ -110,12 +110,6 @@
     },
     "no_source_selected": "No source selected. Select a source picture from the list on the left.",
     "no_duplicate_matches_available": "Congratulations! No duplicates have been found.",
-    "matches_view": {
-      "delete_picture_button": "Delete picture",
-      "delete_picture_confirm": "Are you sure you want to delete {{- displayName}}?",
-      "delete_picture_success": "Duplicate deleted",
-      "delete_picture_failed": "Failed deleting duplicate"
-    },
     "matches_action_bar": {
       "unlink_duplicates_button": "Unlink these duplicates",
       "unlink_duplicates_confirm": "Are you sure you want to unlink duplicate {{- target.displayName}} from this {{- picture.displayName}}?",
@@ -161,5 +155,12 @@
       "delete_failed": "Failed to delete tag",
       "confirm": "Are you sure you want to delete the tag with label {{- label}}?"
     }
+  },
+  "delete_picture_button": {
+    "button_title": "Delete picture",
+    "delete_picture_confirm": "Are you sure you want to delete {{- displayName}}?",
+    "delete_picture_success": "Duplicate deleted",
+    "delete_picture_failed": "Failed deleting duplicate",
+    "delete_picture_confirm_delete_physical": "Delete file from disk"
   }
 }
