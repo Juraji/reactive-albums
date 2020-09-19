@@ -8,7 +8,6 @@ import nl.juraji.reactive.albums.domain.pictures.commands.AnalyzePictureMetaData
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.repositories.*
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -213,21 +212,21 @@ class DirectoryStateUpdateService(
                 logger.debug("Running local state update for $directoryId ($directoryPath)")
 
                 val files: List<Path> = fileSystemService.listFiles(directoryPath)
-                val knownPictures: List<PictureProjection> = pictureRepository.findAllByDirectoryId(directoryId.identifier)
+                val knownPictureIds: Map<Path, String> = pictureRepository.findAllByDirectoryId(directoryId.identifier).map { Paths.get(it.location) to it.id }.toMap()
 
                 // Delete non-existent files
-                knownPictures
-                        .filter { !files.contains(Paths.get(it.location)) }
-                        .forEach {
+                knownPictureIds
+                        .filter { (path) -> path !in files }
+                        .forEach { (_, id) ->
                             commandGateway.send<Unit>(DeletePictureCommand(
-                                    pictureId = PictureId(it.id),
+                                    pictureId = PictureId(id),
                             ))
                         }
 
                 // Add new files
                 files
-                        .filter { path -> !knownPictures.any { it.location === path.toString() } }
-                        .map { path -> path to fileSystemService.readContentType(path) }
+                        .filter { it !in knownPictureIds.keys }
+                        .map { it to fileSystemService.readContentType(it) }
                         .forEach { (location, contentType) ->
                             commandGateway.send<Unit>(CreatePictureCommand(
                                     pictureId = PictureId(),
