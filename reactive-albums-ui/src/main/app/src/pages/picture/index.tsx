@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { FC, useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Conditional } from '@components';
@@ -14,17 +14,24 @@ import { useDispatch } from '@hooks';
 
 const PicturePage: FC = () => {
   const dispatch = useDispatch();
-
+  const history = useHistory();
   const { pictureId } = useParams();
   const picture = useActivePicture();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(activatePictureById({ pictureId }));
+    dispatch(activatePictureById({ pictureId })).finally(() => setIsLoading(false));
 
     return () => {
       dispatch(deactivatePicture());
     };
   }, [pictureId, dispatch]);
+
+  useEffect(() => {
+    if (!isLoading && !picture) {
+      history.goBack();
+    }
+  }, [isLoading, picture, history]);
 
   return (
     <Container fluid>

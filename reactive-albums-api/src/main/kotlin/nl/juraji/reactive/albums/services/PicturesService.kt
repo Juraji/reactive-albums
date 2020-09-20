@@ -6,15 +6,23 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
+import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.nio.file.Paths
+import java.time.Duration
 
 @Service
 class PicturesService(
         commandGateway: CommandGateway,
         private val duplicateMatchRepository: DuplicateMatchRepository,
+        private val pictureRepository: PictureRepository,
+        private val tagRepository: TagRepository,
 ) : CommandSenderService(commandGateway) {
 
     fun rescanDuplicates(pictureId: String): Mono<PictureId> = send(ScanDuplicatesCommand(pictureId = PictureId(pictureId)))
@@ -33,6 +41,13 @@ class PicturesService(
         return sourceDuplicate.and(targetDuplicate)
     }
 
+    fun movePicture(pictureId: String, targetLocation: String): Mono<PictureProjection> = send<PictureId>(
+            MovePictureCommand(
+                    pictureId = PictureId(pictureId),
+                    targetLocation = Paths.get(targetLocation)
+            )
+    ).flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
+
     fun deletePicture(pictureId: String, deletePhysicalFile: Boolean): Mono<String> = send<PictureId>(
             DeletePictureCommand(
                     pictureId = PictureId(pictureId),
@@ -40,13 +55,13 @@ class PicturesService(
             )
     ).map { it.identifier }
 
-    fun linkTag(pictureId: String, tagId: String): Mono<Void> = send(
+    fun linkTag(pictureId: String, tagId: String): Mono<TagProjection> = send<Any>(
             LinkTagCommand(
                     pictureId = PictureId(pictureId),
                     tagId = TagId(tagId),
                     tagLinkType = TagLinkType.USER
             )
-    )
+    ).flatMap { tagRepository.findById(tagId) }
 
     fun unlinkTag(pictureId: String, tagId: String): Mono<Void> = send(
             UnlinkTagCommand(
@@ -55,4 +70,7 @@ class PicturesService(
             )
     )
 
+    companion object {
+        val updateTimeout: Duration = Duration.ofSeconds(30)
+    }
 }

@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
-import java.nio.file.FileVisitOption
-import java.nio.file.Files
-import java.nio.file.LinkOption
-import java.nio.file.Path
+import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.streams.toList
 
@@ -39,6 +36,9 @@ class SyncFileSystemService {
 
     fun isRegularFile(path: Path): Boolean =
             Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)
+
+    fun moveFile(location: Path, targetLocation: Path): Path? =
+            Files.move(location, targetLocation, StandardCopyOption.ATOMIC_MOVE)
 }
 
 @Service
@@ -65,4 +65,7 @@ class FileSystemService(
 
     fun isRegularFile(path: Path): Mono<Boolean> =
             deferTo(scheduler) { syncFileSystemService.isRegularFile(path) }
+
+    fun moveFile(location: Path, targetLocation: Path) =
+            deferTo(scheduler) { syncFileSystemService.moveFile(location, targetLocation) }
 }

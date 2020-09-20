@@ -9,11 +9,12 @@ import { useTranslation } from 'react-i18next';
 import './match-view.scss';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
-import { Scissors } from 'react-feather';
+import { Scissors, Search } from 'react-feather';
 import { ConfirmModal, DeletePictureButton } from '@components';
 import { unlinkDuplicateMatch } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
+import { Link } from 'react-router-dom';
 
 interface MatchViewPictureProps {
   picture: Picture;
@@ -38,6 +39,9 @@ export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture }) => {
       </Card.Body>
       <Card.Footer>
         <ButtonGroup>
+          <Button as={Link} to={`/picture/${picture.id}`}>
+            <Search />
+          </Button>
           <DeletePictureButton picture={picture} />
         </ButtonGroup>
       </Card.Footer>

@@ -57,10 +57,14 @@
     "actions": {
       "rerun_attribute_analysis": "Rerun attribute analysis",
       "rerun_duplicate_analysis": "Rerun duplicate analysis",
-      "move_picture": "Move picture",
-      "delete_picture": "Delete picture",
       "rerun_duplicate_analysis_success": "Duplicate analysis started",
-      "rerun_duplicate_analysis_failed": "Duplicate analysis failed"
+      "rerun_duplicate_analysis_failed": "Duplicate analysis failed",
+      "move_picture_button": {
+        "title": "Move picture",
+        "select_directory_label": "Select target directory",
+        "move_success": "Successfully moved picture",
+        "move_failed": "Failed moving picture: {{message}}"
+      }
     },
     "duplicates_list": {
       "title": "Duplicates",

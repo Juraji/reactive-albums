@@ -22,7 +22,9 @@ import java.nio.file.StandardWatchEventKinds.*
 import java.time.Duration
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
+import java.util.concurrent.atomic.AtomicInteger
 import javax.annotation.PreDestroy
+import kotlin.math.max
 
 @Service
 class FileWatchService(
@@ -34,6 +36,7 @@ class FileWatchService(
         @Qualifier("fileWatchScheduler") private val fileWatchScheduler: Scheduler,
 ) {
     private var watchList: Map<DirectoryId, WatchService> = emptyMap()
+    private val lockingSemaphore = AtomicInteger(1)
 
     @EventListener(ContextRefreshedEvent::class)
     fun init() {
@@ -55,6 +58,12 @@ class FileWatchService(
     fun cleanUp() {
         watchList.values.forEach { it.close() }
     }
+
+    fun lockEvents(): Int = lockingSemaphore.incrementAndGet()
+
+    fun unlockEvents(): Int = lockingSemaphore.updateAndGet { max(it - 1, 0) }
+
+    fun isLocked(): Boolean = lockingSemaphore.get() > 0
 
     private fun handleDirectoryEvent(event: ReactiveEvent<DirectoryProjection>) {
         logger.debug("Handling ${event.type} for directory ${event.entity.id}")
@@ -82,6 +91,7 @@ class FileWatchService(
 
             createWatchServiceFlux(directoryPath, watchService)
                     .subscribeOn(fileWatchScheduler)
+                    .skipWhile { isLocked() }
                     .groupBy { it.context() }
                     .flatMap { it.take(Duration.ofSeconds(1)).collectList() }
                     .map { events ->

@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from '@hooks';
 import { useEffect } from 'react';
 import { fetchAllTags, selectAllTags } from '@reducers';
 
-export function useTags(): Tag[] {
+export function useTags(doFetch: boolean = true): Tag[] {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllTags());
-  }, [dispatch]);
+    if (doFetch) {
+      dispatch(fetchAllTags());
+    }
+  }, [doFetch, dispatch]);
 
   return useSelector((state) => selectAllTags(state));
 }

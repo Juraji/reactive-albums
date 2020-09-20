@@ -95,7 +95,7 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
           dispatch(addActivePictureDuplicateMatch(evt.entity));
           break;
         case 'DELETE':
-          dispatch(removeActivePictureDuplicateMatch({ id: evt.entity.id }));
+          dispatch(removeActivePictureDuplicateMatch(evt.entity.id));
           break;
       }
     },

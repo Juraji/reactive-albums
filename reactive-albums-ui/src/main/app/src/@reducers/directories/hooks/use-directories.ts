@@ -3,12 +3,14 @@ import { useEffect } from 'react';
 import { fetchAllDirectories, selectAllDirectories } from '@reducers';
 import { useDispatch, useSelector } from '@hooks';
 
-export function useDirectories(): Directory[] {
+export function useDirectories(doFetch: boolean = true): Directory[] {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllDirectories());
-  }, [dispatch]);
+    if (doFetch) {
+      dispatch(fetchAllDirectories());
+    }
+  }, [dispatch, doFetch]);
 
   return useSelector((state) => selectAllDirectories(state));
 }

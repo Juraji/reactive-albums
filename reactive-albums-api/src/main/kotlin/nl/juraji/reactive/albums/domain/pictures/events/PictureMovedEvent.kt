@@ -5,8 +5,8 @@ import org.axonframework.serialization.Revision
 import java.nio.file.Path
 
 @Revision("1.0")
-data class PictureDeletedEvent(
+data class PictureMovedEvent(
         override val pictureId: PictureId,
         val location: Path,
-        val physicallyDeleted: Boolean,
+        val targetLocation: Path,
 ) : PictureEvent

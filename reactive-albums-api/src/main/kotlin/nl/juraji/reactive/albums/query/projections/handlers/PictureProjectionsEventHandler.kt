@@ -86,6 +86,13 @@ class PictureProjectionsEventHandler(
     }
 
     @EventHandler
+    fun on(evt: PictureMovedEvent) {
+        pictureRepository
+                .update(evt.pictureId.identifier) { it.copy(location = evt.targetLocation.toString()) }
+                .block()
+    }
+
+    @EventHandler
     fun on(evt: PictureDeletedEvent) {
         pictureRepository
                 .deleteById(evt.pictureId.identifier)

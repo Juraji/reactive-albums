@@ -2,13 +2,14 @@ import React, { FC } from 'react';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
-import { Copy, Move, RefreshCw } from 'react-feather';
+import { Copy, RefreshCw } from 'react-feather';
 import { Picture } from '@types';
 import { useToasts } from 'react-toast-notifications';
 import { useDispatch } from '@hooks';
 import { rescanDuplicates } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { DeletePictureButton } from '@components';
+import { MovePictureButton } from './move-picture-button';
 
 interface PictureActionBarProps {
   picture: Picture;
@@ -30,10 +31,6 @@ export const PictureActionBar: FC<PictureActionBarProps> = ({ picture }) => {
       .catch(() => addToast(t('picture.actions.rerun_duplicate_analysis_failed'), { appearance: 'error' }));
   };
 
-  const onMovePicture = () => {
-    console.log('onMovePicture');
-  };
-
   return (
     <ButtonGroup size="sm" className="mb-2">
       <Button onClick={onRerunAttributeAnalysis} title={t('picture.actions.rerun_attribute_analysis')}>
@@ -42,9 +39,7 @@ export const PictureActionBar: FC<PictureActionBarProps> = ({ picture }) => {
       <Button onClick={onRerunDuplicateAnalysis} title={t('picture.actions.rerun_duplicate_analysis')}>
         <Copy />
       </Button>
-      <Button onClick={onMovePicture} title={t('picture.actions.move_picture')}>
-        <Move />
-      </Button>
+      <MovePictureButton picture={picture} />
       <DeletePictureButton picture={picture} />
     </ButtonGroup>
   );

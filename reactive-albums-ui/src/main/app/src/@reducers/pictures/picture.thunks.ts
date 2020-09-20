@@ -15,7 +15,7 @@ export const fetchPictureById = createApiGetThunk<Picture, PictureThunk>(
   ({ pictureId }) => `/api/pictures/${pictureId}`
 );
 
-export const rescanDuplicates = createApiPostThunk<unknown, PictureThunk>(
+export const rescanDuplicates = createApiPostThunk<string, PictureThunk>(
   'pictures/rescanDuplicates',
   ({ pictureId }) => `/api/pictures/${pictureId}/rescan-duplicates`
 );
@@ -24,16 +24,28 @@ interface UnlinkDuplicateMatchThunk extends PictureThunk {
   matchId: string;
 }
 
-export const unlinkDuplicateMatch = createApiDeleteThunk<unknown, UnlinkDuplicateMatchThunk>(
+export const unlinkDuplicateMatch = createApiDeleteThunk<string, UnlinkDuplicateMatchThunk>(
   'pictures/unlinkDuplicateMatch',
   ({ pictureId, matchId }) => `/api/pictures/${pictureId}/duplicate-matches/${matchId}`
+);
+
+interface MovePictureThunk extends PictureThunk {
+  targetLocation: string;
+}
+
+export const movePicture = createApiPostThunk<Picture, MovePictureThunk>(
+  'pictures/movePicture',
+  ({ pictureId, targetLocation }) => ({
+    url: `/api/pictures/${pictureId}/move`,
+    params: { targetLocation },
+  })
 );
 
 interface DeletePictureThunk extends PictureThunk {
   deletePhysicalFile?: boolean;
 }
 
-export const deletePicture = createApiDeleteThunk<unknown, DeletePictureThunk>(
+export const deletePicture = createApiDeleteThunk<string, DeletePictureThunk>(
   'pictures/deletePicture',
   ({ pictureId, deletePhysicalFile }) => ({
     url: `/api/pictures/${pictureId}`,

@@ -1,37 +1,42 @@
-import { createReducer } from '@reduxjs/toolkit';
+import { combineReducers, createEntityAdapter, createReducer, EntityState } from '@reduxjs/toolkit';
 import { DuplicateMatch, Picture } from '@types';
-import { activatePictureById } from './picture.thunks';
+import { activatePictureById, movePicture } from './picture.thunks';
 import {
   addActivePictureDuplicateMatch,
   deactivatePicture,
   removeActivePictureDuplicateMatch,
 } from './picture.actions';
+import { AppState } from '../index';
 
 export interface ActivePictureState {
   picture?: Picture;
-  duplicates: DuplicateMatch[];
+  duplicates: EntityState<DuplicateMatch>;
 }
 
-const initialState: ActivePictureState = {
-  duplicates: [],
-};
+const duplicatesEntityAdapter = createEntityAdapter<DuplicateMatch>({
+  selectId: (e) => e.id,
+  sortComparer: (a, b) => a.similarity - b.similarity,
+});
+
+const activeDuplicateMatchesReducer = createReducer(duplicatesEntityAdapter.getInitialState(), (builder) => {
+  builder.addCase(addActivePictureDuplicateMatch, duplicatesEntityAdapter.upsertOne);
+  builder.addCase(removeActivePictureDuplicateMatch, duplicatesEntityAdapter.removeOne);
+  builder.addCase(deactivatePicture, duplicatesEntityAdapter.removeAll);
+});
+
+const activePictureReducer = createReducer<Picture | null>(null, (builder) => {
+  builder.addCase(activatePictureById.fulfilled, (_, { payload }) => payload);
+  builder.addCase(deactivatePicture, () => null);
+  builder.addCase(movePicture.fulfilled, (state, { payload }) => payload);
+});
 
 export const activePictureSliceName = 'activePicture';
-export const activePictureSliceReducer = createReducer(initialState, (builder) => {
-  builder.addCase(activatePictureById.fulfilled, (state, { payload }) => state.copy({ picture: payload }));
-
-  builder.addCase(addActivePictureDuplicateMatch, (state, action) => {
-    return state.copy({ duplicates: [...state.duplicates, action.payload] });
-  });
-
-  builder.addCase(removeActivePictureDuplicateMatch, (state, action) => {
-    return state.copy({ duplicates: state.duplicates?.filter((dm) => dm.id !== action.payload.id) });
-  });
-
-  builder.addCase(deactivatePicture, (state) =>
-    state.copy({
-      picture: undefined,
-      duplicates: [],
-    })
-  );
+export const activePictureSliceReducer = combineReducers({
+  picture: activePictureReducer,
+  duplicates: activeDuplicateMatchesReducer,
 });
+
+const duplicateMatchSelectors = duplicatesEntityAdapter.getSelectors<AppState>(
+  (state) => state.pictures.activePicture.duplicates
+);
+export const { selectAll: selectActiveDuplicateMatches } = duplicateMatchSelectors;

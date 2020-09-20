@@ -1,6 +1,8 @@
 package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.domain.pictures.PictureId
+import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.services.PicturesService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -24,6 +26,12 @@ class PictureCommandController(
             matchId = matchId
     )
 
+    @PostMapping("/api/pictures/{pictureId}/move")
+    fun movePicture(
+            @PathVariable("pictureId") pictureId: String,
+            @RequestParam("targetLocation") targetLocation: String,
+    ): Mono<PictureProjection> = picturesService.movePicture(pictureId, targetLocation)
+
     @DeleteMapping("/api/pictures/{pictureId}")
     fun deletePicture(
             @PathVariable("pictureId") pictureId: String,
@@ -34,7 +42,7 @@ class PictureCommandController(
     fun linkTag(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("tagId") tagId: String,
-    ): Mono<Void> = picturesService.linkTag(pictureId, tagId)
+    ): Mono<TagProjection> = picturesService.linkTag(pictureId, tagId)
 
     @DeleteMapping("/api/pictures/{pictureId}/tags/{tagId}")
     fun unlinkTag(

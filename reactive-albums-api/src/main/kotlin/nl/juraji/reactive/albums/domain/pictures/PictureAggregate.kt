@@ -2,6 +2,8 @@ package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
+import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
+import nl.juraji.reactive.albums.domain.pictures.commands.MovePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import org.axonframework.commandhandling.CommandHandler
@@ -42,6 +44,38 @@ class PictureAggregate() {
                         directoryId = cmd.directoryId
                 )
         )
+    }
+
+    @CommandHandler
+    fun handle(cmd: MovePictureCommand): PictureId {
+        val targetLocation: Path =
+                if (location.fileName == cmd.targetLocation.fileName) cmd.targetLocation
+                else cmd.targetLocation.resolve(location.fileName)
+
+        Validate.isFalse(location == targetLocation) { "Target location is the same as the current location" }
+
+        AggregateLifecycle.apply(
+                PictureMovedEvent(
+                        pictureId = pictureId,
+                        location = location,
+                        targetLocation = targetLocation,
+                )
+        )
+
+        return pictureId
+    }
+
+    @CommandHandler
+    fun handle(cmd: DeletePictureCommand): PictureId {
+        AggregateLifecycle.apply(
+                PictureDeletedEvent(
+                        pictureId = pictureId,
+                        location = location,
+                        physicallyDeleted = cmd.deletePhysicalFile
+                )
+        )
+
+        return pictureId
     }
 
     fun setFileAttributes(
@@ -117,14 +151,6 @@ class PictureAggregate() {
         )
     }
 
-    fun deletePicture() {
-        AggregateLifecycle.apply(
-                PictureDeletedEvent(
-                        pictureId = pictureId
-                )
-        )
-    }
-
     @EventSourcingHandler
     fun on(evt: PictureCreatedEvent) {
         pictureId = evt.pictureId
@@ -150,6 +176,11 @@ class PictureAggregate() {
     @EventSourcingHandler
     fun on(evt: DuplicateUnlinkedEvent) {
         duplicates = duplicates.minus(evt.matchId)
+    }
+
+    @EventSourcingHandler
+    fun on(evt: PictureMovedEvent) {
+        location = evt.targetLocation
     }
 
     @EventSourcingHandler

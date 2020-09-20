@@ -10,6 +10,7 @@ interface ConfirmModalProps {
   headerTitle?: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  isValid?: boolean;
 }
 
 export const ConfirmModal: FC<ConfirmModalProps> = ({
@@ -20,25 +21,25 @@ export const ConfirmModal: FC<ConfirmModalProps> = ({
   headerTitle,
   confirmLabel,
   cancelLabel,
+  isValid = true,
 }) => {
   const { t } = useTranslation();
 
-  const onConfirmed = () => onConfirm();
-  const onCanceled = () => onCancel();
-
-  return show ? (
-    <Modal show onHide={onCanceled}>
+  return (
+    <Modal show={show} onHide={onCancel}>
       <Modal.Header closeButton>
         <Modal.Title>{headerTitle || t('components.confirm_modal.default_header_title')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
       <Modal.Footer className="d-flex flex-row">
         <span className="flex-grow-1">&nbsp;</span>
-        <Button onClick={onConfirmed}>{confirmLabel || t('components.confirm_modal.default_confirm_label')}</Button>
-        <Button variant="secondary" onClick={onCanceled}>
+        <Button onClick={onConfirm} disabled={!isValid}>
+          {confirmLabel || t('components.confirm_modal.default_confirm_label')}
+        </Button>
+        <Button variant="secondary" onClick={onCancel}>
           {cancelLabel || t('components.confirm_modal.default_cancel_label')}
         </Button>
       </Modal.Footer>
     </Modal>
-  ) : null;
+  );
 };
