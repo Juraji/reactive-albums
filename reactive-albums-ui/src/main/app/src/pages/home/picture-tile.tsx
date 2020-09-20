@@ -27,7 +27,7 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
   const imageUrl = useApiUrl('pictures', picture.id, 'thumbnail');
 
   return (
-    <Card className="picture-tile mb-4">
+    <Card className="picture-tile mb-4 mr-2">
       <Link to={`/picture/${picture.id}`}>
         <Card.Img variant="top" src={imageUrl} className="picture-thumbnail" />
       </Link>

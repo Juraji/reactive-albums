@@ -45,7 +45,7 @@ export const PictureControls: FC<PictureControlsProps> = () => {
   }, [dispatch, debouncedFilterInput, pageNoInput, pageSizeInput]);
 
   return (
-    <Navbar variant="light" fixed="bottom" bg="light">
+    <Navbar variant="light" fixed="bottom" bg="light" className="border-top">
       <Form inline className="mr-2">
         <Form.Control
           placeholder={t('home.pagination.filter.placeholder')}

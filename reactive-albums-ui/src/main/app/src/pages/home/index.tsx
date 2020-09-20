@@ -25,7 +25,7 @@ const HomePage: FC = () => {
 
   return (
     <Container fluid>
-      <div className="home-page d-flex flex-wrap justify-content-between">
+      <div className="home-page d-flex flex-wrap">
         {page.content.map((picture, pictureIdx) => (
           <PictureTile key={pictureIdx} picture={picture} />
         ))}
