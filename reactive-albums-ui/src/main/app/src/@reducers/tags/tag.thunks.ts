@@ -17,7 +17,7 @@ export const createTag = createApiPostThunk<Tag, CreateTagThunk>(
   'tags/createTag',
   ({ label, tagColor, textColor }) => ({
     url: `/api/tags`,
-    params: { label, tagColor, textColor },
+    data: { label, tagColor, textColor },
   })
 );
 
@@ -30,7 +30,7 @@ export const updateTag = createApiPutThunk<Tag, UpdateTagThunk>('tags/updateTag'
   const changed = (p: string | undefined, t: string) => (!!p && p !== t ? p : undefined);
   return {
     url: `/api/tags/${tag.id}`,
-    params: {
+    data: {
       label: changed(patch.label, tag.label),
       tagColor: changed(patch.tagColor, tag.tagColor),
       textColor: changed(patch.textColor, tag.textColor),
