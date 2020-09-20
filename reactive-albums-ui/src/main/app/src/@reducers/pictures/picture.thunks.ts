@@ -1,4 +1,4 @@
-import { Picture } from '@types';
+import { Page, Picture } from '@types';
 import { createApiDeleteThunk, createApiGetThunk, createApiPostThunk } from '@utils';
 
 interface PictureThunk {
@@ -13,6 +13,20 @@ export const activatePictureById = createApiGetThunk<Picture, PictureThunk>(
 export const fetchPictureById = createApiGetThunk<Picture, PictureThunk>(
   'pictures/fetchPictureById',
   ({ pictureId }) => `/api/pictures/${pictureId}`
+);
+
+interface FetchPicturesPageThunk {
+  page: number;
+  size: number;
+  filter?: string;
+}
+
+export const fetchPicturesPage = createApiGetThunk<Page<Picture>, FetchPicturesPageThunk>(
+  'pictures/fetchPicturesPage',
+  (params) => ({
+    url: '/api/pictures',
+    params,
+  })
 );
 
 export const rescanDuplicates = createApiPostThunk<string, PictureThunk>(

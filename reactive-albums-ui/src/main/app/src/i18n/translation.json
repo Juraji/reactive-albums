@@ -4,8 +4,8 @@
       "label": "Home"
     },
     "pagination": {
-      "page_size_label": "{{- option}} of {{- totalElements}} Pictures",
-      "current_page_label": "Page {{- currentPage}} of {{- totalPages}}",
+      "page_size_label": "{{- option}} of {{- totalItemsAvailable}} Pictures",
+      "current_page_label": "Page {{- currentPage}} of {{- totalPagesAvailable}}, {{itemsOnPage}} items",
       "no_items_found": "No Items found",
       "filter": {
         "placeholder": "Search..."
