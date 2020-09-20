@@ -35,8 +35,8 @@ export function formikIsFormValid<T>(
 ): boolean {
   return (
     formikProps.isValid &&
-    Object.keys(formikProps.touched).length > 0 &&
-    Object.keys(formikProps.errors).length === 0 &&
+    Object.keys(formikProps.touched).isNotEmpty() &&
+    Object.keys(formikProps.errors).isEmpty() &&
     (!extraPredicate || extraPredicate())
   );
 }

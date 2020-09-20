@@ -147,6 +147,9 @@
         "color_picker": {
           "pick_color": "Automatic",
           "pick_color_tooltip": "Click to manually choose a color"
+        },
+        "preview": {
+          "label": "Preview"
         }
       },
       "create_successful": "Successfully created tag",

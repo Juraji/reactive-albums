@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Tag } from '@types';
 
 interface PictureTagProps {
-  tag: Tag;
+  tag: Partial<Tag>;
   fontSize?: string;
 }
 
@@ -17,7 +17,7 @@ export const PictureTag: FC<PictureTagProps> = ({ tag, fontSize }) => {
   );
 
   return (
-    <span className="badge mr-1" style={style}>
+    <span className="badge mr-1 border" style={style}>
       {tag.label}
     </span>
   );

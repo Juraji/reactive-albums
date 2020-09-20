@@ -15,6 +15,7 @@ import Modal from 'react-bootstrap/Modal';
 import { formikControlProps, formikIsFormValid } from '@utils';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { PictureTag } from '@components';
 
 interface TagColorFormGroupProps {
   label: string;
@@ -139,6 +140,13 @@ export const EditTagModal: FC<EditTagModalProps> = ({ hideEditModal, tag }) => {
                   />
                 </Col>
               </Row>
+
+              {!formikBag.values.label.isBlank() ? (
+                <Form.Group>
+                  <Form.Label className="d-block">{t('tags.edit_tag.form.preview.label')}</Form.Label>
+                  <PictureTag tag={formikBag.values} fontSize="1rem" />
+                </Form.Group>
+              ) : null}
             </Modal.Body>
             <Modal.Footer className="d-flex flex-row">
               <span className="flex-grow-1">&nbsp;</span>
