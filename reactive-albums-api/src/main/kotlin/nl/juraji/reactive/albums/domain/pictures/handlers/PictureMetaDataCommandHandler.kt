@@ -36,7 +36,7 @@ class PictureMetaDataCommandHandler(
     @CommandHandler
     fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId = execute(cmd.pictureId) {
         val (fileSize, lastModifiedTime) = readFileAttributes(cmd.pictureId, getLocation())
-        setFileAttributes(fileSize, lastModifiedTime)
+        setFileAttributes(fileSize = fileSize, lastModifiedTime = lastModifiedTime)
 
         val (width, height) = getImageDimensions(cmd.pictureId, getLocation())
         setFileAttributes(imageWidth = width, imageHeight = height)

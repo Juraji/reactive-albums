@@ -6,16 +6,14 @@ import { TOAST_TIMEOUT } from './config.json';
 import { BootstrapToastAdapter, DefaultRoute, GlobalEffectors, NavigationBar } from '@components';
 import Spinner from 'react-bootstrap/Spinner';
 import { ToastProvider } from 'react-toast-notifications';
-import { HomeNavItem } from './pages/home';
-import { DirectoriesNavItem } from './pages/directories';
-import { DuplicatesNavItem } from './pages/duplicates';
-import { TagsNavItem } from './pages/tags';
+import { AuditLogNavItem, DirectoriesNavItem, DuplicatesNavItem, HomeNavItem, TagsNavItem } from './pages/@nav-items';
 
 const HomePage = lazy(() => import('./pages/home'));
 const DirectoriesPage = lazy(() => import('./pages/directories'));
 const PicturePage = lazy(() => import('./pages/picture'));
 const DuplicatesPage = lazy(() => import('./pages/duplicates'));
 const TagManagementPage = lazy(() => import('./pages/tags'));
+const AuditLogPage = lazy(() => import('./pages/audit-log'));
 
 const AppView: FC = () => (
   <BrowserRouter>
@@ -24,6 +22,7 @@ const AppView: FC = () => (
       <DirectoriesNavItem />
       <DuplicatesNavItem />
       <TagsNavItem />
+      <AuditLogNavItem />
     </NavigationBar>
     <ToastProvider autoDismiss={true} autoDismissTimeout={TOAST_TIMEOUT} components={{ Toast: BootstrapToastAdapter }}>
       <GlobalEffectors />
@@ -34,6 +33,7 @@ const AppView: FC = () => (
           <Route exact path="/picture/:pictureId" component={PicturePage} />
           <Route exact path="/duplicates" component={DuplicatesPage} />
           <Route exact path="/tags" component={TagManagementPage} />
+          <Route exact path="/audit-log" component={AuditLogPage} />
           <DefaultRoute to="/home" />
         </Switch>
       </Suspense>

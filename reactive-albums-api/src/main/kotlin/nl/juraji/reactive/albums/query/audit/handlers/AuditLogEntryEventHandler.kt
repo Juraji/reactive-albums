@@ -18,17 +18,17 @@ class AuditLogEntryEventHandler(
 ) {
     @EventHandler
     fun on(evt: DirectoryEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.DIRECTORY, evt.directoryId, auditLogMessage)
+        saveLogEntry(AggregateType.DIRECTORY, evt.directoryId, auditLogMessage).block()
     }
 
     @EventHandler
     fun on(evt: PictureEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.PICTURE, evt.pictureId, auditLogMessage)
+        saveLogEntry(AggregateType.PICTURE, evt.pictureId, auditLogMessage).block()
     }
 
     @EventHandler
     fun on(evt: TagEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.TAG, evt.tagId, auditLogMessage)
+        saveLogEntry(AggregateType.TAG, evt.tagId, auditLogMessage).block()
     }
 
     private fun saveLogEntry(type: AggregateType, id: EntityId, message: String): Mono<AuditLogEntry> =

@@ -18,6 +18,11 @@ export interface Page<T> {
   empty: boolean;
 }
 
+export interface Sort {
+  direction: 'asc' | 'desc';
+  properties: string[];
+}
+
 export interface Audited {
   createdAt: string;
   lastModifiedAt: string;

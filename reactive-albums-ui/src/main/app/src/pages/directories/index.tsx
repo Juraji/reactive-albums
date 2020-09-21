@@ -5,20 +5,7 @@ import { RegisterDirectory } from './register-directory';
 import { DirectoryItem } from './directory-item';
 import { Conditional } from '@components';
 import { useDirectories } from '@reducers';
-import { Link, useLocation } from 'react-router-dom';
-import NavLink from 'react-bootstrap/NavLink';
 import Table from 'react-bootstrap/Table';
-
-export const DirectoriesNavItem: FC = () => {
-  const { t } = useTranslation();
-  const loc = useLocation();
-
-  return (
-    <NavLink as={Link} to="/directories" active={loc.pathname === '/directories'}>
-      {t('directories.nav-item.label')}
-    </NavLink>
-  );
-};
 
 const DirectoriesPage: FC = () => {
   const { t } = useTranslation();

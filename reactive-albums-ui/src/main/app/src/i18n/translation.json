@@ -188,5 +188,26 @@
     "delete_picture_success": "Duplicate deleted",
     "delete_picture_failed": "Failed deleting duplicate",
     "delete_picture_confirm_delete_physical": "Delete file from disk"
+  },
+  "audit_log": {
+    "nav-item": {
+      "label": "Log"
+    },
+    "properties": {
+      "prop_timestamp": "Timestamp",
+      "prop_aggregate_type": "Aggregate Type",
+      "prop_aggregate_id": "Aggregate Id",
+      "prop_message": "Message"
+    },
+    "pagination": {
+      "filter": {
+        "placeholder": "Search..."
+      },
+      "page_size_label": "{{- option}} of {{- totalItemsAvailable}} entries",
+      "current_page_label": "Page {{- currentPage}} of {{- totalPagesAvailable}}, {{itemsOnPage}} items",
+      "no_items_found": "No Items found",
+      "sort_by_label": "Sort by $t(audit_log.properties.{{key}})",
+      "sort_direction_toggle_button": "Change sort direction"
+    }
   }
 }

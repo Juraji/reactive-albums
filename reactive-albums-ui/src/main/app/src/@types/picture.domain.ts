@@ -1,4 +1,5 @@
 import { Audited } from './api';
+import { Tag } from './tag.domain';
 
 export enum PictureType {
   JPEG = 'JPEG',
@@ -6,11 +7,6 @@ export enum PictureType {
   GIF = 'GIF',
   PNG = 'PNG',
   TIFF = 'TIFF',
-}
-
-export enum TagLinkType {
-  AUTO = 'AUTO',
-  USER = 'USER',
 }
 
 export interface Picture extends Audited {
@@ -28,16 +24,14 @@ export interface Picture extends Audited {
   imageHeight?: number;
 }
 
+export enum TagLinkType {
+  AUTO = 'AUTO',
+  USER = 'USER',
+}
+
 export interface TagLink {
   linkType: TagLinkType;
   tag: Tag;
-}
-
-export interface Tag extends Audited {
-  id: string;
-  label: string;
-  tagColor: string;
-  textColor: string;
 }
 
 export interface Color {
