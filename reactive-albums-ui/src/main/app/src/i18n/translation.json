@@ -38,7 +38,8 @@
     },
     "directory_item": {
       "info": {
-        "automatic_scan_enabled": "Automatic scan {{enabled, bool:enabled:disabled}}"
+        "automatic_scan_enabled": "Automatic scan {{enabled, bool:enabled:disabled}}",
+        "registered_at": "Registered on {{- createdAt, isoFullDate}}"
       },
       "unregister_button": {
         "unregister_success": "Directory unregistered",
@@ -47,7 +48,7 @@
           "modal_title": "Unregister directory",
           "message": "Are you sure you want to unregister {{- displayName}}?",
           "confirm_button": "Yes",
-          "recursive_label": "Also delete all sub directories"
+          "recursive_label": "Also unregister all sub directories"
         }
       }
     },
@@ -99,6 +100,11 @@
       "unlink_tag_success": "Tag removed",
       "unlink_tag_failed": "Remove tag failed: {{message}}",
       "no_tags_linked": "No tags linked"
+    },
+    "details": {
+      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} {{- fileSize, fileSize}}",
+      "added_on": "Added on {{- createdAt, isoFullDate}}",
+      "file_last_modified": "File last modified on {{- lastModifiedTime, isoFullDate}}"
     }
   },
   "components": {
@@ -126,6 +132,12 @@
       "unlink_duplicates_confirm": "Are you sure you want to unlink duplicate {{- target.displayName}} from this {{- picture.displayName}}?",
       "unlink_duplicates_success": "Duplicate unlinked",
       "unlink_duplicates_failed": "Failed unlinking duplicate"
+    },
+    "match_view": {
+      "match_info": "{{similarity}}% match on the {{- createdAt, isoFullDate}}",
+      "added_on": "Added on the {{- createdAt, isoFullDate}}",
+      "file_last_modified": "File last modified on the {{- lastModifiedTime, isoFullDate}}",
+      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} {{- fileSize, fileSize}}"
     }
   },
   "tags": {

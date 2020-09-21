@@ -38,22 +38,22 @@ class PictureEventsController(
                     pictureRepository.findById(match.pictureId),
                     pictureRepository.findById(match.targetId)
             ).map { (picture, target) ->
-                match.copy(
+                val copy = match.copy(
                         picture = picture,
                         target = target
                 )
+
+                copy
             }
         }
 
         return Flux.merge(
                 duplicateMatchRepository.findAll().flatMap(fetchPictures).map { ReactiveEvent(EventType.UPSERT, it) },
-                duplicateMatchRepository.subscribeToAll()
-                        .flatMap { evt ->
-                            if (evt.type == EventType.DELETE) Mono.just(evt)
-                            else fetchPictures(evt.entity).map { ReactiveEvent(evt.type, it) }
-                        }
-        )
-                .toServerSentEvents()
+                duplicateMatchRepository.subscribeToAll().flatMap { evt ->
+                    if (evt.type == EventType.DELETE) Mono.just(evt)
+                    else fetchPictures(evt.entity).map { ReactiveEvent(evt.type, it) }
+                }
+        ).toServerSentEvents()
     }
 
     @GetMapping("/api/events/duplicate-matches/{pictureId}")
@@ -73,7 +73,6 @@ class PictureEventsController(
                             if (evt.type == EventType.DELETE) Mono.just(evt)
                             else fetchPicture(evt.entity).map { ReactiveEvent(evt.type, it) }
                         }
-        )
-                .toServerSentEvents()
+        ).toServerSentEvents()
     }
 }

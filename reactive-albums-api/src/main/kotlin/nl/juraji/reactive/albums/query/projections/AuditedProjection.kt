@@ -12,6 +12,6 @@ import javax.persistence.MappedSuperclass
 @Suppress("unused")
 @EntityListeners(AuditingEntityListener::class)
 abstract class AuditedProjection(
-        @CreatedDate @Column(updatable = false) var createdAt: LocalDateTime? = null,
-        @LastModifiedDate var lastModifiedAt: LocalDateTime? = null,
+        @CreatedDate @Column(updatable = false) open var createdAt: LocalDateTime?,
+        @LastModifiedDate open var lastModifiedAt: LocalDateTime?,
 )

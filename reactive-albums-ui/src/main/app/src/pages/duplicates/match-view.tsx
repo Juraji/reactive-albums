@@ -17,10 +17,11 @@ import { useToasts } from 'react-toast-notifications';
 import { Link } from 'react-router-dom';
 
 interface MatchViewPictureProps {
+  match: DuplicateMatch;
   picture: Picture;
 }
 
-export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture }) => {
+export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture, match }) => {
   const { t } = useTranslation();
   const imageUrl = useApiUrl('pictures', picture.id, 'image');
 
@@ -30,11 +31,11 @@ export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture }) => {
       <Card.Body>
         <ul className="list-unstyled">
           <li className="font-weight-bold text-ellipsis">{picture.displayName}</li>
-          <li className="small">{picture.location}</li>
-          <li className="small">
-            {picture.imageWidth} x {picture.imageHeight} ({t('common.file_size', { fileSize: picture.fileSize })})
-          </li>
-          <li className="small">{t('common.full_date', { isoDate: picture.lastModifiedTime })}&nbsp;</li>
+          <li className="small font-weight-bold">{t('duplicates.match_view.match_info', match)}&nbsp;</li>
+          <li className="small">{picture.parentLocation}</li>
+          <li className="small">{t('duplicates.match_view.picture_info', picture)}</li>
+          <li className="small">{t('duplicates.match_view.added_on', picture)}</li>
+          <li className="small">{t('duplicates.match_view.file_last_modified', picture)}&nbsp;</li>
         </ul>
       </Card.Body>
       <Card.Footer>
@@ -98,10 +99,10 @@ export const MatchView: FC<MatchViewProps> = ({ match }) => {
         <MatchesActionBar match={match} />
       </Col>
       <Col sm={12} lg={6} className="pb-4">
-        <MatchViewPicture picture={match.picture!} />
+        <MatchViewPicture match={match} picture={match.picture!} />
       </Col>
       <Col sm={12} lg={6}>
-        <MatchViewPicture picture={match.target!} />
+        <MatchViewPicture match={match} picture={match.target!} />
       </Col>
     </Row>
   );

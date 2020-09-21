@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.query.projections
 
+import java.time.LocalDateTime
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -10,4 +11,6 @@ data class TagProjection(
         @Column(unique = true) val label: String,
         val tagColor: String,
         val textColor: String,
-) : AuditedProjection()
+        override var createdAt: LocalDateTime? = null,
+        override var lastModifiedAt: LocalDateTime? = null,
+) : AuditedProjection(createdAt, lastModifiedAt)

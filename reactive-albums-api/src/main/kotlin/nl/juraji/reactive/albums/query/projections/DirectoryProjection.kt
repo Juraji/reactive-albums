@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.query.projections
 
+import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.Id
 
@@ -9,4 +10,6 @@ data class DirectoryProjection(
         val location: String,
         val displayName: String,
         val automaticScanEnabled: Boolean,
-) : AuditedProjection()
+        override var createdAt: LocalDateTime? = null,
+        override var lastModifiedAt: LocalDateTime? = null,
+) : AuditedProjection(createdAt, lastModifiedAt)

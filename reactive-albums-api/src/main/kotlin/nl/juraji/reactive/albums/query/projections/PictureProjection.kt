@@ -18,10 +18,12 @@ data class PictureProjection(
         val imageWidth: Int? = null,
         val imageHeight: Int? = null,
         val duplicateCount: Int = 0,
+        override var createdAt: LocalDateTime? = null,
+        override var lastModifiedAt: LocalDateTime? = null,
 
         @ElementCollection(fetch = FetchType.EAGER)
         val tags: Set<TagLink> = emptySet(),
-) : AuditedProjection()
+) : AuditedProjection(createdAt, lastModifiedAt)
 
 @Embeddable
 data class TagLink(

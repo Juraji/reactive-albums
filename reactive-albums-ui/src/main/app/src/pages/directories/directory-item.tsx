@@ -85,7 +85,11 @@ export const DirectoryItem: FC<DirectoryItemProps> = ({ directory }) => {
   };
   return (
     <tr>
-      <td>{directory.location}</td>
+      <td>
+        {directory.location}
+        <br />
+        <small className="text-muted">{t('directories.directory_item.info.registered_at', directory)}</small>
+      </td>
       <td className="d-flex flex-row-reverse">
         <ButtonGroup>
           <Button

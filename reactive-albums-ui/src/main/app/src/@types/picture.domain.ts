@@ -1,3 +1,5 @@
+import { Audited } from './api';
+
 export enum PictureType {
   JPEG = 'JPEG',
   BMP = 'BMP',
@@ -11,10 +13,11 @@ export enum TagLinkType {
   USER = 'USER',
 }
 
-export interface Picture {
+export interface Picture extends Audited {
   id: string;
   displayName: string;
   location: string;
+  parentLocation: string;
   pictureType: PictureType;
   duplicateCount: number;
   tags: TagLink[];
@@ -30,7 +33,7 @@ export interface TagLink {
   tag: Tag;
 }
 
-export interface Tag {
+export interface Tag extends Audited {
   id: string;
   label: string;
   tagColor: string;
@@ -41,7 +44,7 @@ export interface Color {
   hexadecimal: string;
 }
 
-export interface DuplicateMatch {
+export interface DuplicateMatch extends Audited {
   id: string;
   pictureId: string;
   targetId: string;

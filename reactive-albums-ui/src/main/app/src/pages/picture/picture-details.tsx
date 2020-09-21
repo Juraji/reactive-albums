@@ -17,14 +17,10 @@ export const PictureDetails: FC<PictureDetailsProps> = ({ picture }) => {
       </Card.Header>
       <Card.Body>
         <ul className="list-unstyled mb-0">
-          <li>{picture.location}</li>
-          <li>
-            {picture.imageWidth}x{picture.imageHeight}
-          </li>
-          <li>
-            {picture.pictureType} {t('common.file_size', { fileSize: picture.fileSize })}
-          </li>
-          <li>{t('common.full_date', { isoDate: picture.lastModifiedTime })}</li>
+          <li>{t('picture.details.picture_info', picture)}</li>
+          <li className="small text-muted">{picture.parentLocation}</li>
+          <li className="small text-muted">{t('picture.details.added_on', picture)}</li>
+          <li className="small text-muted">{t('picture.details.file_last_modified', picture)}</li>
         </ul>
       </Card.Body>
     </Card>

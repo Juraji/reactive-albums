@@ -17,3 +17,8 @@ export interface Page<T> {
   first: boolean;
   empty: boolean;
 }
+
+export interface Audited {
+  createdAt: string;
+  lastModifiedAt: string;
+}
