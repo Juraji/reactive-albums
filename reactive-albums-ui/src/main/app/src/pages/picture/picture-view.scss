@@ -1,5 +1,12 @@
 .picture-view-image {
   display: block;
   margin: 0 auto;
-  max-height: calc(100vh - 5rem);
+  cursor: zoom-in;
+
+  &.fill {
+    height: calc(100vh - 5rem);
+    cursor: zoom-out;
+    object-fit: contain;
+    max-width: 100%;
+  }
 }

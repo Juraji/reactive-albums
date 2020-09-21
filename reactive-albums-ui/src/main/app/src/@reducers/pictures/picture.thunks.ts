@@ -1,4 +1,4 @@
-import { Page, Picture } from '@types';
+import { Page, Picture, TagLink } from '@types';
 import { createApiDeleteThunk, createApiGetThunk, createApiPostThunk } from '@utils';
 
 interface PictureThunk {
@@ -41,6 +41,20 @@ interface UnlinkDuplicateMatchThunk extends PictureThunk {
 export const unlinkDuplicateMatch = createApiDeleteThunk<string, UnlinkDuplicateMatchThunk>(
   'pictures/unlinkDuplicateMatch',
   ({ pictureId, matchId }) => `/api/pictures/${pictureId}/duplicate-matches/${matchId}`
+);
+
+interface PictureTagThunk extends PictureThunk {
+  tagId: string;
+}
+
+export const linkPictureTag = createApiPostThunk<TagLink[], PictureTagThunk>(
+  'pictures/linkPictureTag',
+  ({ pictureId, tagId }) => `/api/pictures/${pictureId}/tags/${tagId}`
+);
+
+export const unlinkPictureTag = createApiDeleteThunk<TagLink[], PictureTagThunk>(
+  'pictures/unlinkPictureTag',
+  ({ pictureId, tagId }) => `/api/pictures/${pictureId}/tags/${tagId}`
 );
 
 interface MovePictureThunk extends PictureThunk {

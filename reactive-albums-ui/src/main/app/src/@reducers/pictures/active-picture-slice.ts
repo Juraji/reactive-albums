@@ -1,6 +1,6 @@
 import { combineReducers, createEntityAdapter, createReducer, EntityState } from '@reduxjs/toolkit';
 import { DuplicateMatch, Picture } from '@types';
-import { activatePictureById, deletePicture, movePicture } from './picture.thunks';
+import { activatePictureById, deletePicture, linkPictureTag, movePicture, unlinkPictureTag } from './picture.thunks';
 import {
   addActivePictureDuplicateMatch,
   deactivatePicture,
@@ -29,6 +29,12 @@ const activePictureReducer = createReducer<Picture | null>(null, (builder) => {
   builder.addCase(deactivatePicture, () => null);
   builder.addCase(movePicture.fulfilled, (state, { payload }) => payload);
   builder.addCase(deletePicture.fulfilled, () => null);
+  builder.addCase(linkPictureTag.fulfilled, (state, action) => {
+    return state?.copy({ tags: action.payload });
+  });
+  builder.addCase(unlinkPictureTag.fulfilled, (state, action) => {
+    return state?.copy({ tags: action.payload });
+  });
 });
 
 export const activePictureSliceName = 'activePicture';

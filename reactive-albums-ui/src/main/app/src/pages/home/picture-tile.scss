@@ -10,7 +10,9 @@ $picture-tile-size: 200px;
   }
 
   .tag-orbs {
-    display: inline-block;
+    position: absolute;
+    top: 190px;
+    left: .5rem;
 
     .tag-orb {
       display: inline-block;
@@ -21,6 +23,8 @@ $picture-tile-size: 200px;
   }
 
   .duplicate-count {
-    margin-left: .5rem;
+    position: absolute;
+    top: 190px;
+    right: .5rem;
   }
 }

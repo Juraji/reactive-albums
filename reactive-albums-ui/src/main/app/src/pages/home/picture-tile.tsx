@@ -14,7 +14,7 @@ interface TagOrbProps {
 }
 
 export const TagOrb: FC<TagOrbProps> = ({ tagLink }) => {
-  const style = useMemo(() => ({ backgroundColor: `#${tagLink.tag.tagColor}` }), [tagLink]);
+  const style = useMemo(() => ({ backgroundColor: tagLink.tag.tagColor }), [tagLink]);
   return <div className="tag-orb" title={tagLink.tag.label} style={style} />;
 };
 
@@ -27,12 +27,12 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
   const imageUrl = useApiUrl('pictures', picture.id, 'thumbnail');
 
   return (
-    <Card className="picture-tile mb-4 mr-2">
+    <Card className="picture-tile mb-2 mr-2">
       <Link to={`/picture/${picture.id}`}>
         <Card.Img variant="top" src={imageUrl} className="picture-thumbnail" />
       </Link>
       <Card.Body>
-        <ul className="list-unstyled">
+        <ul className="list-unstyled mb-0">
           <li className="font-weight-bold text-ellipsis">{picture.displayName}</li>
           <li className="small">
             {picture.imageWidth} x {picture.imageHeight} ({t('common.file_size', { fileSize: picture.fileSize })})

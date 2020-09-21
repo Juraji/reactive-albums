@@ -2,9 +2,11 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
+import nl.juraji.reactive.albums.query.projections.TagLink
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.services.PicturesService
 import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
@@ -42,11 +44,11 @@ class PictureCommandController(
     fun linkTag(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("tagId") tagId: String,
-    ): Mono<TagProjection> = picturesService.linkTag(pictureId, tagId)
+    ): Flux<TagLink> = picturesService.linkTag(pictureId, tagId)
 
     @DeleteMapping("/api/pictures/{pictureId}/tags/{tagId}")
     fun unlinkTag(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("tagId") tagId: String,
-    ): Mono<Void> = picturesService.unlinkTag(pictureId, tagId)
+    ): Flux<TagLink> = picturesService.unlinkTag(pictureId, tagId)
 }

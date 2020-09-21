@@ -92,6 +92,13 @@
         "success": "Duplicate deleted",
         "failed": "Failed deleting duplicate"
       }
+    },
+    "tags": {
+      "add_tag_success": "Tag added",
+      "add_tag_failed": "Add tag failed: {{message}}",
+      "unlink_tag_success": "Tag removed",
+      "unlink_tag_failed": "Remove tag failed: {{message}}",
+      "no_tags_linked": "No tags linked"
     }
   },
   "components": {

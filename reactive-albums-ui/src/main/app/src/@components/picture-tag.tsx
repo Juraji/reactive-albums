@@ -17,8 +17,8 @@ export const PictureTag: FC<PictureTagProps> = ({ tag, fontSize }) => {
   );
 
   return (
-    <span className="badge mr-1 border" style={style}>
-      {tag.label}
+    <span className="picture-tag badge mr-1 border" style={style}>
+      <span>{tag.label}</span>
     </span>
   );
 };

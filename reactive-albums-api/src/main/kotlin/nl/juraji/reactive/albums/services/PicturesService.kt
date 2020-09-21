@@ -7,13 +7,15 @@ import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagProjection
+import nl.juraji.reactive.albums.query.projections.TagLink
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toFlux
 import java.nio.file.Paths
 import java.time.Duration
 
@@ -55,20 +57,20 @@ class PicturesService(
             )
     ).map { it.identifier }
 
-    fun linkTag(pictureId: String, tagId: String): Mono<TagProjection> = send<Any>(
+    fun linkTag(pictureId: String, tagId: String): Flux<TagLink> = send<PictureId>(
             LinkTagCommand(
                     pictureId = PictureId(pictureId),
                     tagId = TagId(tagId),
                     tagLinkType = TagLinkType.USER
             )
-    ).flatMap { tagRepository.findById(tagId) }
+    ).flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }.flatMapMany { it.tags.toFlux() }
 
-    fun unlinkTag(pictureId: String, tagId: String): Mono<Void> = send(
+    fun unlinkTag(pictureId: String, tagId: String): Flux<TagLink> = send<PictureId>(
             UnlinkTagCommand(
                     pictureId = PictureId(pictureId),
                     tagId = TagId(tagId),
             )
-    )
+    ).flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }.flatMapMany { it.tags.toFlux() }
 
     companion object {
         val updateTimeout: Duration = Duration.ofSeconds(30)
