@@ -10,4 +10,4 @@ data class TagProjection(
         @Column(unique = true) val label: String,
         val tagColor: String,
         val textColor: String,
-)
+) : AuditedProjection()

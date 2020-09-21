@@ -11,4 +11,4 @@ data class DuplicateMatchProjection(
         val similarity: Int,
         @Transient val picture: PictureProjection? = null,
         @Transient val target: PictureProjection? = null,
-)
+): AuditedProjection()

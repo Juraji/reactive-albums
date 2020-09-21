@@ -21,7 +21,7 @@ data class PictureProjection(
 
         @ElementCollection(fetch = FetchType.EAGER)
         val tags: Set<TagLink> = emptySet(),
-)
+) : AuditedProjection()
 
 @Embeddable
 data class TagLink(

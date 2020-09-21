@@ -9,4 +9,4 @@ data class DirectoryProjection(
         val location: String,
         val displayName: String,
         val automaticScanEnabled: Boolean,
-)
+) : AuditedProjection()
