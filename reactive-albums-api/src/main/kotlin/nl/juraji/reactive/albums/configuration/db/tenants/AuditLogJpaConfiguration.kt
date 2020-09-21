@@ -23,23 +23,23 @@ import javax.sql.DataSource
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        entityManagerFactoryRef = "projectionsEntityManagerFactory",
-        transactionManagerRef = "projectionsTransactionManager",
-        basePackages = ["nl.juraji.reactive.albums.query.projections.repositories"]
+        entityManagerFactoryRef = "auditLogEntityManagerFactory",
+        transactionManagerRef = "auditLogTransactionManager",
+        basePackages = ["nl.juraji.reactive.albums.query.audit.repositories"]
 )
-class ProjectionsJpaConfiguration(
+class AuditLogJpaConfiguration(
         private val multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
 
-    @Bean(name = ["projectionsScheduler"])
+    @Bean(name = ["auditLogScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(8, NumberedThreadFactory("projections-scheduler"))
+        val pool: ExecutorService = Executors.newFixedThreadPool(8, NumberedThreadFactory("auditLog-scheduler"))
         return Schedulers.fromExecutor(pool)
     }
 
-    @Bean(name = ["projectionsDataSource"])
+    @Bean(name = ["auditLogDataSource"])
     fun dataSource(): DataSource {
-        val (url, username, password) = multiTenancyConfiguration.findTenant("projections")
+        val (url, username, password) = multiTenancyConfiguration.findTenant("auditLog")
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)
@@ -47,21 +47,21 @@ class ProjectionsJpaConfiguration(
                 .build()
     }
 
-    @Bean(name = ["projectionsEntityManagerFactory"])
-    fun projectionsEntityManagerFactory(
+    @Bean(name = ["auditLogEntityManagerFactory"])
+    fun auditLogEntityManagerFactory(
             builder: EntityManagerFactoryBuilder,
-            @Qualifier("projectionsDataSource") dataSource: DataSource,
+            @Qualifier("auditLogDataSource") dataSource: DataSource,
     ): LocalContainerEntityManagerFactoryBean {
         return builder
                 .dataSource(dataSource)
-                .packages("nl.juraji.reactive.albums.query.projections")
-                .persistenceUnit("projections")
+                .packages("nl.juraji.reactive.albums.query.audit")
+                .persistenceUnit("auditLog")
                 .build()
     }
 
-    @Bean(name = ["projectionsTransactionManager"])
-    fun projectionsTransactionManager(
-            @Qualifier("projectionsEntityManagerFactory") entityManagerFactory: EntityManagerFactory,
+    @Bean(name = ["auditLogTransactionManager"])
+    fun auditLogTransactionManager(
+            @Qualifier("auditLogEntityManagerFactory") entityManagerFactory: EntityManagerFactory,
     ): PlatformTransactionManager {
         return JpaTransactionManager(entityManagerFactory)
     }

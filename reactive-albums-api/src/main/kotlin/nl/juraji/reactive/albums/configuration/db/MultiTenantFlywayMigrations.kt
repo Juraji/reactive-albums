@@ -6,6 +6,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.task.TaskExecutor
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @Configuration
 class MultiTenantFlywayMigrations(

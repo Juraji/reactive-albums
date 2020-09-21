@@ -31,3 +31,8 @@ multi-tenancy:
       username: sa
       password: sa
       driver-class-name: org.h2.Driver
+    - tenantId: auditLog
+      url: jdbc:h2:mem:albums-audit-log-db
+      username: sa
+      password: sa
+      driver-class-name: org.h2.Driver

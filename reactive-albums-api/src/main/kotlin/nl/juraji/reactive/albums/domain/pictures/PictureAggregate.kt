@@ -9,6 +9,7 @@ import nl.juraji.reactive.albums.domain.tags.TagId
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.common.Assert
 import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.messaging.MetaData
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
@@ -42,7 +43,8 @@ class PictureAggregate() {
                         location = cmd.location,
                         pictureType = pictureType!!,
                         directoryId = cmd.directoryId
-                )
+                ),
+                MetaData.with("AUDIT", "New picture added: $displayName")
         )
     }
 
@@ -59,7 +61,8 @@ class PictureAggregate() {
                         pictureId = pictureId,
                         location = location,
                         targetLocation = targetLocation,
-                )
+                ),
+                MetaData.with("AUDIT", "Picture moved from $location to $targetLocation")
         )
 
         return pictureId
@@ -72,6 +75,10 @@ class PictureAggregate() {
                         pictureId = pictureId,
                         location = location,
                         physicallyDeleted = cmd.deletePhysicalFile
+                ),
+                MetaData.with("AUDIT",
+                        if (cmd.deletePhysicalFile) "Picture deleted physically and from registry"
+                        else "Picture deleted from registry"
                 )
         )
 
@@ -91,7 +98,8 @@ class PictureAggregate() {
                         lastModifiedTime = lastModifiedTime,
                         imageWidth = imageWidth,
                         imageHeight = imageHeight,
-                )
+                ),
+                MetaData.with("AUDIT", "File attributes updated")
         )
     }
 
@@ -100,7 +108,8 @@ class PictureAggregate() {
                 ContentHashUpdatedEvent(
                         pictureId = pictureId,
                         contentHash = bitSet
-                )
+                ),
+                MetaData.with("AUDIT", "Content analysis completed")
         )
     }
 
@@ -112,7 +121,8 @@ class PictureAggregate() {
                         pictureId = this.pictureId,
                         tagId = tagId,
                         linkType = tagLinkType,
-                )
+                ),
+                MetaData.with("AUDIT", "Tag ($tagId) added")
         )
     }
 
@@ -123,7 +133,8 @@ class PictureAggregate() {
                 TagUnlinkedEvent(
                         pictureId = pictureId,
                         tagId = tagId
-                )
+                ),
+                MetaData.with("AUDIT", "Tag ($tagId) removed")
         )
     }
 
@@ -136,7 +147,8 @@ class PictureAggregate() {
                         targetId = targetId,
                         similarity = similarity,
                         matchId = DuplicateMatchId()
-                )
+                ),
+                MetaData.with("AUDIT", "Duplicate ($targetId) linked")
         )
     }
 
@@ -147,7 +159,8 @@ class PictureAggregate() {
                 DuplicateUnlinkedEvent(
                         pictureId = pictureId,
                         matchId = matchId
-                )
+                ),
+                MetaData.with("AUDIT", "Duplicate (${duplicates[matchId]}) unlinked")
         )
     }
 

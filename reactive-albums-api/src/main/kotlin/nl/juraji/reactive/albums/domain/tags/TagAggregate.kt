@@ -10,6 +10,7 @@ import nl.juraji.reactive.albums.domain.tags.events.TagUpdatedEvent
 import nl.juraji.reactive.albums.util.RgbColor
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.messaging.MetaData
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
@@ -33,7 +34,8 @@ class TagAggregate() {
                         label = cmd.label,
                         tagColor = tagColor,
                         textColor = textColor,
-                )
+                ),
+                MetaData.with("AUDIT", "Tag created with label ${cmd.label}")
         )
     }
 
@@ -48,7 +50,11 @@ class TagAggregate() {
                         label = cmd.label,
                         tagColor = cmd.tagColor,
                         textColor = cmd.textColor
-                )
+                ),
+                MetaData.with("AUDIT", "Tag updated:"
+                        + (if (cmd.label != null) "label to ${cmd.label}" else null)
+                        + (if (cmd.tagColor != null) ", tag color to ${cmd.tagColor}" else null)
+                        + (if (cmd.textColor != null) "text color to ${cmd.textColor}" else null))
         )
 
         return tagId
