@@ -2,12 +2,10 @@ package nl.juraji.reactive.albums.domain.pictures.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.ExternalCommandHandler
-import nl.juraji.reactive.albums.domain.Validate
 import nl.juraji.reactive.albums.domain.pictures.PictureAggregate
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.AnalyzePictureMetaDataCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
-import nl.juraji.reactive.albums.services.Dimensions
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.LoggerCompanion
@@ -18,11 +16,8 @@ import org.axonframework.eventhandling.EventHandler
 import org.axonframework.modelling.command.Repository
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import java.nio.file.Path
-import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
 
 @Service
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
@@ -34,42 +29,32 @@ class PictureMetaDataCommandHandler(
 ) : ExternalCommandHandler<PictureAggregate, PictureId>(repository) {
 
     @CommandHandler
-    fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId = execute(cmd.pictureId) {
-        val (fileSize, lastModifiedTime) = readFileAttributes(cmd.pictureId, getLocation())
-        setFileAttributes(fileSize = fileSize, lastModifiedTime = lastModifiedTime)
+    fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId {
+        fileSystemService.readAttributes(cmd.pictureLocation).subscribe { fileAttributes ->
+            val lastModifiedTime = LocalDateTime.ofInstant(fileAttributes.lastModifiedTime().toInstant(), ZoneId.systemDefault())
+            execute(cmd.pictureId) {
+                setFileAttributes(fileSize = fileAttributes.size(), lastModifiedTime = lastModifiedTime)
+            }
+        }
 
-        val (width, height) = getImageDimensions(cmd.pictureId, getLocation())
-        setFileAttributes(imageWidth = width, imageHeight = height)
+        imageService.getImageDimensions(cmd.pictureLocation).subscribe { (width, height) ->
+            execute(cmd.pictureId) {
+                setFileAttributes(imageWidth = width, imageHeight = height)
+            }
+        }
 
-        val contentHash = analyzeImageContent(cmd.pictureId, getLocation())
-        setContentHash(contentHash)
+        imageService.createContentHash(cmd.pictureLocation).subscribe { contentHash ->
+            execute(cmd.pictureId) {
+                setContentHash(contentHash)
+            }
+        }
+
+        return cmd.pictureId
     }
 
     @EventHandler
     fun on(evt: PictureCreatedEvent) {
-        commandGateway.send<Unit>(AnalyzePictureMetaDataCommand(pictureId = evt.pictureId))
-    }
-
-    private fun readFileAttributes(pictureId: PictureId, location: Path): Pair<Long, LocalDateTime> {
-        logger.debug("Reading file attributes for $pictureId")
-        val convertLastModifiedTime: (BasicFileAttributes) -> LocalDateTime = {
-            LocalDateTime.ofInstant(it.lastModifiedTime().toInstant(), ZoneId.systemDefault())
-        }
-
-        return fileSystemService.readAttributes(location)
-                .map { it.size() to convertLastModifiedTime(it) }
-                .block() ?: Validate.fail { "Failed reading file attributes of image $pictureId" }
-    }
-
-    private fun getImageDimensions(pictureId: PictureId, location: Path): Dimensions {
-        return imageService.getImageDimensions(location).block()
-                ?: Validate.fail { "Failed reading dimensions of image $pictureId" }
-    }
-
-    private fun analyzeImageContent(pictureId: PictureId, location: Path): BitSet {
-        logger.debug("Analyzing image content of $pictureId")
-        return imageService.createContentHash(location).block()
-                ?: Validate.fail { "Failed creating content hash for image $pictureId" }
+        commandGateway.send<Unit>(AnalyzePictureMetaDataCommand(pictureId = evt.pictureId, pictureLocation = evt.location))
     }
 
     companion object : LoggerCompanion(PictureMetaDataCommandHandler::class)

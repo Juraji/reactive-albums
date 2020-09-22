@@ -154,6 +154,7 @@ class FileWatchService(
 
             commandGateway.send<Unit>(AnalyzePictureMetaDataCommand(
                     pictureId = PictureId(it.id),
+                    pictureLocation = eventPath,
             ))
         }
     }
