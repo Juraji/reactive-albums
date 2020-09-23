@@ -1,29 +1,28 @@
 package nl.juraji.reactive.albums.api.pictures
 
-import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagLink
-import nl.juraji.reactive.albums.query.projections.TagProjection
-import nl.juraji.reactive.albums.services.PicturesService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
 @RestController
 class PictureCommandController(
-        private val picturesService: PicturesService,
+        private val pictureCommandsService: PictureCommandsService,
 ) {
 
     @PostMapping("/api/pictures/{pictureId}/rescan-duplicates")
     fun rescanDuplicates(
             @PathVariable("pictureId") pictureId: String,
-    ): Mono<PictureId> = picturesService.rescanDuplicates(pictureId = pictureId)
+    ): Mono<String> = pictureCommandsService
+            .rescanDuplicates(pictureId = pictureId)
+            .map { it.identifier }
 
     @DeleteMapping("/api/pictures/{pictureId}/duplicate-matches/{matchId}")
     fun unlinkDuplicateMatch(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("matchId") matchId: String,
-    ): Mono<Void> = picturesService.unlinkDuplicateMatch(
+    ): Mono<Void> = pictureCommandsService.unlinkDuplicateMatch(
             pictureId = pictureId,
             matchId = matchId
     )
@@ -32,23 +31,25 @@ class PictureCommandController(
     fun movePicture(
             @PathVariable("pictureId") pictureId: String,
             @RequestParam("targetLocation") targetLocation: String,
-    ): Mono<PictureProjection> = picturesService.movePicture(pictureId, targetLocation)
+    ): Mono<PictureProjection> = pictureCommandsService.movePicture(pictureId, targetLocation)
 
     @DeleteMapping("/api/pictures/{pictureId}")
     fun deletePicture(
             @PathVariable("pictureId") pictureId: String,
             @RequestParam("deletePhysicalFile", required = false, defaultValue = "false") deletePhysicalFile: Boolean,
-    ): Mono<String> = picturesService.deletePicture(pictureId = pictureId, deletePhysicalFile = deletePhysicalFile)
+    ): Mono<String> = pictureCommandsService
+            .deletePicture(pictureId = pictureId, deletePhysicalFile = deletePhysicalFile)
+            .map { it.identifier }
 
     @PostMapping("/api/pictures/{pictureId}/tags/{tagId}")
     fun linkTag(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("tagId") tagId: String,
-    ): Flux<TagLink> = picturesService.linkTag(pictureId, tagId)
+    ): Flux<TagLink> = pictureCommandsService.linkTag(pictureId, tagId)
 
     @DeleteMapping("/api/pictures/{pictureId}/tags/{tagId}")
     fun unlinkTag(
             @PathVariable("pictureId") pictureId: String,
             @PathVariable("tagId") tagId: String,
-    ): Flux<TagLink> = picturesService.unlinkTag(pictureId, tagId)
+    ): Flux<TagLink> = pictureCommandsService.unlinkTag(pictureId, tagId)
 }

@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.services
+package nl.juraji.reactive.albums.api.tags
 
 import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.ValidateAsync

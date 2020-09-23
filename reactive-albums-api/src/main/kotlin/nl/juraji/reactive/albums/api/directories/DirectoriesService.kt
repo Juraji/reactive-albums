@@ -1,4 +1,4 @@
-package nl.juraji.reactive.albums.services
+package nl.juraji.reactive.albums.api.directories
 
 import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.ValidateAsync
@@ -8,6 +8,7 @@ import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectory
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
+import nl.juraji.reactive.albums.services.FileSystemService
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux

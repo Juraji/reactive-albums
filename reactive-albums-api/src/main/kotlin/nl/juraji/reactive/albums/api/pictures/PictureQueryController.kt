@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono
 
 @RestController
 class PictureQueryController(
-        private val pictureRepository: PictureRepository,
+        private val pictureQueryService: PictureQueryService,
 ) {
 
     @GetMapping("/api/pictures")
@@ -27,15 +27,11 @@ class PictureQueryController(
             @RequestParam(name = "filter", required = false) filter: String?,
     ): Mono<Page<PictureProjection>> {
         val pageable: Pageable = PageRequest.of(page, size, sort)
-        return when {
-            filter.isNullOrBlank() -> pictureRepository.findAll(pageable)
-            filter.startsWith("tag:") -> pictureRepository.findAllByTagStartsWithIgnoreCase(filter.substring(4), pageable)
-            else -> pictureRepository.findAllByLocationContainsIgnoreCase(filter, pageable)
-        }
+        return pictureQueryService.getPictures(filter, pageable)
     }
 
     @GetMapping("/api/pictures/{pictureId}")
     fun getPicture(
             @PathVariable("pictureId") pictureId: String,
-    ): Mono<PictureProjection> = pictureRepository.findById(pictureId)
+    ): Mono<PictureProjection> = pictureQueryService.getPicture(pictureId)
 }

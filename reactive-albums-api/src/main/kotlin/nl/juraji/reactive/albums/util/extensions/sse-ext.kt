@@ -9,7 +9,7 @@ typealias ServerSentEventFlux<T> = Flux<ServerSentEvent<T?>>
 
 fun <T> Flux<T>.toServerSentEvents(
         heartbeatDelay: Duration = Duration.ZERO,
-        heartbeatInterval: Duration = Duration.ofSeconds(10)
+        heartbeatInterval: Duration = Duration.ofSeconds(10),
 ): ServerSentEventFlux<T> {
 
     val sourceStream: ServerSentEventFlux<T> = this.map {

@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.api.tags
 
 import nl.juraji.reactive.albums.query.projections.TagProjection
-import nl.juraji.reactive.albums.services.TagsService
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
 

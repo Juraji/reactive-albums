@@ -11,8 +11,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.just(true)
         val validated = ValidateAsync.isTrue(mono) { "Should not throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectNext(true)
                 .expectComplete()
                 .verify()
@@ -23,8 +22,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.just(false)
         val validated = ValidateAsync.isTrue(mono) { "Should throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectErrorMatches { it is ValidationException && it.message == "Should throw" }
                 .verify()
     }
@@ -34,8 +32,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.just(false)
         val validated = ValidateAsync.isFalse(mono) { "Should not throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectNext(true)
                 .expectComplete()
                 .verify()
@@ -46,8 +43,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.just(true)
         val validated = ValidateAsync.isFalse(mono) { "Should throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectErrorMatches { it is ValidationException && it.message == "Should throw" }
                 .verify()
     }
@@ -57,8 +53,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.just("Something")
         val validated = ValidateAsync.isNotNull(mono) { "Should not throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectNext(true)
                 .expectComplete()
                 .verify()
@@ -69,8 +64,7 @@ internal class ValidateAsyncTest {
         val mono = Mono.empty<String>()
         val validated = ValidateAsync.isNotNull(mono) { "Should throw" }
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectErrorMatches { it is ValidationException && it.message == "Should throw" }
                 .verify()
     }
@@ -82,8 +76,7 @@ internal class ValidateAsyncTest {
                 ValidateAsync.isFalse(Mono.just(false)) { "Should not throw" }
         )
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectNext(true)
                 .expectComplete()
                 .verify()
@@ -96,8 +89,7 @@ internal class ValidateAsyncTest {
                 ValidateAsync.isTrue(Mono.just(false)) { "Should throw" }
         )
 
-        StepVerifier
-                .create(validated)
+        StepVerifier.create(validated)
                 .expectErrorMatches { it is ValidationException && it.message == "Should throw" }
                 .verify()
     }

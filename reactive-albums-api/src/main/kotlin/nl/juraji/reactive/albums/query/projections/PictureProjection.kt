@@ -30,4 +30,6 @@ data class TagLink(
         val linkType: TagLinkType,
         @ManyToOne(fetch = FetchType.EAGER)
         val tag: TagProjection,
-)
+) : Comparable<TagLink> {
+    override fun compareTo(other: TagLink): Int = compareValuesBy(this, other) { it.linkType }
+}
