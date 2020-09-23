@@ -45,7 +45,7 @@ class DirectoryCommandService(
         }
     }
 
-    fun unregisterDirectory(directoryId: DirectoryId, recursive: Boolean): Mono<List<String>> {
+    fun unregisterDirectory(directoryId: DirectoryId, recursive: Boolean): Flux<DirectoryId> {
         val directoryIds: Flux<DirectoryId> = if (recursive) {
             directoryRepository
                     .findById(directoryId.identifier)
@@ -58,8 +58,6 @@ class DirectoryCommandService(
         return directoryIds
                 .map { UnregisterDirectoryCommand(directoryId = it) }
                 .flatMap { send<DirectoryId>(it) }
-                .map { it.identifier }
-                .collectList()
     }
 
     fun updateDirectory(directoryId: DirectoryId, automaticScanEnabled: Boolean?): Mono<DirectoryProjection> {

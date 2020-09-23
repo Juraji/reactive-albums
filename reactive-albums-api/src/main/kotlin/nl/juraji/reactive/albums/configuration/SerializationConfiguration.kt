@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import nl.juraji.reactive.albums.util.serialization.BitsetDeSerializer
 import nl.juraji.reactive.albums.util.serialization.BitsetSerializer
+import nl.juraji.reactive.albums.util.serialization.EntityIdSerializer
 import org.axonframework.serialization.Serializer
 import org.axonframework.serialization.json.JacksonSerializer
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -31,7 +32,8 @@ class SerializationConfiguration {
                             KotlinModule()
                     )
                     .serializers(
-                            BitsetSerializer()
+                            BitsetSerializer(),
+                            EntityIdSerializer()
                     )
                     .deserializers(
                             BitsetDeSerializer()

@@ -32,7 +32,7 @@ class DirectoryCommandController(
     fun unregisterDirectory(
             @PathVariable("directoryId") directoryId: String,
             @RequestParam("recursive", required = false, defaultValue = "false") recursive: Boolean,
-    ): Mono<List<String>> = directoryCommandService.unregisterDirectory(
+    ): Flux<DirectoryId> = directoryCommandService.unregisterDirectory(
             directoryId = DirectoryId(directoryId),
             recursive = recursive
     )

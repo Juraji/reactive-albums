@@ -7,10 +7,11 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
+import nl.juraji.reactive.albums.domain.EntityId
 import java.util.*
 
 class BitsetDeSerializer : StdDeserializer<BitSet>(BitSet::class.java) {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): BitSet {
+    override fun deserialize(p: JsonParser, ctx: DeserializationContext): BitSet {
         var longArray = LongArray(0)
         var token: JsonToken = p.nextValue()
 
@@ -30,5 +31,11 @@ class BitsetSerializer : StdSerializer<BitSet>(BitSet::class.java) {
         gen.writeStartArray()
         longArray.forEach { gen.writeNumber(it) }
         gen.writeEndArray()
+    }
+}
+
+class EntityIdSerializer: StdSerializer<EntityId>(EntityId::class.java) {
+    override fun serialize(value: EntityId, gen: JsonGenerator?, serializers: SerializerProvider) {
+        serializers.defaultSerializeValue(value.identifier, gen)
     }
 }
