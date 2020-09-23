@@ -41,6 +41,7 @@ internal class PictureCommandControllerTest {
     private val fixture = Fixture {
         register(PictureType::class) { PictureType.JPEG }
         register(LocalDateTime::class) { LocalDateTime.now() }
+        register(PictureProjection::class) { PictureProjection(nextString(), nextString(), nextString(), nextString(), nextString(), next()) }
     }
 
     @MockkBean

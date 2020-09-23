@@ -31,6 +31,7 @@ internal class PictureEventsServiceTest {
 
     private val fixture = Fixture {
         register(PictureType::class) { PictureType.JPEG }
+        register(EventType::class) { EventType.UPSERT }
         register(LocalDateTime::class) { LocalDateTime.now() }
     }
 

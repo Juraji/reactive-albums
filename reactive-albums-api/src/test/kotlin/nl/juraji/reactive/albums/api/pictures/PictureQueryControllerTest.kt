@@ -103,7 +103,7 @@ internal class PictureQueryControllerTest {
     }
 
     @Test
-    fun `getPicture`() {
+    fun `getPicture should render expected picture`() {
         val picture: PictureProjection = fixture.next()
 
         every { pictureQueryService.getPicture(picture.id) } returnsMonoOf picture
