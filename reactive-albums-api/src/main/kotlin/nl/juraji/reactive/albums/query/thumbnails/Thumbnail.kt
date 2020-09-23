@@ -9,7 +9,8 @@ import javax.persistence.Lob
 data class Thumbnail(
         @Id val id: String,
         @Lob val thumbnail: ByteArray,
-        val lastModifiedTime: LocalDateTime
+        val contentType: String,
+        val lastModifiedTime: LocalDateTime,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -17,6 +18,8 @@ data class Thumbnail(
 
         if (id != other.id) return false
         if (!thumbnail.contentEquals(other.thumbnail)) return false
+        if (lastModifiedTime != other.lastModifiedTime) return false
+        if (contentType != other.contentType) return false
 
         return true
     }
@@ -24,6 +27,8 @@ data class Thumbnail(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + thumbnail.contentHashCode()
+        result = 31 * result + lastModifiedTime.hashCode()
+        result = 31 * result + contentType.hashCode()
         return result
     }
 }

@@ -21,11 +21,12 @@ class ThumbnailsEventHandler(
     @EventHandler
     fun on(evt: PictureCreatedEvent) {
         imageService.createThumbnail(evt.location)
-                .map {
+                .map { (mediaType, bytes) ->
                     Thumbnail(
                             id = evt.pictureId.identifier,
-                            thumbnail = it,
-                            lastModifiedTime = LocalDateTime.now()
+                            thumbnail = bytes,
+                            lastModifiedTime = LocalDateTime.now(),
+                            contentType = mediaType.toString()
                     )
                 }
                 .flatMap { thumbnailRepository.save(it) }

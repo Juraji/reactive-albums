@@ -46,10 +46,10 @@ internal class PictureImageServiceTest {
 
         every { thumbnailRepository.findById(any()) } returnsMonoOf thumbnail
 
-        val result: Mono<ByteArray> = pictureImageService.getThumbnail(pictureId.identifier)
+        val result: Mono<Thumbnail> = pictureImageService.getThumbnail(pictureId.identifier)
 
         StepVerifier.create(result)
-                .expectNext(thumbnail.thumbnail)
+                .expectNext(thumbnail)
                 .verifyComplete()
     }
 
@@ -59,7 +59,7 @@ internal class PictureImageServiceTest {
 
         every { thumbnailRepository.findById(any()) }.returnsEmptyMono()
 
-        val result: Mono<ByteArray> = pictureImageService.getThumbnail(pictureId.identifier)
+        val result: Mono<Thumbnail> = pictureImageService.getThumbnail(pictureId.identifier)
 
         StepVerifier.create(result)
                 .expectError(NoSuchEntityException::class.java)

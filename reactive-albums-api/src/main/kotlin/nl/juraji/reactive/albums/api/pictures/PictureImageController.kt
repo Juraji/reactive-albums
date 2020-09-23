@@ -1,9 +1,11 @@
 package nl.juraji.reactive.albums.api.pictures
 
+import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.http.CacheControl
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -14,22 +16,23 @@ import java.time.Duration
 
 @RestController
 class PictureImageController(
-        private val pictureImageService: PictureImageService
+        private val pictureImageService: PictureImageService,
 ) {
 
     @GetMapping("/api/pictures/{pictureId}/thumbnail")
-    fun getPictureThumbnail(
+    fun getPictureThumbnailImage(
             @PathVariable("pictureId") pictureId: String,
     ): Mono<ResponseEntity<Resource>> = pictureImageService
             .getThumbnail(pictureId)
-            .map {
+            .map {(_, thumbnail, contentType)->
                 ResponseEntity.ok()
                         .cacheControl(thumbnailCacheControl)
-                        .body(ByteArrayResource(it))
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .body(ByteArrayResource(thumbnail))
             }
 
     @GetMapping("/api/pictures/{pictureId}/image")
-    fun getPictures(
+    fun getPictureImage(
             @PathVariable("pictureId") pictureId: String,
     ): Mono<Resource> = pictureImageService
             .getPictureLocation(pictureId)

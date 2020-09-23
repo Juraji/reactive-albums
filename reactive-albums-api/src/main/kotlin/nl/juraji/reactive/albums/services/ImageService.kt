@@ -6,6 +6,7 @@ import nl.juraji.reactive.albums.util.extensions.deferTo
 import nl.juraji.reactive.albums.util.extensions.then
 import org.imgscalr.Scalr
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
@@ -27,14 +28,17 @@ class ImageService(
             readImage(location)
                     .map { Dimensions(it.width, it.height) }
 
-    fun createThumbnail(source: Path): Mono<ByteArray> {
+    fun createThumbnail(source: Path): Mono<Pair<MediaType, ByteArray>> {
         return readImage(source)
                 .map { Scalr.resize(it, Scalr.Method.ULTRA_QUALITY, pictureConfiguration.thumbnailSize) }
                 .map { image ->
-                    ByteArrayOutputStream().use { out ->
-                        ImageIO.write(image, "jpeg", out)
+                    val mediaType = MediaType.IMAGE_JPEG
+                    val bytes = ByteArrayOutputStream().use { out ->
+                        ImageIO.write(image, mediaType.subtype, out)
                         out.toByteArray()
                     }
+
+                    mediaType to bytes
                 }
     }
 

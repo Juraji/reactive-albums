@@ -24,8 +24,11 @@ import org.springframework.http.MediaType
 import org.springframework.http.codec.ServerSentEvent
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.reactive.server.FluxExchangeResult
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
+import org.springframework.test.web.reactive.server.returnResult
+import reactor.test.StepVerifier
 import java.time.LocalDateTime
 
 @ActiveProfiles("test")
@@ -59,21 +62,17 @@ internal class PictureEventsControllerTest {
 
         every { pictureEventsService.getDuplicateMatchCountStream() } returnsFluxOf streamData
 
-        webTestClient.get()
+        val returnResult: FluxExchangeResult<ServerSentEvent<Long?>> = webTestClient.get()
                 .uri("/api/events/duplicate-match-count")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody<String>()
-                .isEqualTo("""
-                    data:${streamData[0].data()}
+                .returnResult()
 
-                    data:${streamData[1].data()}
-
-                    data:${streamData[2].data()}
-
-
-                """.trimIndent())
+        StepVerifier.create(returnResult.responseBody.map { it.data()!! })
+                .expectNextSequence(streamData.map { it.data() })
+                .thenCancel()
+                .verify()
     }
 
     @Test
@@ -91,21 +90,17 @@ internal class PictureEventsControllerTest {
 
         every { pictureEventsService.getAllDuplicateMatchesStream() } returnsFluxOf streamData
 
-        webTestClient.get()
+        val returnResult: FluxExchangeResult<ServerSentEvent<ReactiveEvent<DuplicateMatchProjection>?>> = webTestClient.get()
                 .uri("/api/events/duplicate-matches")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody<String>()
-                .isEqualTo("""
-                    data:${objectMapper.writeValueAsString(streamData[0].data())}
+                .returnResult()
 
-                    data:${objectMapper.writeValueAsString(streamData[1].data())}
-
-                    data:${objectMapper.writeValueAsString(streamData[2].data())}
-
-
-                """.trimIndent())
+        StepVerifier.create(returnResult.responseBody.map { it.data()!! })
+                .expectNextSequence(streamData.map { it.data() })
+                .thenCancel()
+                .verify()
     }
 
     @Test
@@ -125,20 +120,16 @@ internal class PictureEventsControllerTest {
 
         every { pictureEventsService.getDuplicateMatchStreamByPictureId(pictureId.identifier) } returnsFluxOf streamData
 
-        webTestClient.get()
+        val returnResult: FluxExchangeResult<ServerSentEvent<ReactiveEvent<DuplicateMatchProjection>?>>  = webTestClient.get()
                 .uri("/api/events/duplicate-matches/$pictureId")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .exchange()
                 .expectStatus().isOk
-                .expectBody<String>()
-                .isEqualTo("""
-                    data:${objectMapper.writeValueAsString(streamData[0].data())}
+                .returnResult()
 
-                    data:${objectMapper.writeValueAsString(streamData[1].data())}
-
-                    data:${objectMapper.writeValueAsString(streamData[2].data())}
-
-
-                """.trimIndent())
+        StepVerifier.create(returnResult.responseBody.map { it.data()!! })
+                .expectNextSequence(streamData.map { it.data() })
+                .thenCancel()
+                .verify()
     }
 }

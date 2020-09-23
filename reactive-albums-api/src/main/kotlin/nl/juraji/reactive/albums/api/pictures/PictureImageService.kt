@@ -2,6 +2,7 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.query.projections.handlers.NoSuchEntityException
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.thumbnails.Thumbnail
 import nl.juraji.reactive.albums.query.thumbnails.repositories.ReactiveThumbnailRepository
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -13,9 +14,8 @@ class PictureImageService(
         private val thumbnailRepository: ReactiveThumbnailRepository,
 ) {
 
-    fun getThumbnail(pictureId: String): Mono<ByteArray> = thumbnailRepository
+    fun getThumbnail(pictureId: String): Mono<Thumbnail> = thumbnailRepository
             .findById(pictureId)
-            .map { it.thumbnail }
             .switchIfEmpty { Mono.error(NoSuchEntityException("Thumbnail", pictureId)) }
 
     fun getPictureLocation(pictureId: String): Mono<String> = pictureRepository
