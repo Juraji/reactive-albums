@@ -1,12 +1,9 @@
 package nl.juraji.reactive.albums.util
 
-import com.marcellogalhardo.fixture.Fixture
 import io.mockk.MockKAdditionalAnswerScope
 import io.mockk.MockKStubScope
-import nl.juraji.reactive.albums.domain.pictures.PictureType
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
 
 fun <T, B> MockKStubScope<Mono<T>, B>.returnsEmptyMono(): MockKAdditionalAnswerScope<Mono<T>, B> =
         this.returns(Mono.empty())

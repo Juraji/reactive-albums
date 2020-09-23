@@ -20,7 +20,7 @@ import java.nio.file.Path
 import java.time.Duration
 
 @Service
-class DirectoriesService(
+class DirectoryCommandService(
         commandGateway: CommandGateway,
         private val directoryRepository: DirectoryRepository,
         private val fileSystemService: FileSystemService,

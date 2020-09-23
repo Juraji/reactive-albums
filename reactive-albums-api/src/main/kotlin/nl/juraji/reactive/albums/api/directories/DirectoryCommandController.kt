@@ -8,13 +8,13 @@ import reactor.core.publisher.Mono
 
 @RestController
 class DirectoryCommandController(
-        private val directoriesService: DirectoriesService,
+        private val directoryCommandService: DirectoryCommandService,
 ) {
 
     @PostMapping("/api/directories")
     fun registerDirectory(
             @RequestBody dto: RegisterDirectoryDto,
-    ): Flux<DirectoryProjection> = directoriesService.registerDirectory(
+    ): Flux<DirectoryProjection> = directoryCommandService.registerDirectory(
             location = dto.location,
             recursive = dto.recursive
     )
@@ -23,7 +23,7 @@ class DirectoryCommandController(
     fun updateDirectory(
             @PathVariable("directoryId") directoryId: String,
             @RequestBody update: UpdateDirectoryDto,
-    ): Mono<DirectoryProjection> = directoriesService.updateDirectory(
+    ): Mono<DirectoryProjection> = directoryCommandService.updateDirectory(
             directoryId = DirectoryId(directoryId),
             automaticScanEnabled = update.automaticScanEnabled
     )
@@ -32,7 +32,7 @@ class DirectoryCommandController(
     fun unregisterDirectory(
             @PathVariable("directoryId") directoryId: String,
             @RequestParam("recursive", required = false, defaultValue = "false") recursive: Boolean,
-    ): Mono<List<String>> = directoriesService.unregisterDirectory(
+    ): Mono<List<String>> = directoryCommandService.unregisterDirectory(
             directoryId = DirectoryId(directoryId),
             recursive = recursive
     )
