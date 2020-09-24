@@ -7,9 +7,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import nl.juraji.reactive.albums.util.serialization.BitsetDeSerializer
-import nl.juraji.reactive.albums.util.serialization.BitsetSerializer
-import nl.juraji.reactive.albums.util.serialization.EntityIdSerializer
+import nl.juraji.reactive.albums.util.serialization.*
 import org.axonframework.serialization.Serializer
 import org.axonframework.serialization.json.JacksonSerializer
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -29,14 +27,9 @@ class SerializationConfiguration {
                     .serializationInclusion(JsonInclude.Include.NON_NULL)
                     .modules(
                             JavaTimeModule(),
-                            KotlinModule()
-                    )
-                    .serializers(
-                            BitsetSerializer(),
-                            EntityIdSerializer()
-                    )
-                    .deserializers(
-                            BitsetDeSerializer()
+                            KotlinModule(),
+                            bitSetModule,
+                            entityIdModule
                     )
                     .featuresToEnable(
                             MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS,
