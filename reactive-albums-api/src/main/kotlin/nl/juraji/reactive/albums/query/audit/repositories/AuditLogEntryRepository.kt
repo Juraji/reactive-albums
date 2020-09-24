@@ -10,17 +10,12 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 
 @Repository
 interface SyncAuditLogEntryRepository : JpaRepository<AuditLogEntry, Long> {
-    fun findByAggregateTypeAndAggregateId(
-            aggregate: AggregateType,
-            aggregateId: String,
-            pageable: Pageable,
-    ): Page<AuditLogEntry>
+    fun findByAggregateId(aggregateId: String, pageable: Pageable): Page<AuditLogEntry>
 }
 
 @Service
@@ -33,10 +28,9 @@ class AuditLogEntryRepository(
         scheduler,
         transactionTemplate
 ) {
-    fun findByAggregateTypeAndAggregateId(
-            aggregate: AggregateType,
+    fun findByAggregateId(
             aggregateId: String,
             pageable: Pageable,
     ): Mono<Page<AuditLogEntry>> =
-            from { it.findByAggregateTypeAndAggregateId(aggregate, aggregateId, pageable) }
+            from { it.findByAggregateId(aggregateId, pageable) }
 }
