@@ -11,6 +11,12 @@ fun <T, B> MockKStubScope<Mono<T>, B>.returnsEmptyMono(): MockKAdditionalAnswerS
 infix fun <T, B> MockKStubScope<Mono<T>, B>.returnsMonoOf(value: T): MockKAdditionalAnswerScope<Mono<T>, B> =
         this.returns(Mono.just(value))
 
+infix fun <T, B> MockKStubScope<Mono<T>, B>.returnsManyMonoOf(iterable: Iterable<T?>): MockKAdditionalAnswerScope<Mono<T>, B> =
+        this.returnsMany(iterable.map { Mono.justOrEmpty(it) })
+
+infix fun <T, B> MockKStubScope<Mono<T>, B>.returnsErrorMonoOf(t: () -> Throwable): MockKAdditionalAnswerScope<Mono<T>, B> =
+        this.returns(Mono.error(t))
+
 infix fun <T, B> MockKAdditionalAnswerScope<Mono<T>, B>.andThenMonoOf(value: T): MockKAdditionalAnswerScope<Mono<T>, B> =
         this.andThen(Mono.just(value))
 

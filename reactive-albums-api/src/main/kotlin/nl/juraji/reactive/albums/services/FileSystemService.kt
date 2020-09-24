@@ -46,7 +46,8 @@ class FileSystemService(
         private val syncFileSystemService: SyncFileSystemService,
         @Qualifier("fileIoScheduler") private val scheduler: Scheduler,
 ) {
-    fun exists(path: Path): Boolean = Files.exists(path)
+    fun exists(path: Path): Mono<Boolean> =
+            deferTo(scheduler) { syncFileSystemService.exists(path) }
 
     fun readContentType(path: Path) =
             deferTo(scheduler) { syncFileSystemService.readContentType(path) }

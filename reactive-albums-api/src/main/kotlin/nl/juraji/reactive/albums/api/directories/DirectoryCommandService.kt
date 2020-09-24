@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toFlux
-import reactor.kotlin.core.publisher.toMono
 import reactor.kotlin.extra.bool.not
 import java.nio.file.Path
 import java.time.Duration
@@ -29,10 +28,10 @@ class DirectoryCommandService(
     fun registerDirectory(location: Path, recursive: Boolean): Flux<DirectoryProjection> {
         return ValidateAsync.all(
                 ValidateAsync.isFalse(directoryRepository.existsByLocation(location = location.toString())) { "Directory $location is already registered" },
-                ValidateAsync.isTrue(fileSystemService.exists(location).toMono()) { "Directory $location does not exist" }
+                ValidateAsync.isTrue(fileSystemService.exists(location)) { "Directory $location does not exist" }
         ).flatMapMany {
             val directories: Flux<Path> = if (recursive) {
-                fileSystemService.listDirectoriesRecursive(location).toFlux()
+                fileSystemService.listDirectoriesRecursive(location)
                         .filterWhen { loc -> directoryRepository.existsByLocation(loc.toString()).not() }
             } else {
                 Flux.fromIterable(listOf(location))

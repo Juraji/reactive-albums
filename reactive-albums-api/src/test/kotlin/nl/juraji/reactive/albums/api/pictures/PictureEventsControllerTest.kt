@@ -1,22 +1,18 @@
 package nl.juraji.reactive.albums.api.pictures
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.marcellogalhardo.fixture.Fixture
 import com.marcellogalhardo.fixture.next
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import nl.juraji.reactive.albums.api.ApiTestConfiguration
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
-import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.repositories.EventType
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveEvent
 import nl.juraji.reactive.albums.util.returnsFluxOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.context.annotation.Import
@@ -26,10 +22,8 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.FluxExchangeResult
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.test.web.reactive.server.expectBody
 import org.springframework.test.web.reactive.server.returnResult
 import reactor.test.StepVerifier
-import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
@@ -43,10 +37,6 @@ internal class PictureEventsControllerTest {
 
     @Autowired
     private lateinit var webTestClient: WebTestClient
-
-    @Autowired
-    @Qualifier("objectMapper")
-    private lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `getDuplicateMatchCount should render duplicate match count stream`() {

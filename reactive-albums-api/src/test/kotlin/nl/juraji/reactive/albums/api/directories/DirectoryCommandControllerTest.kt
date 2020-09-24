@@ -35,7 +35,7 @@ internal class DirectoryCommandControllerTest {
 
     private val fixture = Fixture {
         register(LocalDateTime::class) { LocalDateTime.now() }
-        register(Path::class) { Paths.get("./") }
+        register(Path::class) { Paths.get(nextString()) }
     }
 
     @MockkBean
