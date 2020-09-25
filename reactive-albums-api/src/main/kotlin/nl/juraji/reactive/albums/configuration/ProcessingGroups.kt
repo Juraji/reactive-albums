@@ -4,5 +4,6 @@ object ProcessingGroups {
     const val DIRECTORY_SCANS = "directory-scans"
     const val PICTURE_ANALYSIS = "picture-analysis"
     const val PROJECTIONS = "projections"
-    const val TAGS = "tags"
+    const val AUDIT = "audit"
+    const val FILE_IO = "file-io"
 }

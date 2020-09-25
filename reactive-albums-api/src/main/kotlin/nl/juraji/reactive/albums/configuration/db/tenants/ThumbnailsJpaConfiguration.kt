@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
+import nl.juraji.reactive.albums.configuration.db.Tenant
 import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
@@ -27,18 +28,19 @@ import javax.sql.DataSource
         basePackages = ["nl.juraji.reactive.albums.query.thumbnails.repositories"]
 )
 class ThumbnailsJpaConfiguration(
-        private val multiTenancyConfiguration: MultiTenancyConfiguration,
+        multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
+    private val tennant: Tenant = multiTenancyConfiguration.findTenant("thumbnails")
 
     @Bean(name = ["thumbnailsScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(4, NumberedThreadFactory("thumbnails-scheduler"))
+        val pool: ExecutorService = Executors.newFixedThreadPool(tennant.connectionCount, NumberedThreadFactory("thumbnails-scheduler"))
         return Schedulers.fromExecutor(pool)
     }
 
     @Bean(name = ["thumbnailsDataSource"])
     fun dataSource(): DataSource {
-        val (url, username, password) = multiTenancyConfiguration.findTenant("thumbnails")
+        val (url, username, password) = tennant
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)

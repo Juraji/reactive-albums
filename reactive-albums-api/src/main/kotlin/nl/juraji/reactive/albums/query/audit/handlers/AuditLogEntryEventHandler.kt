@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.query.audit.handlers
 
+import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.EntityId
 import nl.juraji.reactive.albums.domain.directories.events.DirectoryEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureEvent
@@ -7,12 +8,14 @@ import nl.juraji.reactive.albums.domain.tags.events.TagEvent
 import nl.juraji.reactive.albums.query.audit.AggregateType
 import nl.juraji.reactive.albums.query.audit.AuditLogEntry
 import nl.juraji.reactive.albums.query.audit.repositories.AuditLogEntryRepository
+import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.messaging.annotation.MetaDataValue
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
+@ProcessingGroup(ProcessingGroups.AUDIT)
 class AuditLogEntryEventHandler(
         private val auditLogEntryRepository: AuditLogEntryRepository,
 ) {

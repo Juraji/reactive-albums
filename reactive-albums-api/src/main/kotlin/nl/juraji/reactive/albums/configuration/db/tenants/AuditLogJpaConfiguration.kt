@@ -1,13 +1,13 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
+import nl.juraji.reactive.albums.configuration.db.Tenant
 import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
@@ -28,18 +28,19 @@ import javax.sql.DataSource
         basePackages = ["nl.juraji.reactive.albums.query.audit.repositories"]
 )
 class AuditLogJpaConfiguration(
-        private val multiTenancyConfiguration: MultiTenancyConfiguration,
+        multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
+    private val tennant: Tenant = multiTenancyConfiguration.findTenant("auditLog")
 
     @Bean(name = ["auditLogScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(8, NumberedThreadFactory("auditLog-scheduler"))
+        val pool: ExecutorService = Executors.newFixedThreadPool(tennant.connectionCount, NumberedThreadFactory("auditLog-scheduler"))
         return Schedulers.fromExecutor(pool)
     }
 
     @Bean(name = ["auditLogDataSource"])
     fun dataSource(): DataSource {
-        val (url, username, password) = multiTenancyConfiguration.findTenant("auditLog")
+        val (url, username, password) = tennant
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)

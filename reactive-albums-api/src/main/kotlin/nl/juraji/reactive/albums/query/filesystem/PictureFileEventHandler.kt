@@ -1,9 +1,11 @@
 package nl.juraji.reactive.albums.query.filesystem
 
+import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureMovedEvent
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.services.FileWatchService
+import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -11,6 +13,7 @@ import java.nio.file.Path
 import java.time.Duration
 
 @Service
+@ProcessingGroup(ProcessingGroups.FILE_IO)
 class PictureFileEventHandler(
         private val fileSystemService: FileSystemService,
         private val fileWatchService: FileWatchService,

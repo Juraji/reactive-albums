@@ -29,27 +29,26 @@ class PictureMetaDataCommandHandler(
 ) : ExternalCommandHandler<PictureAggregate, PictureId>(repository) {
 
     @CommandHandler
-    fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId {
-        fileSystemService.readAttributes(cmd.pictureLocation).subscribe { fileAttributes ->
-            val lastModifiedTime = LocalDateTime.ofInstant(fileAttributes.lastModifiedTime().toInstant(), ZoneId.systemDefault())
-            execute(cmd.pictureId) {
-                setFileAttributes(fileSize = fileAttributes.size(), lastModifiedTime = lastModifiedTime)
-            }
-        }
+    fun handle(cmd: AnalyzePictureMetaDataCommand): PictureId = execute(cmd.pictureId) {
+        logger.debug("Reading file attributes for picture ${cmd.pictureId} at ${cmd.pictureLocation}")
+        fileSystemService.readAttributes(cmd.pictureLocation).blockOptional()
+                .map {
+                    val lastModifiedTime = LocalDateTime.ofInstant(it.lastModifiedTime().toInstant(), ZoneId.systemDefault())
+                    it.size() to lastModifiedTime
+                }
+                .ifPresent { (fileSize, lastModifiedTime) ->
+                    setFileAttributes(fileSize = fileSize, lastModifiedTime = lastModifiedTime)
+                }
 
-        imageService.getImageDimensions(cmd.pictureLocation).subscribe { (width, height) ->
-            execute(cmd.pictureId) {
-                setFileAttributes(imageWidth = width, imageHeight = height)
-            }
-        }
+        logger.debug("Reading image dimensions for picture ${cmd.pictureId} at ${cmd.pictureLocation}")
+        imageService.getImageDimensions(cmd.pictureLocation).blockOptional()
+                .ifPresent { (width, height) ->
+                    setFileAttributes(imageWidth = width, imageHeight = height)
+                }
 
-        imageService.createContentHash(cmd.pictureLocation).subscribe { contentHash ->
-            execute(cmd.pictureId) {
-                setContentHash(contentHash)
-            }
-        }
-
-        return cmd.pictureId
+        logger.debug("Generating content hash for picture ${cmd.pictureId} at ${cmd.pictureLocation}")
+        imageService.createContentHash(cmd.pictureLocation).blockOptional()
+                .ifPresent { setContentHash(it) }
     }
 
     @EventHandler

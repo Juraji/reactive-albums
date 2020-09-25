@@ -12,6 +12,7 @@ multi-tenancy:
       url: jdbc:h2:file:./albums-axon;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
       username: albums
       password: albums
+      connection-count: 1
       flyway:
         enabled: true
         baseline-on-migrate: true
@@ -20,6 +21,7 @@ multi-tenancy:
       url: jdbc:h2:file:./albums-projections;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
       username: albums
       password: albums
+      connection-count: 1
       flyway:
         enabled: true
         baseline-on-migrate: true
@@ -28,6 +30,7 @@ multi-tenancy:
       url: jdbc:h2:file:./albums-thumbnails;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
       username: albums
       password: albums
+      connection-count: 1
       flyway:
         enabled: true
         baseline-on-migrate: true
@@ -36,6 +39,7 @@ multi-tenancy:
       url: jdbc:h2:file:./albums-audit-log;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
       username: albums
       password: albums
+      connection-count: 1
       flyway:
         enabled: true
         baseline-on-migrate: true
