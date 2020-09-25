@@ -1,6 +1,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { AuditLogEntry, Sort } from '@types';
-import { fetchAuditLogPage } from './audit-log.thunks';
+import { fetchAuditLogPage, fetchAuditLogPageWithAggregateId } from './audit-log.thunks';
 
 export interface AuditLogSliceState {
   content: AuditLogEntry[];
@@ -13,7 +13,7 @@ export interface AuditLogSliceState {
   totalItemsAvailable: number;
   totalPagesAvailable: number;
   sort: Sort;
-  filter?: string;
+  aggregateId?: string;
 }
 
 const initialState: AuditLogSliceState = {
@@ -32,19 +32,39 @@ const initialState: AuditLogSliceState = {
 export const auditLogSliceName = 'auditLog';
 export const auditLogSliceReducer = createReducer(initialState, (builder) => {
   builder.addCase(fetchAuditLogPage.fulfilled, (state, action) => {
-    return state.copy({
-      content: action.payload.content,
-      isEmpty: action.payload.empty,
-      isFirst: action.payload.first,
-      isLast: action.payload.last,
-      pageNumber: action.payload.number,
-      itemsOnPage: action.payload.numberOfElements,
-      requestedPageSize: action.payload.size,
-      totalItemsAvailable: action.payload.totalElements,
-      totalPagesAvailable: action.payload.totalPages,
-      sort: action.meta.arg.sort,
-      filter: action.meta.arg.filter,
-    });
+    return state
+      .copy({
+        content: action.payload.content,
+        isEmpty: action.payload.empty,
+        isFirst: action.payload.first,
+        isLast: action.payload.last,
+        pageNumber: action.payload.number,
+        itemsOnPage: action.payload.numberOfElements,
+        requestedPageSize: action.payload.size,
+        totalItemsAvailable: action.payload.totalElements,
+        totalPagesAvailable: action.payload.totalPages,
+      })
+      .copyNotNull({
+        sort: action.meta.arg.sort,
+      });
+  });
+  builder.addCase(fetchAuditLogPageWithAggregateId.fulfilled, (state, action) => {
+    return state
+      .copy({
+        content: action.payload.content,
+        isEmpty: action.payload.empty,
+        isFirst: action.payload.first,
+        isLast: action.payload.last,
+        pageNumber: action.payload.number,
+        itemsOnPage: action.payload.numberOfElements,
+        requestedPageSize: action.payload.size,
+        totalItemsAvailable: action.payload.totalElements,
+        totalPagesAvailable: action.payload.totalPages,
+        aggregateId: action.meta.arg.aggregateId,
+      })
+      .copyNotNull({
+        sort: action.meta.arg.sort,
+      });
   });
 });
 

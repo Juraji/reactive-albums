@@ -5,11 +5,11 @@ import Form from 'react-bootstrap/Form';
 import { PAGINATION_SIZE_OPTIONS } from '../../config.json';
 import { useTranslation } from 'react-i18next';
 import Pagination from 'react-bootstrap/Pagination';
-import { useDebouncedValue, useDispatch } from '@hooks';
-import { fetchAuditLogPage, useAuditLogEntries } from '@reducers';
+import { useDispatch } from '@hooks';
+import { fetchAuditLogPage, fetchAuditLogPageWithAggregateId, useAuditLogEntries } from '@reducers';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import { ChevronDown, ChevronUp } from 'react-feather';
+import { ChevronDown, ChevronUp, RotateCcw } from 'react-feather';
 
 interface AuditLogControlsProps {}
 
@@ -27,14 +27,12 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
     totalItemsAvailable,
     totalPagesAvailable,
     sort,
-    filter,
+    aggregateId,
   } = useAuditLogEntries();
 
   const [sortInput, setSortInput] = useState(sort);
   const [pageSizeInput, setPageSizeInput] = useState(requestedPageSize);
   const [pageNoInput, setPageNoInput] = useState(pageNumber);
-  const [filterInput, setFilterInput] = useState<string>(filter || '');
-  const debouncedFilterInput = useDebouncedValue(filterInput, 500);
 
   const sizeOpts = useMemo(
     () =>
@@ -46,16 +44,18 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
     [totalItemsAvailable, t]
   );
 
+  const fetchOpts = useMemo(
+    () => ({
+      page: pageNoInput,
+      size: pageSizeInput,
+      sort: sortInput,
+    }),
+    [pageNoInput, pageSizeInput, sortInput]
+  );
+
   useEffect(() => {
-    dispatch(
-      fetchAuditLogPage({
-        filter: debouncedFilterInput,
-        page: pageNoInput,
-        size: pageSizeInput,
-        sort: sortInput,
-      })
-    );
-  }, [dispatch, debouncedFilterInput, pageNoInput, pageSizeInput, sortInput]);
+    dispatch(fetchAuditLogPage(fetchOpts));
+  }, [dispatch, fetchOpts]);
 
   function onSortPropertySelect(e: ChangeEvent<HTMLSelectElement>) {
     const opt = e.target.value;
@@ -70,16 +70,12 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
     setPageSizeInput(+e.target.value);
   }
 
+  function onResetFilterAndSort() {
+    dispatch(fetchAuditLogPageWithAggregateId(fetchOpts.merge({ aggregateId: undefined })));
+  }
+
   return (
     <Navbar variant="light" fixed="bottom" bg="light" className="border-top">
-      <Form inline className="mr-2">
-        <Form.Control
-          placeholder={t('audit_log.pagination.filter.placeholder')}
-          value={filterInput}
-          onChange={(e) => setFilterInput(e.target.value)}
-          size="sm"
-        />
-      </Form>
       <Conditional condition={!isEmpty} orElse={<Navbar.Text>{t('audit_log.pagination.no_items_found')}</Navbar.Text>}>
         <Form inline>
           <InputGroup size="sm" className="mr-2">
@@ -119,6 +115,11 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
             <Pagination.Next disabled={isLast} onClick={() => setPageNoInput(pageNumber + 1)} />
             <Pagination.Last disabled={isLast} onClick={() => setPageNoInput(totalPagesAvailable - 1)} />
           </Pagination>
+          <Conditional condition={!!aggregateId}>
+            <Button onClick={onResetFilterAndSort} title={t('audit_log.pagination.reset_aggregate_filter')}>
+              <RotateCcw />
+            </Button>
+          </Conditional>
         </Form>
       </Conditional>
     </Navbar>

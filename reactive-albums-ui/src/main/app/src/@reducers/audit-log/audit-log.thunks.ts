@@ -5,18 +5,34 @@ interface FetchAuditLogPageThunk {
   page: number;
   size: number;
   sort: Sort;
-  filter?: string;
 }
 
 export const fetchAuditLogPage = createApiGetThunk<Page<AuditLogEntry>, FetchAuditLogPageThunk>(
   'auditLog/fetchAuditLogPage',
-  ({ filter, page, size, sort }) => ({
+  ({ page, size, sort }, api) => ({
     url: '/api/audit-log',
     params: {
       page,
       size,
-      filter,
+      aggregateId: api.getState().auditLog.aggregateId,
       sort: `${sort.properties.join(',')},${sort.direction}`,
     },
   })
 );
+
+interface FetchAuditLogPageWithAggregateIdThunk extends FetchAuditLogPageThunk {
+  aggregateId: string | undefined;
+}
+
+export const fetchAuditLogPageWithAggregateId = createApiGetThunk<
+  Page<AuditLogEntry>,
+  FetchAuditLogPageWithAggregateIdThunk
+>('auditLog/fetchAuditLogPageWithAggregateId', ({ page, size, sort, aggregateId }) => ({
+  url: '/api/audit-log',
+  params: {
+    page,
+    size,
+    aggregateId,
+    sort: `${sort.properties.join(',')},${sort.direction}`,
+  },
+}));

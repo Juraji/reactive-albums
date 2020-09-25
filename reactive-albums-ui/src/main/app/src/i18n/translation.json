@@ -4,15 +4,15 @@
       "label": "Home"
     },
     "pagination": {
-      "page_size_label": "{{- option}} of {{- totalItemsAvailable}} Pictures",
-      "current_page_label": "Page {{- currentPage}} of {{- totalPagesAvailable}}, {{itemsOnPage}} items",
+      "page_size_label": "{{option}} of {{totalItemsAvailable}} Pictures",
+      "current_page_label": "Page {{currentPage}} of {{totalPagesAvailable}}, {{itemsOnPage}} items",
       "no_items_found": "No Items found",
       "filter": {
         "placeholder": "Search..."
       }
     },
     "use-pictures-page": {
-      "fetch-failed": "Failed fetching pictures: {{- message}}"
+      "fetch-failed": "Failed fetching pictures: {{message}}"
     }
   },
   "navigation": {
@@ -38,15 +38,15 @@
     },
     "directory_item": {
       "info": {
-        "automatic_scan_enabled": "Automatic scan {{enabled, bool:enabled:disabled}}",
-        "registered_at": "Registered on {{- createdAt, isoFullDate}}"
+        "automatic_scan_enabled": "Automatic scan ifElse({{enabled}}, enabled, disabled)",
+        "registered_at": "Registered on iso8601Fmt({{createdAt}}, do MMMM yyyy HH:mm)"
       },
       "unregister_button": {
         "unregister_success": "Directory unregistered",
         "unregister_failed": "Failed unregister: {{message}}",
         "confirm_unregister": {
           "modal_title": "Unregister directory",
-          "message": "Are you sure you want to unregister {{- displayName}}?",
+          "message": "Are you sure you want to unregister {{displayName}}?",
           "confirm_button": "Yes",
           "recursive_label": "Also unregister all sub directories"
         }
@@ -71,25 +71,25 @@
       "title": "Duplicates",
       "unlink_all_button": {
         "label": "Unlink all duplicates",
-        "confirm": "Are you sure you want to unlink all {{- count}} duplicates from this picture?",
+        "confirm": "Are you sure you want to unlink all {{count}} duplicates from this picture?",
         "success": "Unlinked all duplicates",
         "failed": "Failed unlinking duplicates (partially)"
       },
       "delete_all_button": {
         "label": "Delete all duplicates",
-        "confirm": "Are you sure you want to delete all {{- count}} duplicate pictures?",
+        "confirm": "Are you sure you want to delete all {{count}} duplicate pictures?",
         "success": "Deleted all duplicates",
         "failed": "Failed deleting duplicates (partially)"
       },
       "unlink_single_button": {
         "label": "Unlink this duplicate",
-        "confirm": "Are you sure you want to unlink duplicate {{- displayName}} from this picture?",
+        "confirm": "Are you sure you want to unlink duplicate {{displayName}} from this picture?",
         "success": "Duplicate unlinked",
         "failed": "Failed unlinking duplicate"
       },
       "delete_single_button": {
         "label": "Delete this duplicate",
-        "confirm": "Are you sure you want to delete {{- displayName}}?",
+        "confirm": "Are you sure you want to delete {{displayName}}?",
         "success": "Duplicate deleted",
         "failed": "Failed deleting duplicate"
       }
@@ -102,9 +102,9 @@
       "no_tags_linked": "No tags linked"
     },
     "details": {
-      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} {{- fileSize, fileSize}}",
-      "added_on": "Added on {{- createdAt, isoFullDate}}",
-      "file_last_modified": "File last modified on {{- lastModifiedTime, isoFullDate}}"
+      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} fileSize({{fileSize}})",
+      "added_on": "Added on iso8601Fmt({{createdAt}}, do MMMM yyyy HH:mm)",
+      "file_last_modified": "File last modified on iso8601Fmt({{lastModifiedTime}}, do MMMM yyyy HH:mm)"
     }
   },
   "components": {
@@ -116,28 +116,29 @@
   },
   "common": {
     "action_can_not_be_undone": "Note that this action can not be undone!",
-    "file_size": "{{- fileSize, fileSize}}",
-    "full_date": "{{- isoDate, isoFullDate}}",
-    "date": "{{- isoDate, isoDate}}",
-    "time": "{{- isoDate, isoTime}}"
+    "full_date_seconds": "iso8601Fmt({{isoDate}}, do MMMM yyyy HH:mm:ss)",
+    "file_size": "fileSize({{fileSize}})",
+    "full_date": "iso8601Fmt({{isoDate}}, do MMMM yyyy HH:mm)",
+    "date": "iso8601Fmt({{isoDate}}, do MMMM yyyy)",
+    "time": "iso8601Fmt({{isoDate}}, HH:mm)"
   },
   "duplicates": {
     "nav-item": {
-      "label": "Duplicates ({{- totalDuplicates}})"
+      "label": "Duplicates ({{totalDuplicates}})"
     },
     "no_source_selected": "No source selected. Select a source picture from the list on the left.",
     "no_duplicate_matches_available": "Congratulations! No duplicates have been found.",
     "matches_action_bar": {
       "unlink_duplicates_button": "Unlink these duplicates",
-      "unlink_duplicates_confirm": "Are you sure you want to unlink duplicate {{- target.displayName}} from this {{- picture.displayName}}?",
+      "unlink_duplicates_confirm": "Are you sure you want to unlink duplicate {{target.displayName}} from this {{picture.displayName}}?",
       "unlink_duplicates_success": "Duplicate unlinked",
       "unlink_duplicates_failed": "Failed unlinking duplicate"
     },
     "match_view": {
-      "match_info": "{{similarity}}% match on the {{- createdAt, isoFullDate}}",
-      "added_on": "Added on the {{- createdAt, isoFullDate}}",
-      "file_last_modified": "File last modified on the {{- lastModifiedTime, isoFullDate}}",
-      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} {{- fileSize, fileSize}}"
+      "match_info": "{{similarity}}% match on the iso8601Fmt({{createdAt}}, do MMMM yyyy HH:mm)",
+      "added_on": "Added on the iso8601Fmt({{createdAt}}, do MMMM yyyy HH:mm)",
+      "file_last_modified": "File last modified on the iso8601Fmt({{lastModifiedTime}}, do MMMM yyyy HH:mm)",
+      "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} fileSize({{fileSize}})"
     }
   },
   "tags": {
@@ -179,12 +180,12 @@
     "delete_tag_button": {
       "delete_success": "Successfully deleted tag",
       "delete_failed": "Failed to delete tag",
-      "confirm": "Are you sure you want to delete the tag with label {{- label}}?"
+      "confirm": "Are you sure you want to delete the tag with label {{label}}?"
     }
   },
   "delete_picture_button": {
     "button_title": "Delete picture",
-    "delete_picture_confirm": "Are you sure you want to delete {{- displayName}}?",
+    "delete_picture_confirm": "Are you sure you want to delete {{displayName}}?",
     "delete_picture_success": "Duplicate deleted",
     "delete_picture_failed": "Failed deleting duplicate",
     "delete_picture_confirm_delete_physical": "Delete file from disk"
@@ -203,11 +204,21 @@
       "filter": {
         "placeholder": "Search..."
       },
-      "page_size_label": "{{- option}} of {{- totalItemsAvailable}} entries",
-      "current_page_label": "Page {{- currentPage}} of {{- totalPagesAvailable}}, {{itemsOnPage}} items",
+      "page_size_label": "{{option}} of {{totalItemsAvailable}} entries",
+      "current_page_label": "Page {{currentPage}} of {{totalPagesAvailable}}, {{itemsOnPage}} items",
       "no_items_found": "No Items found",
       "sort_by_label": "Sort by $t(audit_log.properties.{{key}})",
-      "sort_direction_toggle_button": "Change sort direction"
+      "sort_direction_toggle_button": "Change sort direction",
+      "reset_aggregate_filter": "Reset aggregate id filter"
+    },
+    "table": {
+      "headers": {
+        "timestamp": "Timestamp",
+        "aggregate_type": "Type",
+        "aggregate_id": "Aggregate Id",
+        "message": "Message"
+      },
+      "timestamp": "iso8601Fmt({{timestamp}}, dd-MM-yyyy HH:mm:ss.SSS)"
     }
   }
 }
