@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { AuditLogEntry, Sort } from '@types';
 import { fetchAuditLogPage, fetchAuditLogPageWithAggregateId } from './audit-log.thunks';
+import { clearAuditLogAggregateIdFilter } from './audit-log.actions';
 
 export interface AuditLogSliceState {
   content: AuditLogEntry[];
@@ -66,6 +67,7 @@ export const auditLogSliceReducer = createReducer(initialState, (builder) => {
         sort: action.meta.arg.sort,
       });
   });
+  builder.addCase(clearAuditLogAggregateIdFilter, (state) => state.copy({ aggregateId: undefined }));
 });
 
 export * from './audit-log.thunks';

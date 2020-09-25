@@ -60,6 +60,7 @@
       "rerun_duplicate_analysis": "Rerun duplicate analysis",
       "rerun_duplicate_analysis_success": "Duplicate analysis started",
       "rerun_duplicate_analysis_failed": "Duplicate analysis failed",
+      "view_audit_log": "View audit log for picture",
       "move_picture_button": {
         "title": "Move picture",
         "select_directory_label": "Select target directory",

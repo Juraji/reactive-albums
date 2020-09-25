@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
-import { Copy, RefreshCw } from 'react-feather';
+import { Copy, RefreshCw, Tablet } from 'react-feather';
 import { Picture } from '@types';
 import { useToasts } from 'react-toast-notifications';
 import { useDispatch } from '@hooks';
@@ -10,6 +10,7 @@ import { rescanDuplicates } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { DeletePictureButton } from '@components';
 import { MovePictureButton } from './move-picture-button';
+import { Link } from 'react-router-dom';
 
 interface PictureActionBarProps {
   picture: Picture;
@@ -40,6 +41,13 @@ export const PictureActionBar: FC<PictureActionBarProps> = ({ picture }) => {
         <Copy />
       </Button>
       <MovePictureButton picture={picture} />
+      <Button
+        as={Link}
+        to={{ pathname: '/audit-log', search: `?aggregateId=${picture.id}` }}
+        title={t('picture.actions.view_audit_log')}
+      >
+        <Tablet />
+      </Button>
       <DeletePictureButton picture={picture} />
     </ButtonGroup>
   );

@@ -21,7 +21,7 @@ export const fetchAuditLogPage = createApiGetThunk<Page<AuditLogEntry>, FetchAud
 );
 
 interface FetchAuditLogPageWithAggregateIdThunk extends FetchAuditLogPageThunk {
-  aggregateId: string | undefined;
+  aggregateId: string;
 }
 
 export const fetchAuditLogPageWithAggregateId = createApiGetThunk<
