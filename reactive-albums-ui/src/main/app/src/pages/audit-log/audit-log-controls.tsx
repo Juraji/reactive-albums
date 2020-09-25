@@ -64,6 +64,10 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
       dispatch(setAuditLogAggregateIdFilter(aggregateId));
     }
     dispatch(fetchAuditLogPage(fetchOpts));
+
+    return () => {
+      dispatch(clearAuditLogAggregateIdFilter());
+    };
   }, [dispatch, fetchOpts, queryParams]);
 
   function onSortPropertySelect(e: ChangeEvent<HTMLSelectElement>) {

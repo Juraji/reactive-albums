@@ -50,11 +50,11 @@ export default function () {
     },
   });
 
-  Object.defineProperty(Object.prototype, 'merge', {
+  Object.defineProperty(Object.prototype, 'mergeOther', {
     configurable: false,
     enumerable: false,
     writable: false,
-    value: function merge<T, U>(this: T, other: U): T & U {
+    value: function mergeOther<T, U>(this: T, other: U): T & U {
       if (Array.isArray(this)) {
         // @ts-ignore
         return this.concat(other);
