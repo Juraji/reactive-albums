@@ -27,8 +27,6 @@ class PictureAggregate() {
     private var tags: Set<TagId> = emptySet()
     private var duplicates: Map<DuplicateMatchId, PictureId> = emptyMap()
 
-    fun getLocation(): Path = this.location
-
     @CommandHandler
     constructor(cmd: CreatePictureCommand) : this() {
         val displayName = cmd.displayName ?: cmd.location.fileName.toString()
