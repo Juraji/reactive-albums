@@ -19,20 +19,3 @@ export const fetchAuditLogPage = createApiGetThunk<Page<AuditLogEntry>, FetchAud
     },
   })
 );
-
-interface FetchAuditLogPageWithAggregateIdThunk extends FetchAuditLogPageThunk {
-  aggregateId: string;
-}
-
-export const fetchAuditLogPageWithAggregateId = createApiGetThunk<
-  Page<AuditLogEntry>,
-  FetchAuditLogPageWithAggregateIdThunk
->('auditLog/fetchAuditLogPageWithAggregateId', ({ page, size, sort, aggregateId }) => ({
-  url: '/api/audit-log',
-  params: {
-    page,
-    size,
-    aggregateId,
-    sort: `${sort.properties.join(',')},${sort.direction}`,
-  },
-}));

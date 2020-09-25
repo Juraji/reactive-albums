@@ -1,7 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { AuditLogEntry, Sort } from '@types';
-import { fetchAuditLogPage, fetchAuditLogPageWithAggregateId } from './audit-log.thunks';
-import { clearAuditLogAggregateIdFilter } from './audit-log.actions';
+import { fetchAuditLogPage } from './audit-log.thunks';
+import { clearAuditLogAggregateIdFilter, setAuditLogAggregateIdFilter } from './audit-log.actions';
 
 export interface AuditLogSliceState {
   content: AuditLogEntry[];
@@ -32,6 +32,8 @@ const initialState: AuditLogSliceState = {
 
 export const auditLogSliceName = 'auditLog';
 export const auditLogSliceReducer = createReducer(initialState, (builder) => {
+  builder.addCase(setAuditLogAggregateIdFilter, (state, action) => state.copy({ aggregateId: action.payload }));
+  builder.addCase(clearAuditLogAggregateIdFilter, (state) => state.copy({ aggregateId: undefined }));
   builder.addCase(fetchAuditLogPage.fulfilled, (state, action) => {
     return state
       .copy({
@@ -49,25 +51,6 @@ export const auditLogSliceReducer = createReducer(initialState, (builder) => {
         sort: action.meta.arg.sort,
       });
   });
-  builder.addCase(fetchAuditLogPageWithAggregateId.fulfilled, (state, action) => {
-    return state
-      .copy({
-        content: action.payload.content,
-        isEmpty: action.payload.empty,
-        isFirst: action.payload.first,
-        isLast: action.payload.last,
-        pageNumber: action.payload.number,
-        itemsOnPage: action.payload.numberOfElements,
-        requestedPageSize: action.payload.size,
-        totalItemsAvailable: action.payload.totalElements,
-        totalPagesAvailable: action.payload.totalPages,
-        aggregateId: action.meta.arg.aggregateId,
-      })
-      .copyNotNull({
-        sort: action.meta.arg.sort,
-      });
-  });
-  builder.addCase(clearAuditLogAggregateIdFilter, (state) => state.copy({ aggregateId: undefined }));
 });
 
 export * from './audit-log.thunks';

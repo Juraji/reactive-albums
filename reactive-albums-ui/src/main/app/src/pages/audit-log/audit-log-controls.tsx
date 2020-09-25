@@ -6,11 +6,14 @@ import { PAGINATION_SIZE_OPTIONS } from '../../config.json';
 import { useTranslation } from 'react-i18next';
 import Pagination from 'react-bootstrap/Pagination';
 import { useDispatch, useQueryParams } from '@hooks';
-import { fetchAuditLogPage, fetchAuditLogPageWithAggregateId, useAuditLogEntries } from '@reducers';
+import { fetchAuditLogPage, useAuditLogEntries } from '@reducers';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
 import { ChevronDown, ChevronUp, RotateCcw } from 'react-feather';
-import { clearAuditLogAggregateIdFilter } from '../../@reducers/audit-log/audit-log.actions';
+import {
+  clearAuditLogAggregateIdFilter,
+  setAuditLogAggregateIdFilter,
+} from '../../@reducers/audit-log/audit-log.actions';
 
 interface AuditLogControlsProps {}
 
@@ -58,10 +61,9 @@ export const AuditLogControls: FC<AuditLogControlsProps> = () => {
   useEffect(() => {
     const aggregateId = queryParams.get('aggregateId');
     if (!!aggregateId) {
-      dispatch(fetchAuditLogPageWithAggregateId(fetchOpts.merge({ aggregateId })));
-    } else {
-      dispatch(fetchAuditLogPage(fetchOpts));
+      dispatch(setAuditLogAggregateIdFilter(aggregateId));
     }
+    dispatch(fetchAuditLogPage(fetchOpts));
   }, [dispatch, fetchOpts, queryParams]);
 
   function onSortPropertySelect(e: ChangeEvent<HTMLSelectElement>) {

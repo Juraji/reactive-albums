@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { fetchAuditLogPageWithAggregateId, useAuditLogEntries } from '@reducers';
+import { fetchAuditLogPage, useAuditLogEntries } from '@reducers';
 import Table from 'react-bootstrap/Table';
 import { AggregateType } from '@types';
 import { Folder, HelpCircle, Image } from 'react-feather';
@@ -7,6 +7,7 @@ import { useDispatch } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
+import { setAuditLogAggregateIdFilter } from '../../@reducers/audit-log/audit-log.actions';
 
 interface AggregateTypeIconProps {
   aggregateType: AggregateType;
@@ -44,15 +45,16 @@ export const AuditLogEntryTable: FC<AuditLogEntryTableProps> = () => {
   const { content: entries, ...page } = useAuditLogEntries();
 
   function onAggregateIdClick(aggregateId: string) {
-    return () =>
+    return () => {
+      dispatch(setAuditLogAggregateIdFilter(aggregateId));
       dispatch(
-        fetchAuditLogPageWithAggregateId({
+        fetchAuditLogPage({
           page: page.pageNumber,
           size: page.requestedPageSize,
           sort: page.sort,
-          aggregateId,
         })
       );
+    };
   }
 
   return (
