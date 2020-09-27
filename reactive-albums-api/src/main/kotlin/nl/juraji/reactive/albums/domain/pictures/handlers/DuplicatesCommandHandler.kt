@@ -14,6 +14,7 @@ import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.query.projections.repositories.SyncContentHashRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
+import nl.juraji.reactive.albums.util.extensions.compareSimilarity
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
