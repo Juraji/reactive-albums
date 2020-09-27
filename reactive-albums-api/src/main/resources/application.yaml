@@ -9,37 +9,33 @@ spring:
 multi-tenancy:
   tenants:
     - tenantId: eventsourcing
-      url: jdbc:h2:file:./albums-axon;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
-      username: albums
-      password: albums
-      connection-count: 1
+      url: "jdbc:mariadb://localhost:3306/eventsourcing"
+      username: root
+      password: secret
       flyway:
         enabled: true
         baseline-on-migrate: true
         locations: classpath:/db/migration/axon
     - tenantId: projections
-      url: jdbc:h2:file:./albums-projections;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
-      username: albums
-      password: albums
-      connection-count: 1
+      url: "jdbc:mariadb://localhost:3306/projections"
+      username: root
+      password: secret
       flyway:
         enabled: true
         baseline-on-migrate: true
         locations: classpath:/db/migration/projections
     - tenantId: thumbnails
-      url: jdbc:h2:file:./albums-thumbnails;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
-      username: albums
-      password: albums
-      connection-count: 1
+      url: "jdbc:mariadb://localhost:3306/thumbnails"
+      username: root
+      password: secret
       flyway:
         enabled: true
         baseline-on-migrate: true
         locations: classpath:/db/migration/thumbnails
     - tenantId: auditLog
-      url: jdbc:h2:file:./albums-audit-log;COMPRESS=TRUE;DB_CLOSE_ON_EXIT=FALSE
-      username: albums
-      password: albums
-      connection-count: 1
+      url: "jdbc:mariadb://localhost:3306/audit_log"
+      username: root
+      password: secret
       flyway:
         enabled: true
         baseline-on-migrate: true

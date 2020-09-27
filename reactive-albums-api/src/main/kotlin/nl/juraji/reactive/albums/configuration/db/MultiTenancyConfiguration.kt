@@ -22,7 +22,7 @@ data class Tenant(
         val password: String,
         val flyway: TenantFlywayProperties?,
         val tenantId: String,
-        val connectionCount: Int,
+        val connectionCount: Int = 32,
 )
 
 @ConstructorBinding

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  reactive-albums-mariadb:
+    image: mariadb
+    command: --max-allowed-packet=4G
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./reactive-albums-api/src/test/docker:/docker-entrypoint-initdb.d
+      - albums_db_volume:/var/lib/mysql
+
+volumes:
+  albums_db_volume:
