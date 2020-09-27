@@ -36,7 +36,7 @@ class PictureProjectionsEventHandler(
     }
 
     @EventHandler
-    fun on(evt: AttributesUpdatedEvent) {
+    fun on(evt: FileAttributesUpdatedEvent) {
         pictureRepository
                 .update(evt.pictureId.identifier) {
                     it.copy(

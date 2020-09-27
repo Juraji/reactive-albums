@@ -1,10 +1,11 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
 import nl.juraji.reactive.albums.configuration.db.Tenant
 import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,22 +31,28 @@ import javax.sql.DataSource
 class ThumbnailsJpaConfiguration(
         multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
-    private val tennant: Tenant = multiTenancyConfiguration.findTenant("thumbnails")
+    private val tenant: Tenant = multiTenancyConfiguration.findTenant("thumbnails")
 
     @Bean(name = ["thumbnailsScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(tennant.connectionCount, NumberedThreadFactory("thumbnails-scheduler"))
+        val pool: ExecutorService = Executors.newFixedThreadPool(
+                tenant.connectionCount,
+                NumberedThreadFactory("thumbnails-scheduler")
+        )
         return Schedulers.fromExecutor(pool)
     }
 
     @Bean(name = ["thumbnailsDataSource"])
     fun dataSource(): DataSource {
-        val (url, username, password) = tennant
-        return DataSourceBuilder.create()
-                .url(url)
-                .username(username)
-                .password(password)
-                .build()
+        val config = HikariConfig()
+
+        config.jdbcUrl = tenant.url
+        config.username = tenant.username
+        config.password = tenant.password
+        config.poolName = "hikari-thumbnails"
+        config.maximumPoolSize = tenant.connectionCount
+
+        return HikariDataSource(config)
     }
 
     @Bean(name = ["thumbnailsEntityManagerFactory"])

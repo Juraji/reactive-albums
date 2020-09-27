@@ -22,7 +22,7 @@ interface SyncAuditLogEntryRepository : JpaRepository<AuditLogEntry, Long> {
 class AuditLogEntryRepository(
         repository: SyncAuditLogEntryRepository,
         transactionTemplate: TransactionTemplate,
-        @Qualifier("projectionsScheduler") scheduler: Scheduler,
+        @Qualifier("auditLogScheduler") scheduler: Scheduler,
 ) : ReactiveRepository<SyncAuditLogEntryRepository, AuditLogEntry, Long>(
         repository,
         scheduler,

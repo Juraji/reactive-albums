@@ -90,7 +90,7 @@ class PictureAggregate() {
             imageHeight: Int? = null,
     ) {
         AggregateLifecycle.apply(
-                AttributesUpdatedEvent(
+                FileAttributesUpdatedEvent(
                         pictureId = pictureId,
                         fileSize = fileSize,
                         lastModifiedTime = lastModifiedTime,

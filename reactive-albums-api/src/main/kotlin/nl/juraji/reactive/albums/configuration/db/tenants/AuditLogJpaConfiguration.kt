@@ -1,10 +1,11 @@
 package nl.juraji.reactive.albums.configuration.db.tenants
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import nl.juraji.reactive.albums.configuration.db.MultiTenancyConfiguration
 import nl.juraji.reactive.albums.configuration.db.Tenant
 import nl.juraji.reactive.albums.util.NumberedThreadFactory
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -30,22 +31,28 @@ import javax.sql.DataSource
 class AuditLogJpaConfiguration(
         multiTenancyConfiguration: MultiTenancyConfiguration,
 ) {
-    private val tennant: Tenant = multiTenancyConfiguration.findTenant("auditLog")
+    private val tenant: Tenant = multiTenancyConfiguration.findTenant("auditLog")
 
     @Bean(name = ["auditLogScheduler"])
     fun jdbcScheduler(): Scheduler {
-        val pool: ExecutorService = Executors.newFixedThreadPool(tennant.connectionCount, NumberedThreadFactory("auditLog-scheduler"))
+        val pool: ExecutorService = Executors.newFixedThreadPool(
+                tenant.connectionCount,
+                NumberedThreadFactory("auditLog-scheduler")
+        )
         return Schedulers.fromExecutor(pool)
     }
 
     @Bean(name = ["auditLogDataSource"])
     fun dataSource(): DataSource {
-        val (url, username, password) = tennant
-        return DataSourceBuilder.create()
-                .url(url)
-                .username(username)
-                .password(password)
-                .build()
+        val config = HikariConfig()
+
+        config.jdbcUrl = tenant.url
+        config.username = tenant.username
+        config.password = tenant.password
+        config.poolName = "hikari-audit"
+        config.maximumPoolSize = tenant.connectionCount
+
+        return HikariDataSource(config)
     }
 
     @Bean(name = ["auditLogEntityManagerFactory"])
