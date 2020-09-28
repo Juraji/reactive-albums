@@ -8,7 +8,9 @@ import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
 
 @Service
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
@@ -44,5 +46,10 @@ class DirectoryProjectionsEventHandler(
                     it.copy(automaticScanEnabled = evt.automaticScanEnabled)
                 }
                 .block()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        directoryRepository.getRepository().deleteAll()
     }
 }

@@ -1,16 +1,23 @@
 package nl.juraji.reactive.albums.services
 
+import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCommand
 import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectoryCommand
+import nl.juraji.reactive.albums.domain.directories.events.DirectoryRegisteredEvent
+import nl.juraji.reactive.albums.domain.directories.events.DirectoryUnregisteredEvent
+import nl.juraji.reactive.albums.domain.directories.events.DirectoryUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.AnalyzePictureMetaDataCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
-import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.repositories.*
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
+import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.query.projections.repositories.SyncPictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.config.ProcessingGroup
+import org.axonframework.eventhandling.EventHandler
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
@@ -27,6 +34,7 @@ import javax.annotation.PreDestroy
 import kotlin.math.max
 
 @Service
+@ProcessingGroup(ProcessingGroups.DIRECTORY_SCANS)
 class FileWatchService(
         private val directoryRepository: DirectoryRepository,
         private val pictureRepository: PictureRepository,
@@ -48,15 +56,35 @@ class FileWatchService(
                             directoryPath = Paths.get(it.location)
                     )
                 }
-
-        directoryRepository.subscribeToAll()
-                .publishOn(fileWatchScheduler)
-                .subscribe(this::handleDirectoryEvent)
     }
 
     @PreDestroy
-    fun cleanUp() {
+    fun stopCurrentWatchers() {
         watchList.values.forEach { it.close() }
+        watchList = emptyMap()
+    }
+
+    @EventHandler
+    fun on(evt: DirectoryRegisteredEvent) {
+        if (evt.automaticScanEnabled) {
+            this.registerPath(evt.directoryId, evt.location)
+        }
+    }
+
+    @EventHandler
+    fun on(evt: DirectoryUpdatedEvent) {
+        if (evt.automaticScanEnabled) {
+            directoryRepository
+                    .findById(evt.directoryId.identifier)
+                    .subscribe { this.registerPath(evt.directoryId, Paths.get(it.location)) }
+        } else {
+            this.unregisterPath(evt.directoryId)
+        }
+    }
+
+    @EventHandler
+    fun on(evt: DirectoryUnregisteredEvent) {
+        this.unregisterPath(evt.directoryId)
     }
 
     fun lockEvents(): Int = lockingSemaphore.incrementAndGet()
@@ -64,21 +92,6 @@ class FileWatchService(
     fun unlockEvents(): Int = lockingSemaphore.updateAndGet { max(it - 1, 0) }
 
     fun isLocked(): Boolean = lockingSemaphore.get() > 0
-
-    private fun handleDirectoryEvent(event: ReactiveEvent<DirectoryProjection>) {
-        logger.debug("Handling ${event.type} for directory ${event.entity.id}")
-
-        val eType: EventType = event.type
-        val automaticScanEnabled: Boolean = event.entity.automaticScanEnabled
-        val directoryId = DirectoryId(event.entity.id)
-        val path: Path = Paths.get(event.entity.location)
-
-        if (eType == EventType.UPSERT && automaticScanEnabled) {
-            this.registerPath(directoryId, path)
-        } else {
-            this.unregisterPath(directoryId)
-        }
-    }
 
     private fun registerPath(directoryId: DirectoryId, directoryPath: Path) {
         logger.debug("Registering directory $directoryId ($directoryPath)")
@@ -223,7 +236,9 @@ class DirectoryStateUpdateService(
                 logger.debug("Running local state update for $directoryId ($directoryPath)")
 
                 val files: List<Path> = fileSystemService.listFiles(directoryPath)
-                val knownPictureIds: Map<Path, String> = pictureRepository.findAllByDirectoryId(directoryId.identifier).map { Paths.get(it.location) to it.id }.toMap()
+                val knownPictureIds: Map<Path, String> = pictureRepository
+                        .findAllByDirectoryId(directoryId.identifier)
+                        .map { Paths.get(it.location) to it.id }.toMap()
 
                 // Delete non-existent files
                 knownPictureIds

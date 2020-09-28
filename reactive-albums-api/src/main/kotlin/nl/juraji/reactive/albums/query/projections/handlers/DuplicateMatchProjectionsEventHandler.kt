@@ -8,6 +8,7 @@ import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.springframework.stereotype.Service
 import kotlin.math.roundToInt
 
@@ -43,5 +44,10 @@ class DuplicateMatchProjectionsEventHandler(
         duplicateMatchRepository.findAllByPictureId(evt.pictureId.identifier)
                 .flatMap { duplicateMatchRepository.delete(it) }
                 .blockLast()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        duplicateMatchRepository.getRepository().deleteAll()
     }
 }

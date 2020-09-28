@@ -8,6 +8,7 @@ import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.springframework.stereotype.Service
 
 @Service
@@ -42,5 +43,10 @@ class TagProjectionsEventHandler(
     @EventHandler
     fun on(evt: TagDeletedEvent) {
         tagRepository.deleteById(evt.tagId.identifier).block()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        tagRepository.getRepository().deleteAll()
     }
 }

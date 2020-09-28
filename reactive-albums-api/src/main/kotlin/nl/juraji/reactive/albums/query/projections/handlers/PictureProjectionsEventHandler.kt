@@ -8,6 +8,7 @@ import nl.juraji.reactive.albums.query.projections.repositories.PictureRepositor
 import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.springframework.stereotype.Service
 import reactor.kotlin.core.publisher.switchIfEmpty
 import java.time.Duration
@@ -97,5 +98,10 @@ class PictureProjectionsEventHandler(
         pictureRepository
                 .deleteById(evt.pictureId.identifier)
                 .block()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        pictureRepository.getRepository().deleteAll()
     }
 }

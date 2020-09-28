@@ -39,14 +39,19 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
                     .map { entity }
                     .doOnNext { emitUpdate(EventType.DELETE, it) }
 
+    fun deleteAll(): Mono<Unit> = executeInTransaction { it.deleteAll() }
+
     fun update(id: ID, update: (E) -> E): Mono<E> = findById(id).flatMap { save(update(it)) }
 
     fun subscribeToAll(): Flux<ReactiveEvent<E>> = updatesProcessor
 
-    fun subscribe(filter: (E) -> Boolean): Flux<ReactiveEvent<E>> = updatesProcessor.filter { filter(it.entity) }
+    fun subscribe(filter: (E) -> Boolean): Flux<ReactiveEvent<E>> = updatesProcessor
+            .filter { filter(it.entity) }
 
     fun subscribeFirst(timeout: Duration, filter: (E) -> Boolean): Mono<E> =
             subscribe(filter).map { it.entity }.toMono().timeout(timeout)
+
+    fun getRepository(): T = repository
 
     protected fun <R> from(f: (T) -> R?): Mono<R> =
             deferTo(scheduler) { f(repository) }
@@ -67,7 +72,6 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
 data class ReactiveEvent<T : Any>(
         val type: EventType,
         val entity: T,
-        val entityType: String = entity::class.simpleName ?: "Entity",
 )
 
 enum class EventType {

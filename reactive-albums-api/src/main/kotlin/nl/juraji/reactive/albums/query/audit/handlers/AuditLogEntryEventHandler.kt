@@ -10,6 +10,7 @@ import nl.juraji.reactive.albums.query.audit.AuditLogEntry
 import nl.juraji.reactive.albums.query.audit.repositories.AuditLogEntryRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.axonframework.messaging.annotation.MetaDataValue
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
@@ -32,6 +33,11 @@ class AuditLogEntryEventHandler(
     @EventHandler
     fun on(evt: TagEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
         saveLogEntry(AggregateType.TAG, evt.tagId, auditLogMessage).block()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        auditLogEntryRepository.getRepository().deleteAll()
     }
 
     private fun saveLogEntry(type: AggregateType, id: EntityId, message: String): Mono<AuditLogEntry> =

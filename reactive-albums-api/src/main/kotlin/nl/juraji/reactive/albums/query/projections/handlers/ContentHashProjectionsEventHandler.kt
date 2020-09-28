@@ -7,6 +7,7 @@ import nl.juraji.reactive.albums.query.projections.ContentHashProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ContentHashRepository
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.ResetHandler
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.switchIfEmpty
@@ -37,5 +38,10 @@ class ContentHashProjectionsEventHandler(
         contentHashRepository
                 .deleteById(evt.pictureId.identifier)
                 .block()
+    }
+
+    @ResetHandler
+    fun onReset() {
+        contentHashRepository.getRepository().deleteAll()
     }
 }

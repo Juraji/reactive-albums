@@ -6,7 +6,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
@@ -67,7 +66,7 @@ internal class PictureEventsServiceTest {
 
         every { duplicateMatchRepository.findAll() } returnsFluxOf initialEntities
         every { duplicateMatchRepository.subscribeToAll() } returnsFluxOf updateEntities.map {
-            ReactiveEvent(type = EventType.UPSERT, entity = it, entityType = "")
+            ReactiveEvent(type = EventType.UPSERT, entity = it)
         }
 
         every { pictureRepository.findById(any()) } answers {
@@ -97,7 +96,7 @@ internal class PictureEventsServiceTest {
 
         every { duplicateMatchRepository.findAllByPictureId(sourcePictureId.identifier) } returnsFluxOf initialEntities
         every { duplicateMatchRepository.subscribe(any()) } returnsFluxOf updateEntities.map {
-            ReactiveEvent(type = EventType.UPSERT, entity = it, entityType = "")
+            ReactiveEvent(type = EventType.UPSERT, entity = it)
         }
 
         every { pictureRepository.findById(any()) } answers {
