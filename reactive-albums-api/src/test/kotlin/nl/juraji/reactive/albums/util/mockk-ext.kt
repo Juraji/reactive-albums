@@ -4,6 +4,9 @@ import io.mockk.MockKAdditionalAnswerScope
 import io.mockk.MockKStubScope
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.util.concurrent.CompletableFuture
+
+fun <T> T.toCompletableFuture(): CompletableFuture<T> = CompletableFuture.completedFuture(this)
 
 fun <T, B> MockKStubScope<Mono<T>, B>.returnsEmptyMono(): MockKAdditionalAnswerScope<Mono<T>, B> =
         this.returns(Mono.empty())

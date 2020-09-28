@@ -28,5 +28,5 @@ fun <T> Flux<T>.toServerSentEvents(
                         .build()
             }
 
-    return Flux.merge(sourceStream, heartbeatStream)
+    return Flux.merge(heartbeatStream, sourceStream)
 }
