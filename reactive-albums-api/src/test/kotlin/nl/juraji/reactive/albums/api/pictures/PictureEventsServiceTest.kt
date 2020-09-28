@@ -23,6 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.codec.ServerSentEvent
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import reactor.test.scheduler.VirtualTimeScheduler
 import java.time.LocalDateTime
 
 @ExtendWith(MockKExtension::class)
@@ -45,6 +46,7 @@ internal class PictureEventsServiceTest {
 
     @Test
     fun `getDuplicateMatchCountStream should result in a stream of the current count, initial and on update`() {
+        VirtualTimeScheduler.getOrSet()
 
         every { duplicateMatchRepository.count() } returnsMonoOf 10L andThenMonoOf 21L andThenMonoOf 36L
         every { duplicateMatchRepository.subscribeToAll() } returnsFluxOf listOf(fixture.next(), fixture.next())
@@ -52,6 +54,7 @@ internal class PictureEventsServiceTest {
         val result = pictureEventsService.getDuplicateMatchCountStream()
 
         StepVerifier.create(result)
+                .expectNextMatches { it.event() == "ping" }
                 .expectNextMatches { it.data() == 10L }
                 .expectNextMatches { it.data() == 21L }
                 .expectNextMatches { it.data() == 36L }

@@ -24,6 +24,7 @@ class TagProjectionsEventHandler(
                 label = evt.label,
                 tagColor = evt.tagColor.toString(),
                 textColor = evt.textColor.toString(),
+                tagType = evt.tagType
         )
 
         tagRepository.save(entity).block()

@@ -34,6 +34,7 @@ class TagAggregate() {
                         label = cmd.label,
                         tagColor = tagColor,
                         textColor = textColor,
+                        tagType = cmd.tagType
                 ),
                 MetaData.with("AUDIT", "Tag created with label ${cmd.label}")
         )

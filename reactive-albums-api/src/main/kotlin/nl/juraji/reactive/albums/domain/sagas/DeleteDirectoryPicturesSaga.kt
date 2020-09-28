@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 @Saga
 @ProcessingGroup(ProcessingGroups.DIRECTORY_SCANS)
-class DirectoryUnregisteredSaga : ForkJoinSaga<PictureId>("pictureId") {
+class DeleteDirectoryPicturesSaga : ForkJoinSaga<PictureId>("pictureId") {
 
     @Autowired
     private lateinit var syncPictureRepository: SyncPictureRepository
@@ -42,5 +42,5 @@ class DirectoryUnregisteredSaga : ForkJoinSaga<PictureId>("pictureId") {
         onForkedEventHandled(evt.pictureId)
     }
 
-    companion object : LoggerCompanion(DirectoryUnregisteredSaga::class)
+    companion object : LoggerCompanion(DeleteDirectoryPicturesSaga::class)
 }
