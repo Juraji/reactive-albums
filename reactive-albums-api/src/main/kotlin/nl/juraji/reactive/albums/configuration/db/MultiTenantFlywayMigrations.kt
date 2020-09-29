@@ -6,7 +6,6 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.task.TaskExecutor
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @Configuration
 class MultiTenantFlywayMigrations(
@@ -25,7 +24,7 @@ class MultiTenantFlywayMigrations(
         tenants
                 .filter { it.flyway != null && it.flyway.enabled }
                 .forEach { tenant ->
-                    val flyway = createFlywayMigrator(tenant)
+                    val flyway: Flyway = createFlywayMigrator(tenant)
 
                     if (taskExecutor != null) {
                         taskExecutor.execute {
@@ -40,7 +39,7 @@ class MultiTenantFlywayMigrations(
     }
 
     private fun createFlywayMigrator(tenant: Tenant): Flyway {
-        val flywayConfiguration = tenant.flyway
+        val flywayConfiguration: TenantFlywayProperties = tenant.flyway
                 ?: throw IllegalArgumentException("Flyway configuration can not null during Flyway initialization")
 
         return Flyway.configure()

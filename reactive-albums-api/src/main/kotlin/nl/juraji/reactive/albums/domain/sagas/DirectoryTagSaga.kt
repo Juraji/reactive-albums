@@ -42,7 +42,7 @@ class DirectoryTagSaga {
         commandGateway.sendAndWait<Unit>(CreateTagCommand(
                 tagId = tagId,
                 label = evt.displayName,
-                tagType = TagType.DIRECTORY
+                tagType = TagType.SYSTEM
         ))
     }
 

@@ -91,7 +91,7 @@ class PictureDirectoryTagSaga {
 
     private fun getDirectoryTagByPath(path: Path): TagId {
         return tagRepository.findByTagTypeAndLabel(
-                tagType = TagType.DIRECTORY,
+                tagType = TagType.SYSTEM,
                 label = path.fileName.toString()
         ).map { TagId(it.id) }.orElseThrow()
     }
