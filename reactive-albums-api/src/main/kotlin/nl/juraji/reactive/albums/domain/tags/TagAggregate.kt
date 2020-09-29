@@ -20,6 +20,7 @@ class TagAggregate() {
 
     @AggregateIdentifier
     private lateinit var tagId: TagId
+    private lateinit var tagType: TagType
 
     @CommandHandler
     constructor(cmd: CreateTagCommand) : this() {
@@ -70,6 +71,7 @@ class TagAggregate() {
     @EventSourcingHandler
     fun on(evt: TagCreatedEvent) {
         this.tagId = evt.tagId
+        this.tagType = evt.tagType
     }
 
     @EventSourcingHandler

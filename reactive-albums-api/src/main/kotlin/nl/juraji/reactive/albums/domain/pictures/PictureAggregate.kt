@@ -1,9 +1,7 @@
 package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
-import nl.juraji.reactive.albums.domain.pictures.commands.CreatePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
-import nl.juraji.reactive.albums.domain.pictures.commands.MovePictureCommand
+import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import org.axonframework.commandhandling.CommandHandler
@@ -67,6 +65,33 @@ class PictureAggregate() {
     }
 
     @CommandHandler
+    fun handle(cmd: LinkTagCommand) {
+        Validate.isFalse(tags.contains(cmd.tagId)) { "Tag with id ${cmd.tagId} is already present on $displayName" }
+
+        AggregateLifecycle.apply(
+                TagLinkedEvent(
+                        pictureId = this.pictureId,
+                        tagId = cmd.tagId,
+                        linkType = cmd.tagLinkType,
+                ),
+                MetaData.with("AUDIT", "Tag (${cmd.tagId}) added")
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: UnlinkTagCommand) {
+        Validate.isTrue(tags.contains(cmd.tagId)) { "Tag with id ${cmd.tagId} does not exist on $displayName" }
+
+        AggregateLifecycle.apply(
+                TagUnlinkedEvent(
+                        pictureId = pictureId,
+                        tagId = cmd.tagId
+                ),
+                MetaData.with("AUDIT", "Tag (${cmd.tagId}) removed")
+        )
+    }
+
+    @CommandHandler
     fun handle(cmd: DeletePictureCommand): PictureId {
         AggregateLifecycle.apply(
                 PictureDeletedEvent(
@@ -108,31 +133,6 @@ class PictureAggregate() {
                         contentHash = bitSet
                 ),
                 MetaData.with("AUDIT", "Content analysis completed")
-        )
-    }
-
-    fun addTag(tagId: TagId, tagLinkType: TagLinkType) {
-        Validate.isFalse(tags.contains(tagId)) { "Tag with id $tagId is already present on $displayName" }
-
-        AggregateLifecycle.apply(
-                TagLinkedEvent(
-                        pictureId = this.pictureId,
-                        tagId = tagId,
-                        linkType = tagLinkType,
-                ),
-                MetaData.with("AUDIT", "Tag ($tagId) added")
-        )
-    }
-
-    fun removeTag(tagId: TagId) {
-        Validate.isTrue(tags.contains(tagId)) { "Tag with id $tagId does not exist on $displayName" }
-
-        AggregateLifecycle.apply(
-                TagUnlinkedEvent(
-                        pictureId = pictureId,
-                        tagId = tagId
-                ),
-                MetaData.with("AUDIT", "Tag ($tagId) removed")
         )
     }
 

@@ -8,13 +8,15 @@ import { RoundPostProcessorModule } from './modules/number-round-post-processor-
 import { IfElsePostProcessorModule } from './modules/if-else-post-processor-module';
 import { FileSizePostProcessorModule } from './modules/file-size.post-processor';
 import { PostProcessorModuleChain } from './modules/fn-post-processor-module.abstract';
+import { ConvertCasePostProcessorModule } from './modules/convert-case.post-processor';
 
 (() => {
   const postProcessorModuleChain = PostProcessorModuleChain.chainOf(
     Iso8601DateFnsFmtModule,
     RoundPostProcessorModule,
     IfElsePostProcessorModule,
-    FileSizePostProcessorModule
+    FileSizePostProcessorModule,
+    ConvertCasePostProcessorModule
   );
 
   i18next

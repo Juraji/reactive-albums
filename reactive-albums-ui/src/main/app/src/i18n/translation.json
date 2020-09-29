@@ -182,6 +182,10 @@
       "delete_success": "Successfully deleted tag",
       "delete_failed": "Failed to delete tag",
       "confirm": "Are you sure you want to delete the tag with label {{label}}?"
+    },
+    "tag": {
+      "created_at": "Created at iso8601Fmt({{createdAt}}, dd-MM-yyyy HH:mm:ss)",
+      "type": "Type: convertCase({{tagType}}, LOWER)"
     }
   },
   "delete_picture_button": {

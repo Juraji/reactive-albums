@@ -7,6 +7,7 @@ import { EditTagButton } from './edit-tag-button';
 import { useTags } from '@reducers';
 import { DeleteTagButton } from './delete-tag-button';
 import { useTranslation } from 'react-i18next';
+import { TagType } from '@types';
 
 interface TagsTableProps {}
 
@@ -23,11 +24,17 @@ export const TagsTable: FC<TagsTableProps> = () => {
             <tr key={idx}>
               <td>
                 <PictureTag tag={tag} fontSize="1rem" />
+                <div className="d-flex flex-row">
+                  <small className="text-muted mr-2">{t('tags.tag.created_at', tag)}</small>
+                  <small className="text-muted">{t('tags.tag.type', tag)}</small>
+                </div>
               </td>
               <td className="d-flex flex-row-reverse">
                 <ButtonGroup>
                   <EditTagButton icon={<Search />} tag={tag} />
-                  <DeleteTagButton tag={tag} />
+                  <Conditional condition={tag.tagType === TagType.USER}>
+                    <DeleteTagButton tag={tag} />
+                  </Conditional>
                 </ButtonGroup>
               </td>
             </tr>
