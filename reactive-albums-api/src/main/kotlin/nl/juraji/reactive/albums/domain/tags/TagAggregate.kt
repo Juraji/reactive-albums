@@ -20,6 +20,7 @@ class TagAggregate() {
 
     @AggregateIdentifier
     private lateinit var tagId: TagId
+    private lateinit var label: String
     private lateinit var tagType: TagType
 
     @CommandHandler
@@ -53,7 +54,7 @@ class TagAggregate() {
                         tagColor = cmd.tagColor,
                         textColor = cmd.textColor
                 ),
-                MetaData.with("AUDIT", "Tag updated:"
+                MetaData.with("AUDIT", "Tag $label updated:"
                         + (if (cmd.label != null) "label to ${cmd.label}" else null)
                         + (if (cmd.tagColor != null) ", tag color to ${cmd.tagColor}" else null)
                         + (if (cmd.textColor != null) "text color to ${cmd.textColor}" else null))
@@ -64,7 +65,10 @@ class TagAggregate() {
 
     @CommandHandler
     fun handle(cmd: DeleteTagCommand): TagId {
-        AggregateLifecycle.apply(TagDeletedEvent(tagId = tagId))
+        AggregateLifecycle.apply(
+                TagDeletedEvent(tagId = tagId),
+                MetaData.with("AUDIT", "Tag $label was deleted")
+        )
         return tagId
     }
 
@@ -72,6 +76,12 @@ class TagAggregate() {
     fun on(evt: TagCreatedEvent) {
         this.tagId = evt.tagId
         this.tagType = evt.tagType
+        this.label = evt.label
+    }
+
+    @EventSourcingHandler
+    fun on(evt: TagUpdatedEvent) {
+        this.label = evt.label ?: this.label
     }
 
     @EventSourcingHandler

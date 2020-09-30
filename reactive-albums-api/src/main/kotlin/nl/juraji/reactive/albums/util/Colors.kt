@@ -97,6 +97,8 @@ data class RgbColor(
                     blue = seedColor and 0xFF
             )
         }
+
+        fun from(rgb: IntArray): RgbColor = RgbColor(rgb[0], rgb[1], rgb[2])
     }
 }
 

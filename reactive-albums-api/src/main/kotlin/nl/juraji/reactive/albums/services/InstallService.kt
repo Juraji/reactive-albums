@@ -52,7 +52,7 @@ class InstallService(
                     tagId = TagId(),
                     label = label,
                     tagColor = RgbColor.of(color),
-                    tagType = TagType.SYSTEM
+                    tagType = TagType.COLOR
             ))
         }
     }

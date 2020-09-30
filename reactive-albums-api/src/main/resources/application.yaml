@@ -56,6 +56,9 @@ axon:
       picture-analysis:
         threadCount: 8
         initialSegmentCount: 8
+      projections:
+        threadCount: 2
+        initialSegmentCount: 2
 
 logging:
   level:
@@ -63,7 +66,7 @@ logging:
 
 picture-aggregate:
   color-palette-size: 5
-  snapshot-trigger-threshold: 100
+  snapshot-trigger-threshold: 10
   thumbnail-size: 200
   hashing-sample-size: 100
   duplicate-similarity: 0.82

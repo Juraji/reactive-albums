@@ -10,11 +10,11 @@ import nl.juraji.reactive.albums.domain.tags.commands.DeleteTagCommand
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
 import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
 import nl.juraji.reactive.albums.util.LoggerCompanion
+import nl.juraji.reactive.albums.util.SagaAssociations
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.EndSaga
 import org.axonframework.modelling.saga.SagaEventHandler
-import org.axonframework.modelling.saga.SagaLifecycle
 import org.axonframework.modelling.saga.StartSaga
 import org.axonframework.serialization.Revision
 import org.axonframework.spring.stereotype.Saga
@@ -38,11 +38,11 @@ class DirectoryTagSaga {
         this.location = evt.location
         val tagId = TagId()
 
-        SagaLifecycle.associateWith("tagId", tagId.toString())
+        SagaAssociations.associateWith("tagId", tagId.identifier)
         commandGateway.sendAndWait<Unit>(CreateTagCommand(
                 tagId = tagId,
                 label = evt.displayName,
-                tagType = TagType.SYSTEM
+                tagType = TagType.DIRECTORY
         ))
     }
 

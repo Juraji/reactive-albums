@@ -1,6 +1,8 @@
 package nl.juraji.reactive.albums.services
 
+import de.androidpit.colorthief.ColorThief
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
+import nl.juraji.reactive.albums.util.RgbColor
 import nl.juraji.reactive.albums.util.extensions.coordinateSequence
 import nl.juraji.reactive.albums.util.extensions.deferTo
 import nl.juraji.reactive.albums.util.extensions.then
@@ -8,6 +10,7 @@ import org.imgscalr.Scalr
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import java.awt.image.BufferedImage
@@ -113,6 +116,12 @@ class ImageService(
 
                 Scalr.crop(image, offsetX, offsetY, shortestEdge, shortestEdge)
             }
+
+    fun getImageDominantColors(location: Path, colorCount: Int): Flux<RgbColor> {
+        return readImage(location)
+                .flatMapMany { Flux.fromArray(ColorThief.getPalette(it, colorCount)) }
+                .map { RgbColor.from(it) }
+    }
 
     private fun readImage(location: Path): Mono<BufferedImage> =
             deferTo(scheduler) { ImageIO.read(location.toFile()) }
