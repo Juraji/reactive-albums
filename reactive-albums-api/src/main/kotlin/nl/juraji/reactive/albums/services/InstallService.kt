@@ -21,31 +21,31 @@ class InstallService(
 
     @EventListener(ContextRefreshedEvent::class)
     fun init() {
-        if (!isTaskCompleted("runInstallPictureColorTags")) {
-            runInstallPictureColorTags()
-            setTaskCompleted("runInstallPictureColorTags")
-        }
+        runInstallTask("runInstallPictureColorTags", this::runInstallPictureColorTags)
     }
 
-    private fun isTaskCompleted(taskName: String): Boolean =
-            jdbcTemplate.query(
-                    "select 1 from InstallServiceCompletedTasks where taskName = :taskName;",
-                    mapOf("taskName" to taskName),
-                    ResultSetExtractor { resultSet -> resultSet.next() }
-            ) == true
+    private fun runInstallTask(taskName: String, f: () -> Unit) {
+        val isTaskCompleted = jdbcTemplate.query(
+                "select 1 from InstallServiceCompletedTasks where taskName = :taskName;",
+                mapOf("taskName" to taskName),
+                ResultSetExtractor { resultSet -> resultSet.next() }
+        ) == true
 
-    private fun setTaskCompleted(taskName: String) {
-        jdbcTemplate.execute(
-                "insert into InstallServiceCompletedTasks (taskName) values (:taskName)",
-                mapOf("taskName" to taskName)
-        ) { it.execute() }
+        if (!isTaskCompleted) {
+            f.invoke()
+
+            jdbcTemplate.execute(
+                    "insert into InstallServiceCompletedTasks (taskName) values (:taskName)",
+                    mapOf("taskName" to taskName)
+            ) { it.execute() }
+        }
     }
 
     private fun runInstallPictureColorTags() {
         val yaml = YamlMapFactoryBean()
         yaml.setResources(ClassPathResource("predefined-tag-colors.yaml"))
-        val map: Map<String, String> = (yaml.`object`
-                ?: throw IllegalStateException("Could not load predefined-tag-colors.yaml")) as Map<String, String>
+        val map: Map<String, String> = yaml.`object` as Map<String, String>?
+                ?: throw IllegalStateException("Could not load predefined-tag-colors.yaml")
 
         map.forEach { (label, color) ->
             commandGateway.send<Unit>(CreateTagCommand(
