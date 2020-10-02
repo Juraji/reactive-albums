@@ -22,17 +22,21 @@ class PictureFileEventHandler(
 ) {
 
     @EventHandler
-    fun on(evt: PictureDeletedEvent): Boolean? = Mono.just(evt.location)
-            .filter { evt.physicallyDeleted }
-            .flatMap { fileSystemService.deleteIfExists(it) }
-            .block()
+    fun on(evt: PictureDeletedEvent) {
+        Mono.just(evt.location)
+                .filter { evt.physicallyDeleted }
+                .flatMap { fileSystemService.deleteIfExists(it) }
+                .block()
+    }
 
     @EventHandler
-    fun on(evt: PictureMovedEvent): Path? = Mono.just(evt)
-            .doOnNext { fileWatchService.lockEvents() }
-            .delayElement(Duration.ofSeconds(1))
-            .flatMap { fileSystemService.moveFile(it.location, it.targetLocation) }
-            .delayElement(Duration.ofSeconds(1))
-            .doFinally { fileWatchService.unlockEvents() }
-            .block()
+    fun on(evt: PictureMovedEvent) {
+        Mono.just(evt)
+                .doOnNext { fileWatchService.lockEvents() }
+                .delayElement(Duration.ofSeconds(1))
+                .flatMap { fileSystemService.moveFile(it.sourceLocation, it.targetLocation) }
+                .delayElement(Duration.ofSeconds(1))
+                .doFinally { fileWatchService.unlockEvents() }
+                .block()
+    }
 }

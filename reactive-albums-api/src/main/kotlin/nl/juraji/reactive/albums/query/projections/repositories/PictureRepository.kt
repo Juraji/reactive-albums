@@ -10,14 +10,13 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
-import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Scheduler
 import java.util.*
 
 @Repository
 interface SyncPictureRepository : JpaRepository<PictureProjection, String> {
-    fun findAllByDirectoryId(directoryId: String): List<PictureProjection>
+    fun findByParentLocation(path: String): List<PictureProjection>
     fun findByLocation(path: String): Optional<PictureProjection>
     fun findAllByLocationContainsIgnoreCase(filter: String, pageable: Pageable): Page<PictureProjection>
 
@@ -39,8 +38,6 @@ class PictureRepository(
         scheduler,
         transactionTemplate
 ) {
-
-    fun findAllByDirectoryId(directoryId: String): Flux<PictureProjection> = fromIterator { it.findAllByDirectoryId(directoryId) }
 
     fun findByLocation(path: String): Mono<PictureProjection> = fromOptional { it.findByLocation(path) }
 

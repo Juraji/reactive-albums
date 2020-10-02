@@ -7,6 +7,7 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.mockk
 import nl.juraji.reactive.albums.api.ApiTestConfiguration
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
@@ -41,7 +42,7 @@ internal class PictureCommandControllerTest {
     private val fixture = Fixture {
         register(PictureType::class) { PictureType.JPEG }
         register(LocalDateTime::class) { LocalDateTime.now() }
-        register(PictureProjection::class) { PictureProjection(nextString(), nextString(), nextString(), nextString(), nextString(), next()) }
+        register(PictureProjection::class) { PictureProjection(nextString(), nextString(), nextString(), nextString(), next()) }
     }
 
     @MockkBean
@@ -87,15 +88,15 @@ internal class PictureCommandControllerTest {
     @Test
     fun `movePicture should init picture move`() {
         val pictureId = PictureId()
-        val targetLocation = "location"
+        val targetDirectoryId = DirectoryId()
 
         val resultProjection: PictureProjection = fixture.next()
         val expectedJson: String = objectMapper.writeValueAsString(resultProjection)
 
-        every { pictureCommandsService.movePicture(pictureId.identifier, targetLocation) } returnsMonoOf resultProjection
+        every { pictureCommandsService.movePicture(pictureId.identifier, targetDirectoryId.identifier) } returnsMonoOf resultProjection
 
         webTestClient.post()
-                .uri("/api/pictures/$pictureId/move?targetLocation=$targetLocation")
+                .uri("/api/pictures/$pictureId/move?targetDirectoryId=$targetDirectoryId")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk

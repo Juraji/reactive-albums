@@ -41,6 +41,7 @@ class InstallService(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun runInstallPictureColorTags() {
         val yaml = YamlMapFactoryBean()
         yaml.setResources(ClassPathResource("predefined-tag-colors.yaml"))

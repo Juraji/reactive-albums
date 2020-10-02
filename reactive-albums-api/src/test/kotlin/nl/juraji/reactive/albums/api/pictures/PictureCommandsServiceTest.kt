@@ -1,5 +1,6 @@
 package nl.juraji.reactive.albums.api.pictures
 
+import com.marcellogalhardo.fixture.Fixture
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -7,18 +8,21 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
+import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
-import nl.juraji.reactive.albums.util.toCompletableFuture
 import nl.juraji.reactive.albums.util.returnsMonoOf
+import nl.juraji.reactive.albums.util.toCompletableFuture
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,11 +42,15 @@ internal class PictureCommandsServiceTest {
     private lateinit var duplicateMatchRepository: DuplicateMatchRepository
 
     @MockK
+    private lateinit var directoryRepository: DirectoryRepository
+
+    @MockK
     private lateinit var pictureRepository: PictureRepository
 
     @InjectMockKs
     private lateinit var pictureCommandsService: PictureCommandsService
 
+    private val fixture = Fixture {}
     private val pictureId = PictureId()
 
     @BeforeEach
@@ -89,19 +97,31 @@ internal class PictureCommandsServiceTest {
 
     @Test
     fun `movePicture should result in MovePictureCommand`() {
-        val targetLocation = "location"
+        val targetDirectory = DirectoryProjection(
+                id = fixture.nextString(),
+                location = fixture.nextString(),
+                displayName = fixture.nextString(),
+                automaticScanEnabled = fixture.nextBoolean()
+        )
 
         val resultProjection: PictureProjection = mockk(relaxed = true)
+        every { directoryRepository.findById(targetDirectory.id) } returnsMonoOf targetDirectory
         every { pictureRepository.subscribeFirst(any(), any()) } returnsMonoOf resultProjection
 
-        val result: Mono<PictureProjection> = pictureCommandsService.movePicture(pictureId.identifier, targetLocation)
+        val result: Mono<PictureProjection> = pictureCommandsService.movePicture(pictureId.identifier, targetDirectory.id)
 
         StepVerifier.create(result)
                 .expectNext(resultProjection)
                 .expectComplete()
                 .verify()
 
-        verify(exactly = 1) { commandGateway.send<Any>(MovePictureCommand(pictureId, Paths.get(targetLocation))) }
+        verify(exactly = 1) {
+            commandGateway.send<Any>(MovePictureCommand(
+                    pictureId,
+                    DirectoryId(targetDirectory.id),
+                    Paths.get(targetDirectory.location)
+            ))
+        }
         confirmVerified(commandGateway)
     }
 

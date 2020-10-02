@@ -192,6 +192,7 @@ class FileWatchService(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun createWatchServiceFlux(directory: Path, watchService: WatchService): Flux<WatchEvent<Path>> = Flux.create {
         directory.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE)
         var poll = true
@@ -237,7 +238,7 @@ class DirectoryStateUpdateService(
 
                 val files: List<Path> = fileSystemService.listFiles(directoryPath)
                 val knownPictureIds: Map<Path, String> = pictureRepository
-                        .findAllByDirectoryId(directoryId.identifier)
+                        .findByParentLocation(directoryPath.toString())
                         .map { Paths.get(it.location) to it.id }.toMap()
 
                 // Delete non-existent files

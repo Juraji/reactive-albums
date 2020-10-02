@@ -30,8 +30,8 @@ class PictureCommandController(
     @PostMapping("/api/pictures/{pictureId}/move")
     fun movePicture(
             @PathVariable("pictureId") pictureId: String,
-            @RequestParam("targetLocation") targetLocation: String,
-    ): Mono<PictureProjection> = pictureCommandsService.movePicture(pictureId, targetLocation)
+            @RequestParam("targetDirectoryId") targetDirectoryId: String,
+    ): Mono<PictureProjection> = pictureCommandsService.movePicture(pictureId, targetDirectoryId)
 
     @DeleteMapping("/api/pictures/{pictureId}")
     fun deletePicture(

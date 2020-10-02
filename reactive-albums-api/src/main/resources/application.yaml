@@ -56,9 +56,6 @@ axon:
       picture-analysis:
         threadCount: 8
         initialSegmentCount: 8
-      projections:
-        threadCount: 2
-        initialSegmentCount: 2
 
 logging:
   level:

@@ -24,7 +24,6 @@ class PictureProjectionsEventHandler(
     fun on(evt: PictureCreatedEvent) {
         val projection = PictureProjection(
                 id = evt.pictureId.identifier,
-                directoryId = evt.directoryId.identifier,
                 displayName = evt.displayName,
                 location = evt.location.toString(),
                 parentLocation = evt.location.parent.toString(),
@@ -89,7 +88,12 @@ class PictureProjectionsEventHandler(
     @EventHandler
     fun on(evt: PictureMovedEvent) {
         pictureRepository
-                .update(evt.pictureId.identifier) { it.copy(location = evt.targetLocation.toString()) }
+                .update(evt.pictureId.identifier) {
+                    it.copy(
+                            location = evt.targetLocation.toString(),
+                            parentLocation = evt.targetLocation.parent.toString()
+                    )
+                }
                 .block()
     }
 

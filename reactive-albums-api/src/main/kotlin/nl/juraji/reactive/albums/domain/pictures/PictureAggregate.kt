@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.domain.pictures
 
 import nl.juraji.reactive.albums.domain.Validate
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.domain.tags.TagId
@@ -20,8 +21,9 @@ class PictureAggregate() {
 
     @AggregateIdentifier
     private lateinit var pictureId: PictureId
-    private lateinit var displayName: String
+    private lateinit var directoryId: DirectoryId
     private lateinit var location: Path
+    private lateinit var displayName: String
     private var tags: Set<TagId> = emptySet()
     private var duplicates: Map<DuplicateMatchId, PictureId> = emptyMap()
 
@@ -46,19 +48,21 @@ class PictureAggregate() {
 
     @CommandHandler
     fun handle(cmd: MovePictureCommand): PictureId {
-        val targetLocation: Path =
-                if (location.fileName == cmd.targetLocation.fileName) cmd.targetLocation
-                else cmd.targetLocation.resolve(location.fileName)
+        Validate.isFalse(directoryId == cmd.targetDirectoryId) { "Target directory is the same as the current location" }
 
-        Validate.isFalse(location == targetLocation) { "Target location is the same as the current location" }
+        val targetLocation: Path =
+                if (cmd.targetLocation.fileName == location.fileName) cmd.targetLocation
+                else cmd.targetLocation.resolve(location.fileName)
 
         AggregateLifecycle.apply(
                 PictureMovedEvent(
                         pictureId = pictureId,
-                        location = location,
-                        targetLocation = targetLocation,
+                        sourceDirectoryId = directoryId,
+                        sourceLocation = location,
+                        targetDirectoryId = cmd.targetDirectoryId,
+                        targetLocation = targetLocation
                 ),
-                MetaData.with("AUDIT", "Picture moved from $location to $targetLocation")
+                MetaData.with("AUDIT", "Picture moved from $location to ${cmd.targetLocation}")
         )
 
         return pictureId
@@ -165,8 +169,9 @@ class PictureAggregate() {
     @EventSourcingHandler
     fun on(evt: PictureCreatedEvent) {
         pictureId = evt.pictureId
+        directoryId = evt.directoryId
         displayName = evt.displayName
-        this.location = evt.location
+        location = evt.location
     }
 
     @EventSourcingHandler
@@ -191,7 +196,7 @@ class PictureAggregate() {
 
     @EventSourcingHandler
     fun on(evt: PictureMovedEvent) {
-        location = evt.targetLocation
+        directoryId = evt.targetDirectoryId
     }
 
     @EventSourcingHandler

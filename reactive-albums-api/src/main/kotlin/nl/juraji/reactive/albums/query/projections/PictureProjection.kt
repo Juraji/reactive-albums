@@ -8,7 +8,6 @@ import javax.persistence.*
 @Entity
 data class PictureProjection(
         @Id val id: String,
-        val directoryId: String,
         val displayName: String,
         val location: String,
         val parentLocation: String,

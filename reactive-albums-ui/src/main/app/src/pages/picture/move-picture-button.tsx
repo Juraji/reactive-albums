@@ -36,7 +36,7 @@ export const MovePictureButton: FC<MovePictureButtonProps> = ({ picture }) => {
       dispatch(
         movePicture({
           pictureId: picture.id,
-          targetLocation: targetDirectory.location,
+          targetDirectoryId: targetDirectory.id,
         })
       )
         .then(unwrapResult)

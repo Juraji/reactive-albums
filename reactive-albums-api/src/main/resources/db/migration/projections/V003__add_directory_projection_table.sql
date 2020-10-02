@@ -7,4 +7,6 @@ create table DirectoryProjection
     displayName          varchar(4096) not null,
     location             varchar(4096) not null,
     primary key (id)
-)
+);
+
+create fulltext index idx_ft_directory_location on DirectoryProjection(location)

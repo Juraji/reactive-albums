@@ -31,7 +31,7 @@ multi-tenancy:
       password: albums
       driver-class-name: org.h2.Driver
       flyway:
-        enabled: true
+        enabled: false # TODO: There are some MySQL specific index statements that won't run on H2
         baseline-on-migrate: true
         locations: classpath:/db/migration/projections
     - tenantId: thumbnails

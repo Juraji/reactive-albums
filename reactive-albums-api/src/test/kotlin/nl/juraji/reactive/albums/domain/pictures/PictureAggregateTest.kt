@@ -51,9 +51,10 @@ internal class PictureAggregateTest {
 
     @Test
     fun `should move picture`() {
-        val directoryId = DirectoryId("directory#1")
+        val directoryId = DirectoryId()
         val pictureId = PictureId("picture#1")
         val location = Paths.get("/test/location/picture.jpg")
+        val targetDirectoryId = DirectoryId()
         val targetLocation = Paths.get("/test/other-location/picture.jpg")
 
         fixture
@@ -69,14 +70,17 @@ internal class PictureAggregateTest {
                 .`when`(
                         MovePictureCommand(
                                 pictureId = pictureId,
-                                targetLocation = targetLocation
+                                targetDirectoryId = targetDirectoryId,
+                                targetLocation = targetLocation,
                         )
                 )
                 .expectSuccessfulHandlerExecution()
                 .expectEvents(
                         PictureMovedEvent(
                                 pictureId = pictureId,
-                                location = location,
+                                sourceDirectoryId = directoryId,
+                                sourceLocation = location,
+                                targetDirectoryId = targetDirectoryId,
                                 targetLocation = targetLocation
                         )
                 )

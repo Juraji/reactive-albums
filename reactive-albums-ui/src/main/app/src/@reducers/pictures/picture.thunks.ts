@@ -58,14 +58,14 @@ export const unlinkPictureTag = createApiDeleteThunk<TagLink[], PictureTagThunk>
 );
 
 interface MovePictureThunk extends PictureThunk {
-  targetLocation: string;
+  targetDirectoryId: string;
 }
 
 export const movePicture = createApiPostThunk<Picture, MovePictureThunk>(
   'pictures/movePicture',
-  ({ pictureId, targetLocation }) => ({
+  ({ pictureId, targetDirectoryId }) => ({
     url: `/api/pictures/${pictureId}/move`,
-    params: { targetLocation },
+    params: { targetDirectoryId },
   })
 );
 

@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.api.CommandSenderService
+import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.TagLinkType
@@ -8,6 +9,7 @@ import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -22,6 +24,7 @@ import java.time.Duration
 class PictureCommandsService(
         commandGateway: CommandGateway,
         private val duplicateMatchRepository: DuplicateMatchRepository,
+        private val directoryRepository: DirectoryRepository,
         private val pictureRepository: PictureRepository,
 ) : CommandSenderService(commandGateway) {
     fun rescanDuplicates(pictureId: String): Mono<PictureId> =
@@ -41,8 +44,16 @@ class PictureCommandsService(
         return sourceDuplicate.and(targetDuplicate)
     }
 
-    fun movePicture(pictureId: String, targetLocation: String): Mono<PictureProjection> =
-            send<PictureId>(MovePictureCommand(pictureId = PictureId(pictureId), targetLocation = Paths.get(targetLocation)))
+    fun movePicture(pictureId: String, targetDirectoryId: String): Mono<PictureProjection> =
+            directoryRepository.findById(targetDirectoryId)
+                    .map {
+                        MovePictureCommand(
+                                pictureId = PictureId(pictureId),
+                                targetDirectoryId = DirectoryId(targetDirectoryId),
+                                targetLocation = Paths.get(it.location),
+                        )
+                    }
+                    .flatMap { send<PictureId>(it) }
                     .flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
 
     fun deletePicture(pictureId: String, deletePhysicalFile: Boolean): Mono<PictureId> =
