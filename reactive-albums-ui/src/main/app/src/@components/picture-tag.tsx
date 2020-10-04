@@ -4,9 +4,10 @@ import { Tag } from '@types';
 interface PictureTagProps {
   tag: Partial<Tag>;
   fontSize?: string;
+  onClick?: () => void;
 }
 
-export const PictureTag: FC<PictureTagProps> = ({ tag, fontSize }) => {
+export const PictureTag: FC<PictureTagProps> = ({ tag, fontSize, onClick }) => {
   const style = useMemo(
     () => ({
       backgroundColor: `${tag.tagColor}`,
@@ -17,7 +18,7 @@ export const PictureTag: FC<PictureTagProps> = ({ tag, fontSize }) => {
   );
 
   return (
-    <span className="picture-tag badge mr-1 border" style={style}>
+    <span className="picture-tag badge mr-1 border cursor-pointer" style={style} onClick={onClick}>
       <span>{tag.label}</span>
     </span>
   );

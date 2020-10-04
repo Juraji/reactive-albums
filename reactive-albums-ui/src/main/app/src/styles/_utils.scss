@@ -10,3 +10,8 @@
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+  user-select: none;
+}

@@ -1,14 +1,15 @@
 import React, { FC, useMemo } from 'react';
-import { Picture, TagType } from '@types';
+import { Picture, Tag, TagType } from '@types';
 import Card from 'react-bootstrap/Card';
 import { Conditional, PictureTag } from '@components';
 import { Plus } from 'react-feather';
-import { linkPictureTag, unlinkPictureTag, useTags } from '@reducers';
+import { linkPictureTag, setPictureOverviewFilter, unlinkPictureTag, useTags } from '@reducers';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch } from '@hooks';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useTranslation } from 'react-i18next';
 import { useToasts } from 'react-toast-notifications';
+import { useHistory } from 'react-router-dom';
 
 interface AddTagButtonProps {
   pictureId: string;
@@ -54,9 +55,17 @@ export const PictureTags: FC<PictureTagsProps> = ({ picture }) => {
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const directoryTags = useMemo(() => picture.tags.filter((t) => t.tagType === TagType.DIRECTORY), [picture]);
   const otherTags = useMemo(() => picture.tags.filter((t) => t.tagType !== TagType.DIRECTORY), [picture]);
+
+  function onTagClicked(tag: Tag) {
+    return () => {
+      dispatch(setPictureOverviewFilter(`tag:${tag.label}`));
+      history.push('/home');
+    };
+  }
 
   function onPictureTagUnlink(tagId: string) {
     dispatch(unlinkPictureTag({ pictureId: picture.id, tagId }))
@@ -72,7 +81,7 @@ export const PictureTags: FC<PictureTagsProps> = ({ picture }) => {
           <ul className="list-unstyled">
             {directoryTags.map((tag, idx) => (
               <li key={idx}>
-                <PictureTag tag={tag} />
+                <PictureTag tag={tag} onClick={onTagClicked(tag)} />
               </li>
             ))}
           </ul>
@@ -81,7 +90,7 @@ export const PictureTags: FC<PictureTagsProps> = ({ picture }) => {
           <ul className="list-unstyled">
             {otherTags.map((tag, idx) => (
               <li key={idx}>
-                <PictureTag tag={tag} />
+                <PictureTag tag={tag} onClick={onTagClicked(tag)} />
                 <button
                   type="button"
                   className="close onclick-btn float-none mr-3"

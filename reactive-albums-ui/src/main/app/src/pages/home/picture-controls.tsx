@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import Pagination from 'react-bootstrap/Pagination';
 import { useDebouncedValue, useDispatch } from '@hooks';
 import { fetchPicturesPage, usePicturesOverview } from '@reducers';
+import Button from 'react-bootstrap/Button';
+import { ArrowLeft, RefreshCcw } from 'react-feather';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 interface PictureControlsProps {}
 
@@ -40,6 +43,10 @@ export const PictureControls: FC<PictureControlsProps> = () => {
     [totalItemsAvailable, t]
   );
 
+  function onResetFilter() {
+    setFilterInput('');
+  }
+
   useEffect(() => {
     dispatch(fetchPicturesPage({ filter: debouncedFilterInput, page: pageNoInput, size: pageSizeInput }));
   }, [dispatch, debouncedFilterInput, pageNoInput, pageSizeInput]);
@@ -47,12 +54,18 @@ export const PictureControls: FC<PictureControlsProps> = () => {
   return (
     <Navbar variant="light" fixed="bottom" bg="light" className="border-top">
       <Form inline className="mr-2">
-        <Form.Control
-          placeholder={t('home.pagination.filter.placeholder')}
-          value={filterInput}
-          onChange={(e) => setFilterInput(e.target.value)}
-          size="sm"
-        />
+        <InputGroup size="sm">
+          <Form.Control
+            placeholder={t('home.pagination.filter.placeholder')}
+            value={filterInput}
+            onChange={(e) => setFilterInput(e.target.value)}
+          />
+          <InputGroup.Append>
+            <Button variant="outline-secondary" onClick={onResetFilter} disabled={filterInput === ''}>
+              <ArrowLeft />
+            </Button>
+          </InputGroup.Append>
+        </InputGroup>
       </Form>
       <Conditional condition={!isEmpty} orElse={<Navbar.Text>{t('home.pagination.no_items_found')}</Navbar.Text>}>
         <Form inline>

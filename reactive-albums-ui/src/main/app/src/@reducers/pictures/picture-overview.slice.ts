@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { fetchPicturesPage } from './picture.thunks';
 import { Picture } from '@types';
+import { setPictureOverviewFilter } from './picture.actions';
 
 export interface PictureOverviewSliceState {
   content: Picture[];
@@ -43,4 +44,6 @@ export const pictureOverviewSliceReducer = createReducer(initialState, (builder)
       filter: action.meta.arg.filter,
     });
   });
+
+  builder.addCase(setPictureOverviewFilter, (state, action) => state.copy({ filter: action.payload }));
 });
