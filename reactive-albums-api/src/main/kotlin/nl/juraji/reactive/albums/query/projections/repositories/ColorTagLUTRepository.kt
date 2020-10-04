@@ -1,13 +1,13 @@
 package nl.juraji.reactive.albums.query.projections.repositories
 
-import nl.juraji.reactive.albums.query.projections.ColorTagProjection
+import nl.juraji.reactive.albums.query.projections.ColorTagLUTProjection
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ColorTagRepository: JpaRepository<ColorTagProjection, String> {
+interface ColorTagLUTRepository: JpaRepository<ColorTagLUTProjection, String> {
 
     @Query(nativeQuery = true, value = """
         select t.* from ColorTagProjection t
@@ -22,5 +22,5 @@ interface ColorTagRepository: JpaRepository<ColorTagProjection, String> {
             @Param("red") red: Int,
             @Param("green") green: Int,
             @Param("blue") blue: Int,
-    ): ColorTagProjection
+    ): ColorTagLUTProjection
 }

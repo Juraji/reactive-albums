@@ -1,4 +1,4 @@
-create table ColorTagProjection
+create table ColorTagLUTProjection
 (
     id    varchar(64) not null,
     red   int         not null,
