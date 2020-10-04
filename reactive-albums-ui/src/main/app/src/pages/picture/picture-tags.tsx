@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { Picture } from '@types';
+import React, { FC, useMemo } from 'react';
+import { Picture, TagType } from '@types';
 import Card from 'react-bootstrap/Card';
 import { Conditional, PictureTag } from '@components';
 import { Plus } from 'react-feather';
@@ -55,6 +55,9 @@ export const PictureTags: FC<PictureTagsProps> = ({ picture }) => {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
 
+  const directoryTags = useMemo(() => picture.tags.filter((t) => t.tagType === TagType.DIRECTORY), [picture]);
+  const otherTags = useMemo(() => picture.tags.filter((t) => t.tagType !== TagType.DIRECTORY), [picture]);
+
   function onPictureTagUnlink(tagId: string) {
     dispatch(unlinkPictureTag({ pictureId: picture.id, tagId }))
       .then(unwrapResult)
@@ -65,20 +68,31 @@ export const PictureTags: FC<PictureTagsProps> = ({ picture }) => {
   return (
     <Card className="mb-2">
       <Card.Body>
-        <Conditional condition={picture.tags.isNotEmpty()} orElse={t('picture.tags.no_tags_linked')}>
-          {picture.tags.map((tagLink, index) => (
-            <span>
-              <PictureTag tag={tagLink.tag} key={index} />
-              <button
-                type="button"
-                className="close onclick-btn float-none mr-3"
-                onClick={() => onPictureTagUnlink(tagLink.tag.id)}
-              >
-                <span aria-hidden="true">×</span>
-                <span className="sr-only">Close</span>
-              </button>
-            </span>
-          ))}
+        <Conditional condition={directoryTags.isNotEmpty()}>
+          <ul className="list-unstyled">
+            {directoryTags.map((tag, idx) => (
+              <li key={idx}>
+                <PictureTag tag={tag} />
+              </li>
+            ))}
+          </ul>
+        </Conditional>
+        <Conditional condition={otherTags.isNotEmpty()}>
+          <ul className="list-unstyled">
+            {otherTags.map((tag, idx) => (
+              <li key={idx}>
+                <PictureTag tag={tag} />
+                <button
+                  type="button"
+                  className="close onclick-btn float-none mr-3"
+                  onClick={() => onPictureTagUnlink(tag.id)}
+                >
+                  <span aria-hidden="true">×</span>
+                  <span className="sr-only">Close</span>
+                </button>
+              </li>
+            ))}
+          </ul>
         </Conditional>
       </Card.Body>
       <Card.Footer className="d-flex flex-row-reverse">

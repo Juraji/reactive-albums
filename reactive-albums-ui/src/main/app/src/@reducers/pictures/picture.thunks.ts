@@ -1,4 +1,4 @@
-import { Page, Picture, TagLink } from '@types';
+import { Page, Picture, Tag } from '@types';
 import { createApiDeleteThunk, createApiGetThunk, createApiPostThunk } from '@utils';
 
 interface PictureThunk {
@@ -47,12 +47,12 @@ interface PictureTagThunk extends PictureThunk {
   tagId: string;
 }
 
-export const linkPictureTag = createApiPostThunk<TagLink[], PictureTagThunk>(
+export const linkPictureTag = createApiPostThunk<Tag[], PictureTagThunk>(
   'pictures/linkPictureTag',
   ({ pictureId, tagId }) => `/api/pictures/${pictureId}/tags/${tagId}`
 );
 
-export const unlinkPictureTag = createApiDeleteThunk<TagLink[], PictureTagThunk>(
+export const unlinkPictureTag = createApiDeleteThunk<Tag[], PictureTagThunk>(
   'pictures/unlinkPictureTag',
   ({ pictureId, tagId }) => `/api/pictures/${pictureId}/tags/${tagId}`
 );

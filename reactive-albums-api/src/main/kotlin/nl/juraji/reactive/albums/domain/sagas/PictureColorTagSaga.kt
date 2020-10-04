@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.LinkTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagLinkedEvent
@@ -54,7 +53,6 @@ class PictureColorTagSaga {
                     LinkTagCommand(
                             pictureId = evt.pictureId,
                             tagId = tagId,
-                            tagLinkType = TagLinkType.AUTO
                     )
                 }
                 ?.forEach { cmd ->

@@ -4,11 +4,10 @@ import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
@@ -59,12 +58,12 @@ class PictureCommandsService(
     fun deletePicture(pictureId: String, deletePhysicalFile: Boolean): Mono<PictureId> =
             send(DeletePictureCommand(pictureId = PictureId(pictureId), deletePhysicalFile = deletePhysicalFile))
 
-    fun linkTag(pictureId: String, tagId: String): Flux<TagLink> =
-            send<PictureId>(LinkTagCommand(pictureId = PictureId(pictureId), tagId = TagId(tagId), tagLinkType = TagLinkType.USER))
+    fun linkTag(pictureId: String, tagId: String): Flux<TagProjection> =
+            send<PictureId>(LinkTagCommand(pictureId = PictureId(pictureId), tagId = TagId(tagId)))
                     .flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
                     .flatMapMany { it.tags.toFlux() }
 
-    fun unlinkTag(pictureId: String, tagId: String): Flux<TagLink> =
+    fun unlinkTag(pictureId: String, tagId: String): Flux<TagProjection> =
             send<PictureId>(UnlinkTagCommand(pictureId = PictureId(pictureId), tagId = TagId(tagId)))
                     .flatMap { id -> pictureRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
                     .flatMapMany { it.tags.toFlux() }

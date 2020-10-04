@@ -17,22 +17,18 @@ spring:
 multi-tenancy:
   tenants:
     - tenantId: eventsourcing
-      url: jdbc:h2:mem:albums-axon-db
-      username: sa
-      password: sa
-      driver-class-name: org.h2.Driver
+      url: "jdbc:mariadb://localhost:3306/temp"
+      username: root
+      password: secret
     - tenantId: projections
-      url: jdbc:h2:mem:albums-projections-db
-      username: sa
-      password: sa
-      driver-class-name: org.h2.Driver
+      url: "jdbc:mariadb://localhost:3306/temp"
+      username: root
+      password: secret
     - tenantId: thumbnails
-      url: jdbc:h2:mem:albums-thumbnails-db
-      username: sa
-      password: sa
-      driver-class-name: org.h2.Driver
+      url: "jdbc:mariadb://localhost:3306/temp"
+      username: root
+      password: secret
     - tenantId: auditLog
-      url: jdbc:h2:mem:albums-audit-log-db
-      username: sa
-      password: sa
-      driver-class-name: org.h2.Driver
+      url: "jdbc:mariadb://localhost:3306/temp"
+      username: root
+      password: secret

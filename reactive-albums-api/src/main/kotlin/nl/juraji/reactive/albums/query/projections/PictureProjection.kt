@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.query.projections
 
 import nl.juraji.reactive.albums.domain.pictures.PictureType
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -20,15 +19,6 @@ data class PictureProjection(
         override var createdAt: LocalDateTime? = null,
         override var lastModifiedAt: LocalDateTime? = null,
 
-        @ElementCollection(fetch = FetchType.EAGER)
-        val tags: Set<TagLink> = emptySet(),
+        @OneToMany(fetch = FetchType.EAGER)
+        val tags: Set<TagProjection> = emptySet(),
 ) : AuditedProjection(createdAt, lastModifiedAt)
-
-@Embeddable
-data class TagLink(
-        val linkType: TagLinkType,
-        @ManyToOne(fetch = FetchType.EAGER)
-        val tag: TagProjection,
-) : Comparable<TagLink> {
-    override fun compareTo(other: TagLink): Int = compareValuesBy(this, other) { it.linkType }
-}

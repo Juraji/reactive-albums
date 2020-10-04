@@ -76,7 +76,6 @@ class PictureAggregate() {
                 TagLinkedEvent(
                         pictureId = this.pictureId,
                         tagId = cmd.tagId,
-                        linkType = cmd.tagLinkType,
                 ),
                 MetaData.with("AUDIT", "Tag (${cmd.tagId}) added")
         )

@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Picture, TagLink } from '@types';
+import { Picture, Tag } from '@types';
 import { useApiUrl } from '@hooks';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
@@ -10,12 +10,12 @@ import './picture-tile.scss';
 import { useTranslation } from 'react-i18next';
 
 interface TagOrbProps {
-  tagLink: TagLink;
+  tag: Tag;
 }
 
-export const TagOrb: FC<TagOrbProps> = ({ tagLink }) => {
-  const style = useMemo(() => ({ backgroundColor: tagLink.tag.tagColor }), [tagLink]);
-  return <div className="tag-orb" title={tagLink.tag.label} style={style} />;
+export const TagOrb: FC<TagOrbProps> = ({ tag }) => {
+  const style = useMemo(() => ({ backgroundColor: tag.tagColor }), [tag]);
+  return <div className="tag-orb" title={tag.label} style={style} />;
 };
 
 interface PictureTileProps {
@@ -41,7 +41,7 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
         </ul>
         <div className="tag-orbs">
           {picture.tags.map((tagLink, index) => (
-            <TagOrb tagLink={tagLink} key={index} />
+            <TagOrb tag={tagLink} key={index} />
           ))}
         </div>
         <Conditional condition={picture.duplicateCount > 0}>

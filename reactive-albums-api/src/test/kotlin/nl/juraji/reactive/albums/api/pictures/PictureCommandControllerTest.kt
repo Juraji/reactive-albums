@@ -13,7 +13,7 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.util.returnsEmptyMono
 import nl.juraji.reactive.albums.util.returnsFluxOf
 import nl.juraji.reactive.albums.util.returnsMonoOf
@@ -123,7 +123,7 @@ internal class PictureCommandControllerTest {
         val pictureId = PictureId()
         val tagId = TagId()
 
-        val resultProjection: List<TagLink> = listOf(mockk(relaxed = true))
+        val resultProjection: List<TagProjection> = listOf(mockk(relaxed = true))
 
         every { pictureCommandsService.linkTag(pictureId.identifier, tagId.identifier) } returnsFluxOf resultProjection
 
@@ -132,7 +132,7 @@ internal class PictureCommandControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBodyList<TagLink>().hasSize(1)
+                .expectBodyList<TagProjection>().hasSize(1)
     }
 
     @Test
@@ -140,7 +140,7 @@ internal class PictureCommandControllerTest {
         val pictureId = PictureId()
         val tagId = TagId()
 
-        val resultProjection: List<TagLink> = listOf(mockk(relaxed = true))
+        val resultProjection: List<TagProjection> = listOf(mockk(relaxed = true))
 
         every { pictureCommandsService.unlinkTag(pictureId.identifier, tagId.identifier) } returnsFluxOf resultProjection
 
@@ -149,6 +149,6 @@ internal class PictureCommandControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk
-                .expectBodyList<TagLink>().hasSize(1)
+                .expectBodyList<TagProjection>().hasSize(1)
     }
 }

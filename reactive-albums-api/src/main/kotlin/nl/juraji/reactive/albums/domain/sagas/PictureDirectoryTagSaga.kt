@@ -1,7 +1,6 @@
 package nl.juraji.reactive.albums.domain.sagas
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.LinkTagCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
@@ -42,7 +41,6 @@ class PictureDirectoryTagSaga {
         val cmd = LinkTagCommand(
                 pictureId = evt.pictureId,
                 tagId = tagId,
-                tagLinkType = TagLinkType.AUTO
         )
 
         SagaAssociations.associateWith(LINKED_TAG_ASSOC_KEY, tagId.identifier)
@@ -68,7 +66,6 @@ class PictureDirectoryTagSaga {
         commandGateway.sendAndWait<Unit>(LinkTagCommand(
                 pictureId = evt.pictureId,
                 tagId = newTagId,
-                tagLinkType = TagLinkType.AUTO
         ))
     }
 

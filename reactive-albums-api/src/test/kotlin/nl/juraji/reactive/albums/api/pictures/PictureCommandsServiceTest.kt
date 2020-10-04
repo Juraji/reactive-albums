@@ -11,13 +11,12 @@ import io.mockk.verify
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
-import nl.juraji.reactive.albums.domain.pictures.TagLinkType
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
@@ -148,14 +147,14 @@ internal class PictureCommandsServiceTest {
 
         every { pictureRepository.subscribeFirst(any(), any()) } returnsMonoOf pictureProjection
 
-        val result: Flux<TagLink> = pictureCommandsService.linkTag(pictureId.identifier, tagId.identifier)
+        val result: Flux<TagProjection> = pictureCommandsService.linkTag(pictureId.identifier, tagId.identifier)
 
         StepVerifier.create(result)
                 .expectNextSequence(pictureProjection.tags)
                 .expectComplete()
                 .verify()
 
-        verify(exactly = 1) { commandGateway.send<Any>(LinkTagCommand(pictureId, tagId, TagLinkType.USER)) }
+        verify(exactly = 1) { commandGateway.send<Any>(LinkTagCommand(pictureId, tagId)) }
         confirmVerified(commandGateway)
     }
 
@@ -169,7 +168,7 @@ internal class PictureCommandsServiceTest {
 
         every { pictureRepository.subscribeFirst(any(), any()) } returnsMonoOf pictureProjection
 
-        val result: Flux<TagLink> = pictureCommandsService.unlinkTag(pictureId.identifier, tagId.identifier)
+        val result: Flux<TagProjection> = pictureCommandsService.unlinkTag(pictureId.identifier, tagId.identifier)
 
         StepVerifier.create(result)
                 .expectNextSequence(pictureProjection.tags)

@@ -3,7 +3,7 @@ package nl.juraji.reactive.albums.query.projections.handlers
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
-import nl.juraji.reactive.albums.query.projections.TagLink
+import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
 import org.axonframework.config.ProcessingGroup
@@ -56,7 +56,7 @@ class PictureProjectionsEventHandler(
                 .flatMap { tag ->
                     pictureRepository
                             .update(evt.pictureId.identifier) { picture ->
-                                val tags: Set<TagLink> = picture.tags.plus(TagLink(tag = tag, linkType = evt.linkType))
+                                val tags: Set<TagProjection> = picture.tags.plus(tag)
                                 picture.copy(tags = tags)
                             }
                 }
@@ -66,7 +66,7 @@ class PictureProjectionsEventHandler(
     @EventHandler
     fun on(evt: TagUnlinkedEvent) {
         pictureRepository.update(evt.pictureId.identifier) {
-            val tags: Set<TagLink> = it.tags.filter { t -> t.tag.id != evt.tagId.identifier }.toSet()
+            val tags: Set<TagProjection> = it.tags.filter { t -> t.id != evt.tagId.identifier }.toSet()
             it.copy(tags = tags)
         }.block()
     }
