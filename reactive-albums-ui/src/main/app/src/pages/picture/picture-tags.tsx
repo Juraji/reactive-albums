@@ -3,7 +3,14 @@ import { Picture, Tag, TagType } from '@types';
 import Card from 'react-bootstrap/Card';
 import { Conditional, PictureTag } from '@components';
 import { Plus } from 'react-feather';
-import { fetchAllTags, linkPictureTag, setPictureOverviewFilter, unlinkPictureTag, useTags } from '@reducers';
+import {
+  fetchAllTags,
+  linkPictureTag,
+  setPictureOverviewFilter,
+  unlinkPictureTag,
+  useColorTags,
+  useUserTags,
+} from '@reducers';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch } from '@hooks';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -21,10 +28,9 @@ const AddTagButton: FC<AddTagButtonProps> = ({ pictureId }) => {
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
-  const tags = useTags();
 
-  const userTags = useMemo(() => tags.filter((t) => t.tagType === TagType.USER), [tags]);
-  const colorTags = useMemo(() => tags.filter((t) => t.tagType === TagType.COLOR), [tags]);
+  const userTags = useUserTags();
+  const colorTags = useColorTags();
 
   function onDropDownOpen(isOpen: boolean) {
     if (isOpen) {

@@ -192,8 +192,11 @@
     "tab_user": {
       "tab_header": "User tags"
     },
-    "tab_system": {
-      "tab_header": "System tags"
+    "tab_directory": {
+      "tab_header": "Directory tags"
+    },
+    "tab_color": {
+      "tab_header": "Color tags"
     }
   },
   "delete_picture_button": {

@@ -1,8 +1,7 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import { TagsTable } from './tags-table';
-import { fetchAllTags, useTags } from '@reducers';
-import { TagType } from '@types';
+import { fetchAllTags, useColorTags, useDirectoryTags, useUserTags } from '@reducers';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import { useTranslation } from 'react-i18next';
@@ -13,16 +12,15 @@ import { useDispatch } from '@hooks';
 
 const TagManagementPage: FC = () => {
   const { t } = useTranslation();
-  const tags = useTags();
-
   const dispatch = useDispatch();
+
+  const userTags = useUserTags();
+  const colorTags = useColorTags();
+  const directoryTags = useDirectoryTags();
 
   useEffect(() => {
     dispatch(fetchAllTags());
   }, [dispatch]);
-
-  const userTags = useMemo(() => tags.filter((t) => t.tagType === TagType.USER), [tags]);
-  const systemTags = useMemo(() => tags.filter((t) => t.tagType !== TagType.USER), [tags]);
 
   return (
     <Container>
@@ -33,8 +31,11 @@ const TagManagementPage: FC = () => {
           </ButtonGroup>
           <TagsTable tags={userTags} />
         </Tab>
-        <Tab title={t('tags.tab_system.tab_header')} eventKey="system-tags">
-          <TagsTable tags={systemTags} />
+        <Tab title={t('tags.tab_directory.tab_header')} eventKey="directory-tags">
+          <TagsTable tags={directoryTags} />
+        </Tab>
+        <Tab title={t('tags.tab_color.tab_header')} eventKey="color-tags">
+          <TagsTable tags={colorTags} />
         </Tab>
       </Tabs>
     </Container>
