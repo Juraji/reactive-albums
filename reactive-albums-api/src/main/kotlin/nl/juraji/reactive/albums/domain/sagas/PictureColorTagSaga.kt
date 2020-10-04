@@ -6,7 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.commands.LinkTagCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagLinkedEvent
 import nl.juraji.reactive.albums.domain.tags.TagId
-import nl.juraji.reactive.albums.query.projections.repositories.TagRepository
+import nl.juraji.reactive.albums.query.projections.repositories.ColorTagRepository
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.SagaAssociations
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -30,7 +30,7 @@ class PictureColorTagSaga {
     private lateinit var imageService: ImageService
 
     @Autowired
-    private lateinit var tagRepository: TagRepository
+    private lateinit var colorTagRepository: ColorTagRepository
 
     @Autowired
     private lateinit var commandGateway: CommandGateway
@@ -45,7 +45,7 @@ class PictureColorTagSaga {
         deadlineManager.schedule(Duration.ofMinutes(30), SAGA_DEADLINE)
 
         imageService.getImageDominantColors(evt.location, 5)
-                .flatMap { tagRepository.findClosestColorTag(it.red, it.green, it.blue) }
+                .map { colorTagRepository.findClosestColorTag(it.red, it.green, it.blue) }
                 .distinct { it.id }
                 .map { TagId(it.id) }
                 .collectList()

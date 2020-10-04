@@ -7,9 +7,6 @@ create table TagProjection
     tagColor       varchar(8)   not null,
     textColor      varchar(8)   not null,
     tagType        varchar(255) not null,
-    tagColorRed    int          not null,
-    tagColorGreen  int          not null,
-    tagColorBlue   int          not null,
     primary key (id)
 );
 

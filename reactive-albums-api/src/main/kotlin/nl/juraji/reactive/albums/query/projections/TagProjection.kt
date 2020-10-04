@@ -12,9 +12,6 @@ data class TagProjection(
         val tagColor: String,
         val textColor: String,
         @Enumerated(EnumType.STRING) val tagType: TagType,
-        @JsonIgnore val tagColorRed: Int,
-        @JsonIgnore val tagColorGreen: Int,
-        @JsonIgnore val tagColorBlue: Int,
         override var createdAt: LocalDateTime? = null,
         override var lastModifiedAt: LocalDateTime? = null,
 ) : AuditedProjection(createdAt, lastModifiedAt)
