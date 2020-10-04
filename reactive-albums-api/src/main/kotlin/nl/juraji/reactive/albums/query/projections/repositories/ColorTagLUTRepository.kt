@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository
 interface ColorTagLUTRepository: JpaRepository<ColorTagLUTProjection, String> {
 
     @Query(nativeQuery = true, value = """
-        select t.* from ColorTagProjection t
+        select t.* from ColorTagLUTProjection t
         order by (
             POW((:red - t.red) * 0.3, 2) +
             POW((:green - t.green) * 0.59, 2) +

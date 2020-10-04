@@ -42,7 +42,8 @@ class DirectoryTagSaga {
         commandGateway.sendAndWait<Unit>(CreateTagCommand(
                 tagId = tagId,
                 label = evt.displayName,
-                tagType = TagType.DIRECTORY
+                tagType = TagType.DIRECTORY,
+                metaData = mapOf(CreateTagCommand.META_DIRECTORY_ID to evt.directoryId.identifier)
         ))
     }
 

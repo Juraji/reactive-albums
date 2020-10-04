@@ -9,5 +9,10 @@ data class CreateTagCommand(
         val label: String,
         val tagColor: RgbColor? = null,
         val textColor: RgbColor? = null,
-        val tagType: TagType = TagType.USER
-) : TagCommand(tagId)
+        val tagType: TagType = TagType.USER,
+        val metaData: Map<String, String> = emptyMap(),
+) : TagCommand(tagId) {
+    companion object{
+        const val META_DIRECTORY_ID = "DIRECTORY_ID"
+    }
+}

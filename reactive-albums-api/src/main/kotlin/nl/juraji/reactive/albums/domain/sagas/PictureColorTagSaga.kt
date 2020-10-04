@@ -46,8 +46,8 @@ class PictureColorTagSaga {
 
         imageService.getImageDominantColors(evt.location, 5)
                 .map { colorTagLUTRepository.findClosestColorTag(it.red, it.green, it.blue) }
-                .distinct { it.id }
-                .map { TagId(it.id) }
+                .distinct { it.tagId }
+                .map { TagId(it.tagId) }
                 .collectList()
                 .block()
                 ?.map { tagId ->

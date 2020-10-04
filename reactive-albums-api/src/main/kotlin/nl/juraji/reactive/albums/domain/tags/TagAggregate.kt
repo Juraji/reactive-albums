@@ -30,6 +30,10 @@ class TagAggregate() {
         val tagColor: RgbColor = cmd.tagColor ?: RgbColor.of(cmd.label)
         val textColor: RgbColor = cmd.textColor ?: tagColor.contrastColor()
 
+        val metaData: MetaData = MetaData
+                .with("AUDIT", "Tag created with label ${cmd.label}")
+                .mergedWith(cmd.metaData)
+
         AggregateLifecycle.apply(
                 TagCreatedEvent(
                         tagId = cmd.tagId,
@@ -38,7 +42,7 @@ class TagAggregate() {
                         textColor = textColor,
                         tagType = cmd.tagType
                 ),
-                MetaData.with("AUDIT", "Tag created with label ${cmd.label}")
+                metaData
         )
     }
 

@@ -3,6 +3,7 @@ package nl.juraji.reactive.albums.query.projections.handlers
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.tags.TagType
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
+import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
 import nl.juraji.reactive.albums.query.projections.ColorTagLUTProjection
 import nl.juraji.reactive.albums.query.projections.repositories.ColorTagLUTRepository
 import org.axonframework.config.ProcessingGroup
@@ -20,7 +21,7 @@ class ColorTagLUTProjectionsEventHandler(
     fun on(evt: TagCreatedEvent) {
         if (evt.tagType == TagType.COLOR) {
             val entity = ColorTagLUTProjection(
-                    id = evt.tagId.identifier,
+                    tagId = evt.tagId.identifier,
                     red = evt.tagColor.red,
                     green = evt.tagColor.green,
                     blue = evt.tagColor.blue,
@@ -28,6 +29,11 @@ class ColorTagLUTProjectionsEventHandler(
 
             colorTagLUTRepository.save(entity)
         }
+    }
+
+    @EventHandler
+    fun on(evt: TagDeletedEvent) {
+        colorTagLUTRepository.deleteById(evt.tagId.identifier)
     }
 
     @ResetHandler

@@ -5,7 +5,7 @@ import javax.persistence.Id
 
 @Entity
 class ColorTagLUTProjection(
-        @Id val id: String,
+        @Id val tagId: String,
         val red: Int,
         val green: Int,
         val blue: Int,

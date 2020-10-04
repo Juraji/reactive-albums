@@ -9,8 +9,7 @@ import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureMovedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagUnlinkedEvent
 import nl.juraji.reactive.albums.domain.tags.TagId
-import nl.juraji.reactive.albums.domain.tags.TagType
-import nl.juraji.reactive.albums.query.projections.repositories.SyncTagRepository
+import nl.juraji.reactive.albums.query.projections.repositories.DirectoryTagLUTRepository
 import nl.juraji.reactive.albums.util.SagaAssociations
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
@@ -21,7 +20,6 @@ import org.axonframework.modelling.saga.StartSaga
 import org.axonframework.serialization.Revision
 import org.axonframework.spring.stereotype.Saga
 import org.springframework.beans.factory.annotation.Autowired
-import java.nio.file.Path
 
 @Saga
 @Revision("1.0")
@@ -29,7 +27,7 @@ import java.nio.file.Path
 class PictureDirectoryTagSaga {
 
     @Autowired
-    private lateinit var tagRepository: SyncTagRepository
+    private lateinit var directoryTagLUTRepository: DirectoryTagLUTRepository
 
     @Autowired
     private lateinit var commandGateway: CommandGateway
@@ -37,7 +35,10 @@ class PictureDirectoryTagSaga {
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
     fun on(evt: PictureCreatedEvent) {
-        val tagId: TagId = getDirectoryTagByPath(evt.location.parent)
+        val tagId: TagId = directoryTagLUTRepository.findById(evt.directoryId.identifier)
+                .map { TagId(it.tagId) }
+                .orElseThrow()
+
         val cmd = LinkTagCommand(
                 pictureId = evt.pictureId,
                 tagId = tagId,
@@ -51,7 +52,9 @@ class PictureDirectoryTagSaga {
     @SagaEventHandler(associationProperty = "pictureId")
     fun on(evt: PictureMovedEvent) {
         val linkedTagId: TagId? = SagaAssociations.getAssociatedValue(LINKED_TAG_ASSOC_KEY) { TagId(it) }
-        val newTagId: TagId = getDirectoryTagByPath(evt.targetLocation.parent)
+        val newTagId: TagId = directoryTagLUTRepository.findById(evt.targetDirectoryId.identifier)
+                .map { TagId(it.tagId) }
+                .orElseThrow()
 
         if (linkedTagId != null) {
             SagaAssociations.associateWith(UNLINKED_TAG_ASSOC_KEY, linkedTagId.identifier)
@@ -79,13 +82,6 @@ class PictureDirectoryTagSaga {
     @EndSaga
     @SagaEventHandler(associationProperty = "pictureId")
     fun on(evt: PictureDeletedEvent) {
-    }
-
-    private fun getDirectoryTagByPath(path: Path): TagId {
-        return tagRepository.findByTagTypeAndLabel(
-                tagType = TagType.DIRECTORY,
-                label = path.fileName.toString()
-        ).map { TagId(it.id) }.orElseThrow()
     }
 
     companion object {
