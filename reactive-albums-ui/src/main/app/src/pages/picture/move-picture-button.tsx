@@ -3,7 +3,7 @@ import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useToggleState } from '@hooks';
 import { useToasts } from 'react-toast-notifications';
-import { movePicture, useDirectories } from '@reducers';
+import { fetchAllDirectories, movePicture, useDirectories } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import Button from 'react-bootstrap/Button';
 import { Move } from 'react-feather';
@@ -23,7 +23,13 @@ export const MovePictureButton: FC<MovePictureButtonProps> = ({ picture }) => {
   const [targetDirectory, setTargetDirectory] = useState<Directory | undefined>();
   const targetDirectoryId = useMemo(() => targetDirectory?.id || '', [targetDirectory]);
 
-  const directories = useDirectories(isShowMoveConfirm);
+  const directories = useDirectories();
+
+  useEffect(() => {
+    if (isShowMoveConfirm) {
+      dispatch(fetchAllDirectories());
+    }
+  }, [dispatch, isShowMoveConfirm]);
 
   useEffect(() => setTargetDirectory(directories[0]), [directories]);
 

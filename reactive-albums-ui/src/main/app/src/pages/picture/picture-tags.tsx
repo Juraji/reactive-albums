@@ -3,7 +3,7 @@ import { Picture, Tag, TagType } from '@types';
 import Card from 'react-bootstrap/Card';
 import { Conditional, PictureTag } from '@components';
 import { Plus } from 'react-feather';
-import { linkPictureTag, setPictureOverviewFilter, unlinkPictureTag, useTags } from '@reducers';
+import { fetchAllTags, linkPictureTag, setPictureOverviewFilter, unlinkPictureTag, useTags } from '@reducers';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch } from '@hooks';
 import { unwrapResult } from '@reduxjs/toolkit';
@@ -26,6 +26,12 @@ const AddTagButton: FC<AddTagButtonProps> = ({ pictureId }) => {
   const userTags = useMemo(() => tags.filter((t) => t.tagType === TagType.USER), [tags]);
   const colorTags = useMemo(() => tags.filter((t) => t.tagType === TagType.COLOR), [tags]);
 
+  function onDropDownOpen(isOpen: boolean) {
+    if (isOpen) {
+      dispatch(fetchAllTags());
+    }
+  }
+
   function onTagSelected(tagId: string) {
     dispatch(linkPictureTag({ pictureId, tagId }))
       .then(unwrapResult)
@@ -35,7 +41,7 @@ const AddTagButton: FC<AddTagButtonProps> = ({ pictureId }) => {
 
   return (
     <>
-      <Dropdown onSelect={onTagSelected} drop="up">
+      <Dropdown onSelect={onTagSelected} drop="up" onToggle={onDropDownOpen}>
         <Dropdown.Toggle id="add-tag-dropdown" size="sm">
           <Plus />
         </Dropdown.Toggle>

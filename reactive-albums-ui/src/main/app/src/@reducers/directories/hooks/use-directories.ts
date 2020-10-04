@@ -1,16 +1,7 @@
 import { Directory } from '@types';
-import { useEffect } from 'react';
-import { fetchAllDirectories, selectAllDirectories } from '@reducers';
-import { useDispatch, useSelector } from '@hooks';
+import { selectAllDirectories } from '@reducers';
+import { useSelector } from '@hooks';
 
-export function useDirectories(doFetch: boolean = true): Directory[] {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (doFetch) {
-      dispatch(fetchAllDirectories());
-    }
-  }, [dispatch, doFetch]);
-
+export function useDirectories(): Directory[] {
   return useSelector((state) => selectAllDirectories(state));
 }
