@@ -1,5 +1,5 @@
 import React, { FC, ReactNode, useCallback, useMemo } from 'react';
-import { Tag } from '@types';
+import { Tag, TagType } from '@types';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useToggleState } from '@hooks';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +15,7 @@ import Modal from 'react-bootstrap/Modal';
 import { formikControlProps, formikIsFormValid } from '@utils';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { PictureTag } from '@components';
+import { Conditional, PictureTag } from '@components';
 
 interface TagColorFormGroupProps {
   label: string;
@@ -121,25 +121,34 @@ export const EditTagModal: FC<EditTagModalProps> = ({ hideEditModal, tag }) => {
                   placeholder={t('tags.edit_tag.form.label_field.placeholder')}
                   tabIndex={1}
                   {...formikControlProps(formikBag, 'label')}
+                  disabled={tag?.tagType === TagType.DIRECTORY}
                 />
               </Form.Group>
 
-              <Row>
-                <Col sm={6}>
-                  <TagColorFormGroup
-                    label={t('tags.edit_tag.form.label_color_field.label')}
-                    value={formikBag.values.tagColor}
-                    onChange={(hex) => formikBag.setFieldValue('tagColor', hex, true)}
-                  />
-                </Col>
-                <Col sm={6}>
-                  <TagColorFormGroup
-                    label={t('tags.edit_tag.form.text_color_field.label')}
-                    value={formikBag.values.textColor}
-                    onChange={(hex) => formikBag.setFieldValue('textColor', hex, true)}
-                  />
-                </Col>
-              </Row>
+              <Conditional condition={tag?.tagType !== TagType.COLOR}>
+                <Row>
+                  <Col sm={6}>
+                    <TagColorFormGroup
+                      label={t('tags.edit_tag.form.label_color_field.label')}
+                      value={formikBag.values.tagColor}
+                      onChange={(hex) => {
+                        formikBag.setFieldValue('tagColor', hex, true);
+                        formikBag.setFieldTouched('tagColor', true);
+                      }}
+                    />
+                  </Col>
+                  <Col sm={6}>
+                    <TagColorFormGroup
+                      label={t('tags.edit_tag.form.text_color_field.label')}
+                      value={formikBag.values.textColor}
+                      onChange={(hex) => {
+                        formikBag.setFieldValue('textColor', hex, true);
+                        formikBag.setFieldTouched('textColor', true);
+                      }}
+                    />
+                  </Col>
+                </Row>
+              </Conditional>
 
               {!formikBag.values.label.isBlank() ? (
                 <Form.Group>

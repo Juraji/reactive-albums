@@ -188,6 +188,12 @@
     "tag": {
       "created_at": "Created at iso8601Fmt({{createdAt}}, dd-MM-yyyy HH:mm:ss)",
       "type": "Type: convertCase({{tagType}}, LOWER)"
+    },
+    "tab_user": {
+      "tab_header": "User tags"
+    },
+    "tab_system": {
+      "tab_header": "System tags"
     }
   },
   "delete_picture_button": {
