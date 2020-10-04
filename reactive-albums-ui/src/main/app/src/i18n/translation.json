@@ -100,7 +100,9 @@
       "add_tag_failed": "Add tag failed: {{message}}",
       "unlink_tag_success": "Tag removed",
       "unlink_tag_failed": "Remove tag failed: {{message}}",
-      "no_tags_linked": "No tags linked"
+      "no_tags_linked": "No tags linked",
+      "tag_type_color": "Color tags",
+      "tag_type_user": "User defined tags"
     },
     "details": {
       "picture_info": "{{pictureType}} {{imageWidth}}x{{imageHeight}} fileSize({{fileSize}})",

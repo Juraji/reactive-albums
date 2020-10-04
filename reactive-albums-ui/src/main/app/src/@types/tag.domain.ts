@@ -2,6 +2,7 @@ import { Audited } from './api';
 
 export enum TagType {
   USER = 'USER',
+  COLOR = 'COLOR',
   DIRECTORY = 'DIRECTORY',
 }
 

@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 
+import './picture-tags.scss';
+
 interface AddTagButtonProps {
   pictureId: string;
 }
@@ -21,6 +23,9 @@ const AddTagButton: FC<AddTagButtonProps> = ({ pictureId }) => {
   const dispatch = useDispatch();
   const tags = useTags();
 
+  const userTags = useMemo(() => tags.filter((t) => t.tagType === TagType.USER), [tags]);
+  const colorTags = useMemo(() => tags.filter((t) => t.tagType === TagType.COLOR), [tags]);
+
   function onTagSelected(tagId: string) {
     dispatch(linkPictureTag({ pictureId, tagId }))
       .then(unwrapResult)
@@ -30,13 +35,22 @@ const AddTagButton: FC<AddTagButtonProps> = ({ pictureId }) => {
 
   return (
     <>
-      <Dropdown onSelect={onTagSelected}>
+      <Dropdown onSelect={onTagSelected} drop="up">
         <Dropdown.Toggle id="add-tag-dropdown" size="sm">
           <Plus />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          {tags.map((tag) => (
+        <Dropdown.Menu className="tag-dropdown-menu">
+          <Conditional condition={userTags.isNotEmpty()}>
+            <Dropdown.Header>{t('picture.tags.tag_type_user')}</Dropdown.Header>
+            {userTags.map((tag) => (
+              <Dropdown.Item key={tag.id} eventKey={tag.id}>
+                <PictureTag tag={tag} />
+              </Dropdown.Item>
+            ))}
+          </Conditional>
+          <Dropdown.Header>{t('picture.tags.tag_type_color')}</Dropdown.Header>
+          {colorTags.map((tag) => (
             <Dropdown.Item key={tag.id} eventKey={tag.id}>
               <PictureTag tag={tag} />
             </Dropdown.Item>

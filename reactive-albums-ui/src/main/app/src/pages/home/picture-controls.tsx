@@ -8,7 +8,7 @@ import Pagination from 'react-bootstrap/Pagination';
 import { useDebouncedValue, useDispatch } from '@hooks';
 import { fetchPicturesPage, usePicturesOverview } from '@reducers';
 import Button from 'react-bootstrap/Button';
-import { ArrowLeft, RefreshCcw } from 'react-feather';
+import { ArrowLeft } from 'react-feather';
 import InputGroup from 'react-bootstrap/InputGroup';
 
 interface PictureControlsProps {}
