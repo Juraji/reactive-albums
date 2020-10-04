@@ -6,8 +6,8 @@ create table AuditLogEntry
     aggregateId   varchar(64),
     aggregateType varchar(255),
     message       text,
-    timestamp     timestamp,
+    timestamp     datetime(3),
     primary key (id)
 );
 
-create index idx_audit_log_aggregate_id_type on AuditLogEntry(aggregateId, aggregateType)
+create index idx_audit_log_aggregate_id_type on AuditLogEntry (aggregateId, aggregateType)

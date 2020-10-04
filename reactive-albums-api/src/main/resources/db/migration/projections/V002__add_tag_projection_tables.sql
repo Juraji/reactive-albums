@@ -1,8 +1,8 @@
 create table TagProjection
 (
     id             varchar(64)  not null,
-    createdAt      timestamp    not null,
-    lastModifiedAt timestamp    not null,
+    createdAt      datetime(3)  not null,
+    lastModifiedAt datetime(3)  not null,
     label          varchar(255) not null,
     tagColor       varchar(8)   not null,
     textColor      varchar(8)   not null,
