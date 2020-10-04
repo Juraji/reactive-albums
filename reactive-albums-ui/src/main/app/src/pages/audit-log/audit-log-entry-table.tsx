@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { fetchAuditLogPage, useAuditLogEntries } from '@reducers';
 import Table from 'react-bootstrap/Table';
 import { AggregateType } from '@types';
-import { Folder, HelpCircle, Image } from 'react-feather';
+import { Folder, HelpCircle, Image, Tag } from 'react-feather';
 import { useDispatch } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
@@ -24,6 +24,8 @@ const AggregateTypeIcon: FC<AggregateTypeIconProps> = ({ aggregateType, aggregat
           <Image />
         </Link>
       );
+    case AggregateType.TAG:
+      return <Tag />;
     default:
       return <HelpCircle />;
   }

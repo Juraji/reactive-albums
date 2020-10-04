@@ -19,8 +19,8 @@ const AppView: FC = () => (
   <BrowserRouter>
     <NavigationBar>
       <HomeNavItem />
-      <DirectoriesNavItem />
       <DuplicatesNavItem />
+      <DirectoriesNavItem />
       <TagsNavItem />
       <AuditLogNavItem />
     </NavigationBar>

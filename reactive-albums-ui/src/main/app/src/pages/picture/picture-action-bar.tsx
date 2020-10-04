@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
-import { Copy, RefreshCw, Tablet } from 'react-feather';
+import { Copy, List, RefreshCw } from 'react-feather';
 import { Picture } from '@types';
 import { useToasts } from 'react-toast-notifications';
 import { useDispatch } from '@hooks';
@@ -46,7 +46,7 @@ export const PictureActionBar: FC<PictureActionBarProps> = ({ picture }) => {
         to={{ pathname: '/audit-log', search: `?aggregateId=${picture.id}` }}
         title={t('picture.actions.view_audit_log')}
       >
-        <Tablet />
+        <List />
       </Button>
       <DeletePictureButton picture={picture} />
     </ButtonGroup>
