@@ -1,6 +1,7 @@
 package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
+import nl.juraji.reactive.albums.domain.pictures.PictureAnalysisStatus
 import nl.juraji.reactive.albums.domain.pictures.events.*
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
@@ -32,6 +33,15 @@ class PictureProjectionsEventHandler(
 
         pictureRepository
                 .save(projection)
+                .block()
+    }
+
+    @EventHandler
+    fun on(evt: PictureAnalysisProgressEvent) {
+        pictureRepository
+                .update(evt.pictureId.identifier) {
+                    it.copy(analysisCompleted = (PictureAnalysisStatus.COMPLETED == evt.status))
+                }
                 .block()
     }
 

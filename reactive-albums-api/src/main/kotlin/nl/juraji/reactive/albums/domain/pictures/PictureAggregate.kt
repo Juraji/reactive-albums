@@ -13,8 +13,6 @@ import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 import java.nio.file.Path
-import java.time.LocalDateTime
-import java.util.*
 
 @Aggregate
 class PictureAggregate() {
@@ -111,31 +109,44 @@ class PictureAggregate() {
         return pictureId
     }
 
-    fun setFileAttributes(
-            fileSize: Long? = null,
-            lastModifiedTime: LocalDateTime? = null,
-            imageWidth: Int? = null,
-            imageHeight: Int? = null,
-    ) {
+    @CommandHandler
+    fun handle(cmd: SetFileAttributesCommand) {
         AggregateLifecycle.apply(
                 FileAttributesUpdatedEvent(
                         pictureId = pictureId,
-                        fileSize = fileSize,
-                        lastModifiedTime = lastModifiedTime,
-                        imageWidth = imageWidth,
-                        imageHeight = imageHeight,
+                        fileSize = cmd.fileSize,
+                        lastModifiedTime = cmd.lastModifiedTime,
+                        imageWidth = cmd.imageWidth,
+                        imageHeight = cmd.imageHeight,
                 ),
                 MetaData.with("AUDIT", "File attributes updated")
         )
     }
 
-    fun setContentHash(bitSet: BitSet) {
+    @CommandHandler
+    fun handle(cmd: SetContentHashCommand) {
         AggregateLifecycle.apply(
                 ContentHashUpdatedEvent(
                         pictureId = pictureId,
-                        contentHash = bitSet
+                        contentHash = cmd.contentHash
                 ),
                 MetaData.with("AUDIT", "Content analysis completed")
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: SetPictureAnalysisStatusCommand) {
+        val auditMessage = when (cmd.status) {
+            PictureAnalysisStatus.IN_PROGRESS -> "Picture analysis started"
+            PictureAnalysisStatus.COMPLETED -> "Picture analysis completed"
+        }
+
+        AggregateLifecycle.apply(
+                PictureAnalysisProgressEvent(
+                        pictureId = pictureId,
+                        status = cmd.status
+                ),
+                MetaData.with("AUDIT", auditMessage)
         )
     }
 

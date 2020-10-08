@@ -11,6 +11,7 @@ data class PictureProjection(
         val location: String,
         val parentLocation: String,
         @Enumerated(EnumType.STRING) val pictureType: PictureType,
+        val analysisCompleted: Boolean = false,
         val fileSize: Long? = null,
         val lastModifiedTime: LocalDateTime? = null,
         val imageWidth: Int? = null,
