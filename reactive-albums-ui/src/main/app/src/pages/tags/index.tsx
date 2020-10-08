@@ -9,9 +9,25 @@ import { EditTagButton } from './edit-tag-button';
 import { Plus } from 'react-feather';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { useDispatch } from '@hooks';
+import { Tag } from '@types';
+import Badge from 'react-bootstrap/Badge';
+
+interface TabTitleProps {
+  i18nKey: string;
+  tags: Tag[];
+}
+
+const TabTitle: FC<TabTitleProps> = ({ i18nKey, tags }) => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {t(i18nKey)}&nbsp;<Badge variant="primary">{tags.length}</Badge>
+    </>
+  );
+};
 
 const TagManagementPage: FC = () => {
-  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const userTags = useUserTags();
@@ -25,16 +41,19 @@ const TagManagementPage: FC = () => {
   return (
     <Container>
       <Tabs id="tag-management-tabs" defaultActiveKey="user-tags">
-        <Tab title={t('tags.tab_user.tab_header')} eventKey="user-tags">
+        <Tab title={<TabTitle i18nKey="tags.tab_user.tab_header" tags={userTags} />} eventKey="user-tags">
           <ButtonGroup className="my-2">
             <EditTagButton icon={<Plus />} />
           </ButtonGroup>
           <TagsTable tags={userTags} />
         </Tab>
-        <Tab title={t('tags.tab_directory.tab_header')} eventKey="directory-tags">
+        <Tab
+          title={<TabTitle i18nKey="tags.tab_directory.tab_header" tags={directoryTags} />}
+          eventKey="directory-tags"
+        >
           <TagsTable tags={directoryTags} />
         </Tab>
-        <Tab title={t('tags.tab_color.tab_header')} eventKey="color-tags">
+        <Tab title={<TabTitle i18nKey="tags.tab_color.tab_header" tags={colorTags} />} eventKey="color-tags">
           <TagsTable tags={colorTags} />
         </Tab>
       </Tabs>
