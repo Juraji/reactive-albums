@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  reactive-albums-mariadb:
+  reactive-albums:
     image: mariadb
     command: --max-allowed-packet=4G
     environment:
