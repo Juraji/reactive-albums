@@ -13,6 +13,11 @@
     },
     "use-pictures-page": {
       "fetch-failed": "Failed fetching pictures: {{message}}"
+    },
+    "picture_tile": {
+      "file_meta": "{{imageWidth}} x {{imageHeight}} (fileSize({{fileSize}}))",
+      "file_modification_date": "iso8601Fmt({{lastModifiedTime}}, do MMMM yyyy HH:mm, ...)",
+      "analysis_in_progress": "Analysis in progress..."
     }
   },
   "navigation": {

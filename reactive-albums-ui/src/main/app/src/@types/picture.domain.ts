@@ -16,6 +16,7 @@ export interface Picture extends Audited {
   parentLocation: string;
   pictureType: PictureType;
   duplicateCount: number;
+  analysisCompleted: boolean;
   tags: Tag[];
   colors: Color[];
   fileSize?: number;
