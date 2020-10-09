@@ -3,8 +3,6 @@ package nl.juraji.reactive.albums.query.projections.repositories
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import reactor.core.publisher.Flux
@@ -14,14 +12,7 @@ import java.util.*
 
 interface SyncDuplicateMatchRepository : JpaRepository<DuplicateMatchProjection, String> {
     fun findAllByPictureId(pictureId: String): List<DuplicateMatchProjection>
-    fun findAllByTargetId(pictureId: String): List<DuplicateMatchProjection>
-
-    @Query("""
-        select om from DuplicateMatchProjection om
-        where om.pictureId = (select m1.targetId from DuplicateMatchProjection m1 where m1.id = :matchId)
-        and  om.targetId = (select m2.pictureId from DuplicateMatchProjection m2 where m2.id = :matchId)
-    """)
-    fun findInverseMatchByMatchId(@Param("matchId") matchId: String): Optional<DuplicateMatchProjection>
+    fun findByPictureIdAndTargetId(pictureId: String, targetId: String): Optional<DuplicateMatchProjection>
 }
 
 @Service
@@ -36,13 +27,11 @@ class DuplicateMatchRepository(
 ) {
 
     fun findAllByPictureId(pictureId: String): Flux<DuplicateMatchProjection> =
-            fromIterator { it.findAllByPictureId(pictureId) }
+            fromIterator { findAllByPictureId(pictureId) }
 
-    fun findAllByTargetId(pictureId: String): Flux<DuplicateMatchProjection> =
-            fromIterator { it.findAllByTargetId(pictureId) }
+    fun deleteByPictureIdAndTargetId(pictureId: String, targetId: String): Mono<DuplicateMatchProjection> =
+            fromOptional { findByPictureIdAndTargetId(pictureId, targetId) }
+                    .flatMap { delete(it) }
 
-    fun findInverseMatchByMatchId(matchId: String): Mono<DuplicateMatchProjection> =
-            fromOptional { it.findInverseMatchByMatchId(matchId) }
-
-    fun count(): Mono<Long> = from { it.count() }
+    fun count(): Mono<Long> = from { count() }
 }

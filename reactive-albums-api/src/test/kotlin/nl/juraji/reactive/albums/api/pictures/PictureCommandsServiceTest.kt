@@ -9,7 +9,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
-import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
@@ -67,31 +66,6 @@ internal class PictureCommandsServiceTest {
                 .verify()
 
         verify { commandGateway.send<Any>(ScanDuplicatesCommand(pictureId)) }
-    }
-
-    @Test
-    fun `unlinkDuplicateMatch  should result in 2 UnlinkDuplicateCommands`() {
-        val targetId = PictureId()
-        val matchId = DuplicateMatchId()
-        val inverseMatchId = DuplicateMatchId()
-        val inverseMatch = DuplicateMatchProjection(
-                id = inverseMatchId.identifier,
-                pictureId = targetId.identifier,
-                targetId = pictureId.identifier,
-                similarity = 100,
-        )
-
-        every { duplicateMatchRepository.findInverseMatchByMatchId(matchId.identifier) } returnsMonoOf inverseMatch
-
-        val result: Mono<Void> = pictureCommandsService.unlinkDuplicateMatch(pictureId.identifier, matchId.identifier)
-
-        StepVerifier.create(result)
-                .expectComplete()
-                .verify()
-
-        verify(exactly = 1) { commandGateway.send<Any>(UnlinkDuplicateCommand(pictureId, matchId)) }
-        verify(exactly = 1) { commandGateway.send<Any>(UnlinkDuplicateCommand(targetId, inverseMatchId)) }
-        confirmVerified(commandGateway)
     }
 
     @Test

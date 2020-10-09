@@ -1,7 +1,7 @@
 import React, { FC, lazy, Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { appStore } from '@reducers';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { TOAST_TIMEOUT } from './config.json';
 import { BootstrapToastAdapter, DefaultRoute, GlobalEffectors, NavigationBar } from '@components';
 import Spinner from 'react-bootstrap/Spinner';
@@ -16,7 +16,7 @@ const TagManagementPage = lazy(() => import('./pages/tags'));
 const AuditLogPage = lazy(() => import('./pages/audit-log'));
 
 const AppView: FC = () => (
-  <HashRouter>
+  <BrowserRouter>
     <NavigationBar>
       <HomeNavItem />
       <DuplicatesNavItem />
@@ -38,7 +38,7 @@ const AppView: FC = () => (
         </Switch>
       </Suspense>
     </ToastProvider>
-  </HashRouter>
+  </BrowserRouter>
 );
 
 export const App: FC = () => (

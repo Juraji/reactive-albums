@@ -18,13 +18,13 @@ class PictureCommandController(
             .rescanDuplicates(pictureId = pictureId)
             .map { it.identifier }
 
-    @DeleteMapping("/api/pictures/{pictureId}/duplicate-matches/{matchId}")
+    @DeleteMapping("/api/pictures/{pictureId}/duplicate-matches/{targetId}")
     fun unlinkDuplicateMatch(
             @PathVariable("pictureId") pictureId: String,
-            @PathVariable("matchId") matchId: String,
+            @PathVariable("targetId") targetId: String,
     ): Mono<Void> = pictureCommandsService.unlinkDuplicateMatch(
             pictureId = pictureId,
-            matchId = matchId
+            targetId = targetId
     )
 
     @PostMapping("/api/pictures/{pictureId}/move")

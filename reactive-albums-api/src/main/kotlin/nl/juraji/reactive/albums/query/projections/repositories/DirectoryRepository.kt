@@ -28,11 +28,11 @@ class DirectoryRepository(
 ) {
 
     fun existsByLocation(location: String): Mono<Boolean> =
-            from { it.existsByLocation(location) }
+            from { existsByLocation(location) }
 
     fun findAllByLocationStartsWith(parentLocation: String): Flux<DirectoryProjection> =
-            fromIterator { it.findAllByLocationStartsWith(parentLocation) }
+            fromIterator { findAllByLocationStartsWith(parentLocation) }
 
     fun findAllByAutomaticScanEnabledIsTrue(): Flux<DirectoryProjection> =
-            fromIterator { it.findAllByAutomaticScanEnabledIsTrue() }
+            fromIterator { findAllByAutomaticScanEnabledIsTrue() }
 }

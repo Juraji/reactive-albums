@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.query.audit.repositories
 
-import nl.juraji.reactive.albums.query.audit.AggregateType
 import nl.juraji.reactive.albums.query.audit.AuditLogEntry
 import nl.juraji.reactive.albums.query.projections.repositories.ReactiveRepository
 import org.springframework.beans.factory.annotation.Qualifier
@@ -28,9 +27,6 @@ class AuditLogEntryRepository(
         scheduler,
         transactionTemplate
 ) {
-    fun findByAggregateId(
-            aggregateId: String,
-            pageable: Pageable,
-    ): Mono<Page<AuditLogEntry>> =
-            from { it.findByAggregateId(aggregateId, pageable) }
+    fun findByAggregateId(aggregateId: String, pageable: Pageable): Mono<Page<AuditLogEntry>> =
+            from { findByAggregateId(aggregateId, pageable) }
 }

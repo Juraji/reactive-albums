@@ -28,5 +28,5 @@ class TagRepository(
         transactionTemplate
 ) {
     fun existsByLabel(label: String): Mono<Boolean> =
-            from { it.existsByLabel(label) }
+            from { existsByLabel(label) }
 }

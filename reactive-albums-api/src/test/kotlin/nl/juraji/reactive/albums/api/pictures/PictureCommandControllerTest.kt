@@ -8,7 +8,6 @@ import io.mockk.every
 import io.mockk.mockk
 import nl.juraji.reactive.albums.api.ApiTestConfiguration
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
-import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.PictureType
 import nl.juraji.reactive.albums.domain.tags.TagId
@@ -73,12 +72,12 @@ internal class PictureCommandControllerTest {
     @Test
     fun `unlinkDuplicateMatch should init match unlink`() {
         val pictureId = PictureId()
-        val matchId = DuplicateMatchId()
+        val targetId = PictureId()
 
-        every { pictureCommandsService.unlinkDuplicateMatch(pictureId.identifier, matchId.identifier) }.returnsEmptyMono()
+        every { pictureCommandsService.unlinkDuplicateMatch(pictureId.identifier, targetId.identifier) }.returnsEmptyMono()
 
         webTestClient.delete()
-                .uri("/api/pictures/$pictureId/duplicate-matches/$matchId")
+                .uri("/api/pictures/$pictureId/duplicate-matches/$targetId")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk

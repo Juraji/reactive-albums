@@ -23,7 +23,7 @@ class PictureAggregate() {
     private lateinit var location: Path
     private lateinit var displayName: String
     private var tags: Set<TagId> = emptySet()
-    private var duplicates: Map<DuplicateMatchId, PictureId> = emptyMap()
+    private var duplicates: Set<PictureId> = emptySet()
 
     @CommandHandler
     constructor(cmd: CreatePictureCommand) : this() {
@@ -150,29 +150,30 @@ class PictureAggregate() {
         )
     }
 
-    fun linkDuplicate(targetId: PictureId, similarity: Float) {
-        Assert.isFalse(duplicates.containsValue(targetId)) { "$targetId is already linked as duplicate to $pictureId" }
+    @CommandHandler
+    fun handle(cmd: LinkDuplicateCommand) {
+        Assert.isFalse(duplicates.contains(cmd.targetId)) { "${cmd.targetId} is already linked as duplicate to $pictureId" }
 
         AggregateLifecycle.apply(
                 DuplicateLinkedEvent(
                         pictureId = pictureId,
-                        targetId = targetId,
-                        similarity = similarity,
-                        matchId = DuplicateMatchId()
+                        targetId = cmd.targetId,
+                        similarity = cmd.similarity
                 ),
-                MetaData.with("AUDIT", "Duplicate ($targetId) linked")
+                MetaData.with("AUDIT", "Duplicate (${cmd.targetId}) linked")
         )
     }
 
-    fun unlinkDuplicate(matchId: DuplicateMatchId) {
-        Assert.isTrue(duplicates.containsKey(matchId)) { "$matchId is not linked to $pictureId" }
+    @CommandHandler
+    fun handle(cmd: UnlinkDuplicateCommand) {
+        Assert.isTrue(duplicates.contains(cmd.targetId)) { "${cmd.targetId} is not linked to $pictureId" }
 
         AggregateLifecycle.apply(
                 DuplicateUnlinkedEvent(
                         pictureId = pictureId,
-                        matchId = matchId
+                        targetId = cmd.targetId
                 ),
-                MetaData.with("AUDIT", "Duplicate (${duplicates[matchId]}) unlinked")
+                MetaData.with("AUDIT", "Duplicate (${cmd.targetId}) unlinked")
         )
     }
 
@@ -196,12 +197,12 @@ class PictureAggregate() {
 
     @EventSourcingHandler
     fun on(evt: DuplicateLinkedEvent) {
-        duplicates = duplicates.plus(evt.matchId to evt.targetId)
+        duplicates = duplicates.plus(evt.targetId)
     }
 
     @EventSourcingHandler
     fun on(evt: DuplicateUnlinkedEvent) {
-        duplicates = duplicates.minus(evt.matchId)
+        duplicates = duplicates.minus(evt.targetId)
     }
 
     @EventSourcingHandler

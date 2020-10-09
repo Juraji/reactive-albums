@@ -37,7 +37,7 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
   const [isShowUnlinkConfirm, showUnlinkConfirm, hideUnlinkConfirm] = useToggleState(false);
 
   function onUnlinkDuplicateConfirmed() {
-    dispatch(unlinkDuplicateMatch({ pictureId: match.pictureId, matchId: match.id }))
+    dispatch(unlinkDuplicateMatch({ pictureId: match.pictureId, targetId: match.targetId }))
       .then(unwrapResult)
       .then(() => addToast(t('picture.duplicates_list.unlink_single_button.success')))
       .catch(() => addToast(t('picture.duplicates_list.unlink_single_button.failed', { appearance: 'error' })));
@@ -109,7 +109,7 @@ export const PictureDuplicateList: FC<PictureDuplicateListProps> = ({ pictureId 
   const [isShowDeleteAllConfirm, showDeleteAllConfirm, hideDeleteAllConfirm] = useToggleState(false);
 
   function onUnlinkAllConfirmed() {
-    const unlinkAction = ({ id: matchId }: DuplicateMatch) => unlinkDuplicateMatch({ pictureId, matchId });
+    const unlinkAction = ({ targetId }: DuplicateMatch) => unlinkDuplicateMatch({ pictureId, targetId });
 
     Promise.all(matches.map((match) => dispatch(unlinkAction(match)).then(unwrapResult)))
       .then(() => addToast(t('picture.duplicates_list.unlink_all_button.success')))

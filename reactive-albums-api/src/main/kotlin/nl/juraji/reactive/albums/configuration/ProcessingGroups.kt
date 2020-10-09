@@ -6,4 +6,5 @@ object ProcessingGroups {
     const val PROJECTIONS = "projections"
     const val AUDIT = "audit"
     const val FILE_IO = "file-io"
+    const val THUMBNAILS = "thumbnails"
 }

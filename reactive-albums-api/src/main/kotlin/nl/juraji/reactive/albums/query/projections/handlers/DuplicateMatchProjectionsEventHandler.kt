@@ -6,6 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
+import org.axonframework.common.IdentifierFactory
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventhandling.ResetHandler
@@ -21,7 +22,7 @@ class DuplicateMatchProjectionsEventHandler(
     @EventHandler
     fun on(evt: DuplicateLinkedEvent) {
         val entity = DuplicateMatchProjection(
-                id = evt.matchId.identifier,
+                id = IdentifierFactory.getInstance().generateIdentifier(),
                 pictureId = evt.pictureId.identifier,
                 targetId = evt.targetId.identifier,
                 similarity = (evt.similarity * 100.0).roundToInt()
@@ -35,7 +36,7 @@ class DuplicateMatchProjectionsEventHandler(
     @EventHandler
     fun on(evt: DuplicateUnlinkedEvent) {
         duplicateMatchRepository
-                .deleteById(evt.matchId.identifier)
+                .deleteByPictureIdAndTargetId(evt.pictureId.identifier, evt.targetId.identifier)
                 .block()
     }
 

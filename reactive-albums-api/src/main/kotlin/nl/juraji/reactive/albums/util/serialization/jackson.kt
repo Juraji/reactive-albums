@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import nl.juraji.reactive.albums.domain.EntityId
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
-import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.tags.TagId
 import java.util.*
@@ -74,10 +73,8 @@ val entityIdModule = simpleModule {
     deserializer(PictureId::class) { PictureId(valueAsString) }
     deserializer(DirectoryId::class) { DirectoryId(valueAsString) }
     deserializer(TagId::class) { TagId(valueAsString) }
-    deserializer(DuplicateMatchId::class) { DuplicateMatchId(valueAsString) }
 
     keyDeserializer(PictureId::class) { value -> PictureId(value) }
     keyDeserializer(DirectoryId::class) { value -> DirectoryId(value) }
     keyDeserializer(TagId::class) { value -> TagId(value) }
-    keyDeserializer(DuplicateMatchId::class) { value -> DuplicateMatchId(value) }
 }

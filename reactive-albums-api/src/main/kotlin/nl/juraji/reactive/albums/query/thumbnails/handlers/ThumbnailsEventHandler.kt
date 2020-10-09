@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-@ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
+@ProcessingGroup(ProcessingGroups.THUMBNAILS)
 class ThumbnailsEventHandler(
         private val thumbnailRepository: ReactiveThumbnailRepository,
         private val imageService: ImageService,

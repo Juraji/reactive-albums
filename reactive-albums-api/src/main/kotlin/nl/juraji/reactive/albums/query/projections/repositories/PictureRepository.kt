@@ -39,11 +39,11 @@ class PictureRepository(
         transactionTemplate
 ) {
 
-    fun findByLocation(path: String): Mono<PictureProjection> = fromOptional { it.findByLocation(path) }
+    fun findByLocation(path: String): Mono<PictureProjection> = fromOptional { findByLocation(path) }
 
     fun findAllByLocationContainsIgnoreCase(filter: String, pageable: Pageable): Mono<Page<PictureProjection>> =
-            from { it.findAllByLocationContainsIgnoreCase(filter, pageable) }
+            from { findAllByLocationContainsIgnoreCase(filter, pageable) }
 
     fun findAllByTagStartsWithIgnoreCase(tagLabel: String, pageable: Pageable): Mono<Page<PictureProjection>> =
-            from { it.findAllByTagContainsIgnoreCase(tagLabel, pageable) }
+            from { findAllByTagContainsIgnoreCase(tagLabel, pageable) }
 }

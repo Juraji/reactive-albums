@@ -62,7 +62,7 @@ export const MatchesActionBar: FC<MatchesActionBarProps> = ({ match }) => {
   const [isShowUnlinkConfirm, showUnlinkConfirm, hideUnlinkConfirm] = useToggleState(false);
 
   const onUnlinkDuplicateConfirmed = () => {
-    dispatch(unlinkDuplicateMatch({ matchId: match.id, pictureId: match.pictureId }))
+    dispatch(unlinkDuplicateMatch({ targetId: match.targetId, pictureId: match.pictureId }))
       .then(unwrapResult)
       .then(() => addToast(t('duplicates.matches_action_bar.unlink_duplicates_success'), { appearance: 'success' }))
       .catch(() => addToast(t('duplicates.matches_action_bar.unlink_duplicates_failed'), { appearance: 'error' }))

@@ -49,7 +49,7 @@ class PictureDirectoryTagSaga {
 
     @SagaEventHandler(associationProperty = "pictureId")
     fun on(evt: PictureMovedEvent) {
-        val linkedTagId: TagId? = SagaAssociations.getAssociatedValue(LINKED_TAG_ASSOC_KEY) { TagId(it) }
+        val linkedTagId: TagId? = SagaAssociations.getAssociatedValue(LINKED_TAG_ASSOC_KEY, ::TagId)
         val newTagId: TagId = directoryTagLUTRepository.findById(evt.targetDirectoryId.identifier)
                 .map { TagId(it.tagId) }
                 .orElseThrow()

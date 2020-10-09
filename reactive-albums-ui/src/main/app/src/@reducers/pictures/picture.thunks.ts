@@ -35,12 +35,12 @@ export const rescanDuplicates = createApiPostThunk<string, PictureThunk>(
 );
 
 interface UnlinkDuplicateMatchThunk extends PictureThunk {
-  matchId: string;
+  targetId: string;
 }
 
 export const unlinkDuplicateMatch = createApiDeleteThunk<string, UnlinkDuplicateMatchThunk>(
   'pictures/unlinkDuplicateMatch',
-  ({ pictureId, matchId }) => `/api/pictures/${pictureId}/duplicate-matches/${matchId}`
+  ({ pictureId, targetId }) => `/api/pictures/${pictureId}/duplicate-matches/${targetId}`
 );
 
 interface PictureTagThunk extends PictureThunk {

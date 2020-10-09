@@ -22,24 +22,24 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
 ) {
     private val updatesProcessor: DirectProcessor<ReactiveEvent<E>> = DirectProcessor.create()
 
-    fun findById(id: ID): Mono<E> = fromOptional { it.findById(id) }
+    fun findById(id: ID): Mono<E> = fromOptional { findById(id) }
 
-    fun findAll(): Flux<E> = fromIterator { it.findAll() }
+    fun findAll(): Flux<E> = fromIterator { findAll() }
 
-    fun findAll(pageable: Pageable): Mono<Page<E>> = from { it.findAll(pageable) }
+    fun findAll(pageable: Pageable): Mono<Page<E>> = from { findAll(pageable) }
 
     fun save(entity: E): Mono<E> =
-            executeInTransaction { it.save(entity) }
+            executeInTransaction { save(entity) }
                     .doOnNext { emitUpdate(EventType.UPSERT, it) }
 
     fun deleteById(id: ID): Mono<E> = findById(id).flatMap { delete(it) }
 
     fun delete(entity: E): Mono<E> =
-            executeInTransaction { it.delete(entity) }
+            executeInTransaction { delete(entity) }
                     .map { entity }
                     .doOnNext { emitUpdate(EventType.DELETE, it) }
 
-    fun deleteAll(): Mono<Unit> = executeInTransaction { it.deleteAll() }
+    fun deleteAll(): Mono<Unit> = executeInTransaction { deleteAll() }
 
     fun update(id: ID, update: (E) -> E): Mono<E> = findById(id).flatMap { save(update(it)) }
 
@@ -53,16 +53,16 @@ abstract class ReactiveRepository<T : JpaRepository<E, ID>, E : Any, ID>(
 
     fun getRepository(): T = repository
 
-    protected fun <R> from(f: (T) -> R?): Mono<R> =
+    protected fun <R> from(f: T.() -> R?): Mono<R> =
             deferTo(scheduler) { f(repository) }
 
-    protected fun <R> fromOptional(f: (T) -> Optional<R>): Mono<R> =
+    protected fun <R> fromOptional(f: T.() -> Optional<R>): Mono<R> =
             deferOptionalTo(scheduler) { f(repository) }
 
-    protected fun <R> fromIterator(f: (T) -> Iterable<R>): Flux<R> =
+    protected fun <R> fromIterator(f: T.() -> Iterable<R>): Flux<R> =
             deferIterableTo(scheduler) { f(repository) }
 
-    private fun <R> executeInTransaction(f: (T) -> R): Mono<R> =
+    private fun <R> executeInTransaction(f: T.() -> R): Mono<R> =
             deferTo(scheduler) { transactionTemplate.execute { f(repository) } }
 
     private fun emitUpdate(type: EventType, entity: E) = updatesProcessor

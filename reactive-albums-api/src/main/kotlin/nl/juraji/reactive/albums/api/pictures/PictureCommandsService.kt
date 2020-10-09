@@ -2,14 +2,12 @@ package nl.juraji.reactive.albums.api.pictures
 
 import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
-import nl.juraji.reactive.albums.domain.pictures.DuplicateMatchId
 import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
-import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
@@ -22,26 +20,17 @@ import java.time.Duration
 @Service
 class PictureCommandsService(
         commandGateway: CommandGateway,
-        private val duplicateMatchRepository: DuplicateMatchRepository,
         private val directoryRepository: DirectoryRepository,
         private val pictureRepository: PictureRepository,
 ) : CommandSenderService(commandGateway) {
     fun rescanDuplicates(pictureId: String): Mono<PictureId> =
             send(ScanDuplicatesCommand(pictureId = PictureId(pictureId)))
 
-    fun unlinkDuplicateMatch(pictureId: String, matchId: String): Mono<Void> {
-        val sourceDuplicate: Mono<Void> = send(UnlinkDuplicateCommand(
-                pictureId = PictureId(pictureId),
-                matchId = DuplicateMatchId(matchId)
-        ))
-
-        val targetDuplicate: Mono<Void> = duplicateMatchRepository
-                .findInverseMatchByMatchId(matchId = matchId)
-                .map { UnlinkDuplicateCommand(pictureId = PictureId(it.pictureId), matchId = DuplicateMatchId(it.id)) }
-                .flatMap { sendAndCatch(it) }
-
-        return sourceDuplicate.and(targetDuplicate)
-    }
+    fun unlinkDuplicateMatch(pictureId: String, targetId:String): Mono<Void> =
+            send(UnlinkDuplicateCommand(
+                    pictureId = PictureId(pictureId),
+                    targetId = PictureId(targetId)
+            ))
 
     fun movePicture(pictureId: String, targetDirectoryId: String): Mono<PictureProjection> =
             directoryRepository.findById(targetDirectoryId)
