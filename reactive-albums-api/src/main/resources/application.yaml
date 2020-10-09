@@ -54,8 +54,11 @@ axon:
   eventhandling:
     processors:
       picture-analysis:
-        threadCount: 8
         initialSegmentCount: 8
+      projections:
+        initialSegmentCount: 4
+      audit:
+        initialSegmentCount: 2
 
 logging:
   level:

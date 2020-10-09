@@ -33,7 +33,7 @@ class ColorTagLUTProjectionsEventHandler(
 
     @EventHandler
     fun on(evt: TagDeletedEvent) {
-        colorTagLUTRepository.deleteById(evt.tagId.identifier)
+        colorTagLUTRepository.runCatching { deleteById(evt.tagId.identifier) }
     }
 
     @ResetHandler

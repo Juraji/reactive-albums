@@ -33,7 +33,7 @@ class DirectoryTagLUTProjectionEventHandler(
 
     @EventHandler
     fun on(evt: TagDeletedEvent) {
-        directoryTagLUTRepository.deleteById(evt.tagId.identifier)
+        directoryTagLUTRepository.runCatching { deleteById(evt.tagId.identifier) }
     }
 
     @ResetHandler
