@@ -11,27 +11,23 @@ import { PictureActionBar } from './picture-action-bar';
 import { PictureDuplicateList } from './picture-duplicate-list';
 import { activatePictureById, deactivatePicture, useActivePicture } from '@reducers';
 import { useDispatch } from '@hooks';
+import { unwrapResult } from '@reduxjs/toolkit';
 
 const PicturePage: FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { pictureId } = useParams();
   const picture = useActivePicture();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    dispatch(activatePictureById({ pictureId })).finally(() => setIsLoading(false));
+    dispatch(activatePictureById({ pictureId }))
+      .then(unwrapResult)
+      .catch(() => history.goBack());
 
     return () => {
       dispatch(deactivatePicture());
     };
-  }, [pictureId, dispatch]);
-
-  useEffect(() => {
-    if (!isLoading && !picture) {
-      history.goBack();
-    }
-  }, [isLoading, picture, history]);
+  }, [pictureId, dispatch, history]);
 
   return (
     <Container fluid>
