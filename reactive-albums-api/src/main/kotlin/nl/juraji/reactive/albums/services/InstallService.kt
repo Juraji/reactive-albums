@@ -3,6 +3,7 @@ package nl.juraji.reactive.albums.services
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.domain.tags.TagType
 import nl.juraji.reactive.albums.domain.tags.commands.CreateTagCommand
+import nl.juraji.reactive.albums.util.LoggerCompanion
 import nl.juraji.reactive.albums.util.RgbColor
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.beans.factory.config.YamlMapFactoryBean
@@ -24,7 +25,7 @@ class InstallService(
         runInstallTask("runInstallPictureColorTags", this::runInstallPictureColorTags)
     }
 
-    private fun runInstallTask(taskName: String, f: () -> Unit) {
+    private fun runInstallTask(taskName: String, taskRunner: () -> Unit) {
         val isTaskCompleted = jdbcTemplate.query(
                 "select 1 from InstallServiceCompletedTasks where taskName = :taskName;",
                 mapOf("taskName" to taskName),
@@ -32,12 +33,17 @@ class InstallService(
         ) == true
 
         if (!isTaskCompleted) {
-            f.invoke()
-
-            jdbcTemplate.execute(
-                    "insert into InstallServiceCompletedTasks (taskName) values (:taskName)",
-                    mapOf("taskName" to taskName)
-            ) { it.execute() }
+            taskRunner
+                    .runCatching { invoke() }
+                    .onSuccess {
+                        jdbcTemplate.execute(
+                                "insert into InstallServiceCompletedTasks (taskName) values (:taskName)",
+                                mapOf("taskName" to taskName)
+                        ) { stmt -> stmt.execute() }
+                    }
+                    .onFailure { ex ->
+                        logger.error("Install task \"$taskName\" failed", ex)
+                    }
         }
     }
 
@@ -57,4 +63,6 @@ class InstallService(
             ))
         }
     }
+
+    companion object : LoggerCompanion(InstallService::class)
 }
