@@ -51,6 +51,13 @@ class TagAggregate() {
         Validate.ignoreWhen(cmd.label == null) { isFalse(cmd.label.isNullOrBlank()) { "Tag label may not be blank" } }
         Validate.isFalse(cmd.label == null && cmd.tagColor == null && cmd.textColor == null) { "No properties are updated" }
 
+        val auditMessage = "Tag $label updated:" +
+                listOfNotNull(
+                        if (cmd.label != null) "label to ${cmd.label}" else null,
+                        if (cmd.tagColor != null) "tag color to ${cmd.tagColor}" else null,
+                        if (cmd.textColor != null) "text color to ${cmd.textColor}" else null
+                ).reduce { acc, s -> "$acc, $s" }
+
         AggregateLifecycle.apply(
                 TagUpdatedEvent(
                         tagId = tagId,
@@ -58,10 +65,7 @@ class TagAggregate() {
                         tagColor = cmd.tagColor,
                         textColor = cmd.textColor
                 ),
-                MetaData.with("AUDIT", "Tag $label updated:"
-                        + (if (cmd.label != null) "label to ${cmd.label}" else null)
-                        + (if (cmd.tagColor != null) ", tag color to ${cmd.tagColor}" else null)
-                        + (if (cmd.textColor != null) "text color to ${cmd.textColor}" else null))
+                MetaData.with("AUDIT", auditMessage)
         )
 
         return tagId
