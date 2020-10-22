@@ -1,0 +1,15 @@
+@import "src/styles/variables";
+
+.match-list-table {
+  .active {
+    background-color: $table-hover-bg;
+    color: $table-hover-color;
+
+    &::after {
+      content: '\203A';
+      position: absolute;
+      font-size: 3rem;
+      line-height: 1.3rem;
+    }
+  }
+}
