@@ -10,7 +10,7 @@ interface MatchListItemProps {
   onMatchSelect: (match: DuplicateMatch) => void;
 }
 
-export const MatchListItem: FC<MatchListItemProps> = ({ match, selectedMatch, onMatchSelect }) => {
+const MatchListItem: FC<MatchListItemProps> = ({ match, selectedMatch, onMatchSelect }) => {
   const rowClassName = useMemo(() => {
     const classes = ['cursor-pointer'];
 

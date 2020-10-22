@@ -14,7 +14,7 @@ interface TagOrbProps {
   tag: Tag;
 }
 
-export const TagOrb: FC<TagOrbProps> = ({ tag }) => {
+const TagOrb: FC<TagOrbProps> = ({ tag }) => {
   const style = useMemo(() => ({ backgroundColor: tag.tagColor }), [tag]);
   return <div className="tag-orb" title={tag.label} style={style} />;
 };
@@ -29,9 +29,14 @@ export const PictureTile: FC<PictureTileProps> = ({ picture }) => {
 
   return (
     <Card className="picture-tile mb-2 mr-2">
-      <Link to={`/picture/${picture.id}`}>
-        <Card.Img variant="top" src={imageUrl} className="picture-thumbnail" />
-      </Link>
+      <Conditional
+        condition={picture.analysisCompleted}
+        orElse={<Card.Img variant="top" src="thumbnail-placeholder.gif" className="picture-thumbnail" />}
+      >
+        <Link to={`/picture/${picture.id}`}>
+          <Card.Img variant="top" src={imageUrl} className="picture-thumbnail" />
+        </Link>
+      </Conditional>
       <Card.Body>
         <ul className="list-unstyled mb-0">
           <li className="font-weight-bold text-ellipsis">{picture.displayName}</li>
