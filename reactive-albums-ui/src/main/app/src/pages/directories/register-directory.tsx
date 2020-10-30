@@ -45,6 +45,11 @@ export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
 
   const [show, handleShow, handleClose] = useToggleState(false);
 
+  const cleanLocationOnBlur = (formikBag: FormikProps<RegisterDirectoryForm>) => () => {
+    const trimmed = formikBag.values.location.trim().trimChar('"');
+    formikBag.setFieldValue('location', trimmed);
+  };
+
   const onSubmitForm = (e: RegisterDirectoryForm, { resetForm }: FormikHelpers<RegisterDirectoryForm>) => {
     dispatch(registerDirectory(e))
       .then(unwrapResult)
@@ -80,6 +85,7 @@ export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
                       placeholder={t('directories.register_directories_button.form.field_location.placeholder')}
                       value={formikBag.values.location}
                       {...formikControlProps(formikBag, 'location')}
+                      onBlur={cleanLocationOnBlur(formikBag)}
                     />
                   </Form.Group>
 
@@ -96,10 +102,10 @@ export const RegisterDirectory: FC<RegisterDirectoryProps> = () => {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleClose}>
-                    {t('directories.register_directories_button.close-btn')}{' '}
+                    {t('directories.register_directories_button.close-btn')}
                   </Button>
                   <Button type="submit" variant="primary" disabled={!formikIsFormValid(formikBag)}>
-                    {t('directories.register_directories_button.add-btn')}{' '}
+                    {t('directories.register_directories_button.add-btn')}
                   </Button>
                 </Modal.Footer>
               </Form>
