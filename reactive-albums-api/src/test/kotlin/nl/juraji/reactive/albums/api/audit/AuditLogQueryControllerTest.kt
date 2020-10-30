@@ -28,7 +28,7 @@ import org.springframework.test.web.reactive.server.EntityExchangeResult
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.expectBody
 import reactor.core.publisher.Mono
-import java.time.LocalDateTime
+import java.time.Instant
 
 @ActiveProfiles("test")
 @ExtendWith(SpringExtension::class)
@@ -38,7 +38,7 @@ import java.time.LocalDateTime
 internal class AuditLogQueryControllerTest {
 
     private val fixture = Fixture {
-        register(LocalDateTime::class) { LocalDateTime.now() }
+        register(Instant::class) { Instant.now() }
         register(AggregateType::class) { AggregateType.PICTURE }
     }
 

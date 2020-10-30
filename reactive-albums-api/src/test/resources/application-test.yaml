@@ -24,16 +24,18 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/axon
+        locations:
+          - classpath:/db/migration/axon
     - tenantId: projections
       url: jdbc:h2:mem:albums-projections-db
       username: albums
       password: albums
       driver-class-name: org.h2.Driver
       flyway:
-        enabled: false # TODO: There are some MySQL specific index statements that won't run on H2
+        enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/projections
+        locations:
+          - classpath:/db/migration/projections
     - tenantId: thumbnails
       url: jdbc:h2:mem:albums-thumbnails-db
       username: albums
@@ -42,7 +44,8 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/thumbnail
+        locations:
+          - classpath:/db/migration/thumbnail
     - tenantId: auditLog
       url: jdbc:h2:mem:albums-audit-log-db
       username: albums
@@ -51,4 +54,5 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/audit-log
+        locations:
+          - classpath:/db/migration/audit-log

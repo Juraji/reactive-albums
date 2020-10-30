@@ -17,5 +17,4 @@ create table PictureProjection_TagProjection
     primary key (PictureProjection_id, tags_id)
 );
 
-create fulltext index idx_ft_tag_label on TagProjection (label);
 create index idx_tag_label on TagProjection (label);

@@ -21,7 +21,7 @@ class InstallService(
 
     @EventListener(ContextRefreshedEvent::class)
     fun init() {
-        runInstallTask("runInstallPictureColorTags", this::runInstallPictureColorTags)
+        runInstallTask("installPictureColorTags", this::installPictureColorTags)
     }
 
     private fun runInstallTask(taskName: String, taskRunner: () -> Unit) {
@@ -32,6 +32,7 @@ class InstallService(
         ) == true
 
         if (!isTaskCompleted) {
+            logger.info("Running task: $taskName")
             taskRunner
                     .runCatching { invoke() }
                     .onSuccess {
@@ -39,15 +40,17 @@ class InstallService(
                                 "insert into InstallServiceCompletedTasks (taskName) values (:taskName)",
                                 mapOf("taskName" to taskName)
                         ) { stmt -> stmt.execute() }
+
+                        logger.info("Completed task: $taskName")
                     }
                     .onFailure { ex ->
-                        logger.error("Install task \"$taskName\" failed", ex)
+                        logger.error("Install task failed: $taskName", ex)
                     }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun runInstallPictureColorTags() {
+    private fun installPictureColorTags() {
         val yaml = YamlMapFactoryBean()
         yaml.setResources(ClassPathResource("predefined-tag-colors.yaml"))
         val map: Map<String, String> = yaml.`object` as Map<String, String>?

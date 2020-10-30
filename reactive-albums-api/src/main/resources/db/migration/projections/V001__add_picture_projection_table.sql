@@ -16,5 +16,4 @@ create table PictureProjection
     primary key (id)
 );
 
-create fulltext index idx_ft_picture_location on PictureProjection (location);
 create index idx_picture_parent_location on PictureProjection (parentLocation);

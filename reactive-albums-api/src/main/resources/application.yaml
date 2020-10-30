@@ -15,7 +15,8 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/axon
+        locations:
+          - classpath:/db/migration/axon
     - tenantId: projections
       url: "jdbc:mariadb://localhost:3306/projections"
       username: root
@@ -23,7 +24,9 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/projections
+        locations:
+          - classpath:/db/migration/projections
+          - classpath:/db/migration/projections-fulltext-indices
     - tenantId: thumbnails
       url: "jdbc:mariadb://localhost:3306/thumbnails"
       username: root
@@ -31,7 +34,8 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/thumbnails
+        locations:
+          - classpath:/db/migration/thumbnails
     - tenantId: auditLog
       url: "jdbc:mariadb://localhost:3306/audit_log"
       username: root
@@ -39,7 +43,8 @@ multi-tenancy:
       flyway:
         enabled: true
         baseline-on-migrate: true
-        locations: classpath:/db/migration/audit-log
+        locations:
+          - classpath:/db/migration/audit-log
 
 cors:
   maxAge: "3600"
