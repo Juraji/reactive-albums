@@ -11,9 +11,11 @@ import nl.juraji.reactive.albums.query.audit.repositories.AuditLogEntryRepositor
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventhandling.ResetHandler
+import org.axonframework.eventhandling.Timestamp
 import org.axonframework.messaging.annotation.MetaDataValue
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.time.Instant
 
 @Service
 @ProcessingGroup(ProcessingGroups.AUDIT)
@@ -21,18 +23,30 @@ class AuditLogEntryEventHandler(
         private val auditLogEntryRepository: AuditLogEntryRepository,
 ) {
     @EventHandler
-    fun on(evt: DirectoryEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.DIRECTORY, evt.directoryId, auditLogMessage).block()
+    fun on(
+            evt: DirectoryEvent,
+            @MetaDataValue("AUDIT") auditLogMessage: String,
+            @Timestamp timestamp: Instant,
+    ) {
+        saveLogEntry(AggregateType.DIRECTORY, evt.directoryId, auditLogMessage, timestamp).block()
     }
 
     @EventHandler
-    fun on(evt: PictureEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.PICTURE, evt.pictureId, auditLogMessage).block()
+    fun on(
+            evt: PictureEvent,
+            @MetaDataValue("AUDIT") auditLogMessage: String,
+            @Timestamp timestamp: Instant,
+    ) {
+        saveLogEntry(AggregateType.PICTURE, evt.pictureId, auditLogMessage, timestamp).block()
     }
 
     @EventHandler
-    fun on(evt: TagEvent, @MetaDataValue("AUDIT") auditLogMessage: String) {
-        saveLogEntry(AggregateType.TAG, evt.tagId, auditLogMessage).block()
+    fun on(
+            evt: TagEvent,
+            @MetaDataValue("AUDIT") auditLogMessage: String,
+            @Timestamp timestamp: Instant,
+    ) {
+        saveLogEntry(AggregateType.TAG, evt.tagId, auditLogMessage, timestamp).block()
     }
 
     @ResetHandler
@@ -40,10 +54,16 @@ class AuditLogEntryEventHandler(
         auditLogEntryRepository.getRepository().deleteAll()
     }
 
-    private fun saveLogEntry(type: AggregateType, id: EntityId, message: String): Mono<AuditLogEntry> =
+    private fun saveLogEntry(
+            type: AggregateType,
+            id: EntityId,
+            message: String,
+            timestamp: Instant,
+    ): Mono<AuditLogEntry> =
             auditLogEntryRepository.save(AuditLogEntry(
                     aggregateType = type,
                     aggregateId = id.toString(),
-                    message = message
+                    message = message,
+                    timestamp = timestamp
             ))
 }
