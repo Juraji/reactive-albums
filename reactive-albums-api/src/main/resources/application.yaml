@@ -59,6 +59,8 @@ axon:
         initialSegmentCount: 4
       audit:
         initialSegmentCount: 2
+      thumbnails:
+        initialSegmentCount: 3
 
 logging:
   level:

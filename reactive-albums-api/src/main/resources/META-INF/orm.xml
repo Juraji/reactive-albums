@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-mappings
+        xmlns="http://java.sun.com/xml/ns/persistence/orm"
+        version="2.0">
+    <mapped-superclass class="org.axonframework.eventhandling.AbstractSequencedDomainEventEntry" access="FIELD" metadata-complete="false">
+        <attributes>
+            <id name="globalIndex">
+                <generated-value generator="domainEventEntryGenerator" strategy="SEQUENCE"/>
+                <sequence-generator name="domainEventEntryGenerator" sequence-name="domain_event_entry_sequence" allocation-size="1"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+</entity-mappings>
