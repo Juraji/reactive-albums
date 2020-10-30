@@ -2,7 +2,6 @@ package nl.juraji.reactive.albums.query.projections.handlers
 
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.tags.TagType
-import nl.juraji.reactive.albums.domain.tags.commands.CreateTagCommand
 import nl.juraji.reactive.albums.domain.tags.events.TagCreatedEvent
 import nl.juraji.reactive.albums.domain.tags.events.TagDeletedEvent
 import nl.juraji.reactive.albums.query.projections.DirectoryTagLUTProjection
@@ -20,7 +19,7 @@ class DirectoryTagLUTProjectionEventHandler(
 ) {
 
     @EventHandler
-    fun on(evt: TagCreatedEvent, @MetaDataValue(CreateTagCommand.META_DIRECTORY_ID, required = false) directoryId: String?) {
+    fun on(evt: TagCreatedEvent, @MetaDataValue("DIRECTORY_ID", required = false) directoryId: String?) {
         if (evt.tagType == TagType.DIRECTORY && !directoryId.isNullOrEmpty()) {
             val entity = DirectoryTagLUTProjection(
                     tagId = evt.tagId.identifier,

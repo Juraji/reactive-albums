@@ -9,10 +9,10 @@ import nl.juraji.reactive.albums.domain.pictures.commands.SetPictureAnalysisStat
 import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.FileAttributesUpdatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.LoggerCompanion
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.SagaEventHandler
 import org.axonframework.modelling.saga.SagaLifecycle
@@ -36,7 +36,7 @@ class PictureAnalysisSaga {
     private lateinit var fileSystemService: FileSystemService
 
     @Autowired
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     var fileAttributesSet = false
     var imageDimensionsSet = false
@@ -63,7 +63,7 @@ class PictureAnalysisSaga {
 
     private fun onEventHandled(pictureId: PictureId) {
         if (fileAttributesSet && imageDimensionsSet && contentHashSet) {
-            commandGateway.send<Any>(SetPictureAnalysisStatusCommand(
+            commandDispatch.dispatchAndForget(SetPictureAnalysisStatusCommand(
                     pictureId = pictureId,
                     status = PictureAnalysisStatus.COMPLETED
             ))
@@ -73,7 +73,7 @@ class PictureAnalysisSaga {
     }
 
     private fun runAnalysis(pictureId: PictureId, location: Path) {
-        commandGateway.send<Any>(SetPictureAnalysisStatusCommand(
+        commandDispatch.dispatchAndForget(SetPictureAnalysisStatusCommand(
                 pictureId = pictureId,
                 status = PictureAnalysisStatus.IN_PROGRESS
         ))
@@ -85,7 +85,7 @@ class PictureAnalysisSaga {
                     it.size() to lastModifiedTime
                 }
                 .ifPresent { (fileSize, lastModifiedTime) ->
-                    commandGateway.send<Any>(SetFileAttributesCommand(
+                    commandDispatch.dispatchAndForget(SetFileAttributesCommand(
                             pictureId = pictureId,
                             fileSize = fileSize,
                             lastModifiedTime = lastModifiedTime
@@ -95,7 +95,7 @@ class PictureAnalysisSaga {
         logger.debug("Reading image dimensions for picture $pictureId at $location")
         imageService.getImageDimensions(location).blockOptional()
                 .ifPresent { (width, height) ->
-                    commandGateway.send<Any>(SetFileAttributesCommand(
+                    commandDispatch.dispatchAndForget(SetFileAttributesCommand(
                             pictureId = pictureId,
                             imageWidth = width,
                             imageHeight = height,
@@ -105,7 +105,7 @@ class PictureAnalysisSaga {
         logger.debug("Generating content hash for picture $pictureId at $location")
         imageService.createContentHash(location).blockOptional()
                 .ifPresent {
-                    commandGateway.send<Any>(SetContentHashCommand(
+                    commandDispatch.dispatchAndForget(SetContentHashCommand(
                             pictureId = pictureId,
                             contentHash = it
                     ))

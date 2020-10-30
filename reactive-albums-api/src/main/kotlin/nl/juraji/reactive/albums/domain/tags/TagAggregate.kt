@@ -24,15 +24,15 @@ class TagAggregate() {
     private lateinit var tagType: TagType
 
     @CommandHandler
-    constructor(cmd: CreateTagCommand) : this() {
+    constructor(cmd: CreateTagCommand, metaData: MetaData) : this() {
         Validate.isFalse(cmd.label.isBlank()) { "Tag label may not be blank" }
 
         val tagColor: RgbColor = cmd.tagColor ?: RgbColor.of(cmd.label)
         val textColor: RgbColor = cmd.textColor ?: tagColor.contrastColor()
 
-        val metaData: MetaData = MetaData
+        val evtMetaData: MetaData = MetaData
                 .with("AUDIT", "Tag created with label ${cmd.label}")
-                .mergedWith(cmd.metaData)
+                .mergedWith(metaData)
 
         AggregateLifecycle.apply(
                 TagCreatedEvent(
@@ -42,7 +42,7 @@ class TagAggregate() {
                         textColor = textColor,
                         tagType = cmd.tagType
                 ),
-                metaData
+                evtMetaData
         )
     }
 

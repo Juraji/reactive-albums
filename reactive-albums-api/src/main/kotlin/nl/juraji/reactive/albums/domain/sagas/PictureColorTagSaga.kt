@@ -6,9 +6,9 @@ import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagLinkedEvent
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.repositories.ColorTagLUTRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.services.ImageService
 import nl.juraji.reactive.albums.util.SagaAssociations
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.deadline.DeadlineManager
 import org.axonframework.deadline.annotation.DeadlineHandler
@@ -32,7 +32,7 @@ class PictureColorTagSaga {
     private lateinit var colorTagLUTRepository: ColorTagLUTRepository
 
     @Autowired
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @Autowired
     private lateinit var deadlineManager: DeadlineManager
@@ -57,9 +57,9 @@ class PictureColorTagSaga {
                 }
                 ?.forEach { cmd ->
                     SagaAssociations.associateWith("tagId", cmd.tagId.identifier)
-                    commandGateway.send<Any>(cmd).exceptionally {
-                        SagaAssociations.removeAssociationWith("tagId", cmd.tagId.identifier)
-                    }
+                    commandDispatch.dispatch<Any>(cmd)
+                            .doOnError { SagaAssociations.removeAssociationWith("tagId", cmd.tagId.identifier) }
+                            .subscribe()
                 }
     }
 

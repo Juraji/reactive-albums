@@ -14,17 +14,17 @@ import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectory
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.services.FileSystemService
 import nl.juraji.reactive.albums.util.returnsFluxOf
 import nl.juraji.reactive.albums.util.returnsManyMonoOf
 import nl.juraji.reactive.albums.util.returnsMonoOf
-import nl.juraji.reactive.albums.util.toCompletableFuture
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import reactor.kotlin.core.publisher.toMono
 import reactor.test.StepVerifier
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -39,7 +39,7 @@ internal class DirectoryCommandServiceTest {
     }
 
     @MockK
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @MockK
     private lateinit var directoryRepository: DirectoryRepository
@@ -92,8 +92,8 @@ internal class DirectoryCommandServiceTest {
 
 
         val commandSlot: CapturingSlot<RegisterDirectoryCommand> = slot()
-        every { commandGateway.send<DirectoryId>(capture(commandSlot)) } answers {
-            firstArg<DirectoryCommand>().directoryId.toCompletableFuture()
+        every { commandDispatch.dispatch<DirectoryId>(capture(commandSlot)) } answers {
+            firstArg<DirectoryCommand>().directoryId.toMono()
         }
 
         val result: Flux<DirectoryProjection> = directoryCommandService.registerDirectory(location, recursive)
@@ -121,8 +121,8 @@ internal class DirectoryCommandServiceTest {
         every { fileSystemService.listDirectoriesRecursive(location) } returnsFluxOf childDirectories.map { Paths.get(it.location) }
 
         val commandSlot: MutableList<RegisterDirectoryCommand> = mutableListOf()
-        every { commandGateway.send<DirectoryId>(capture(commandSlot)) } answers {
-            firstArg<DirectoryCommand>().directoryId.toCompletableFuture()
+        every { commandDispatch.dispatch<DirectoryId>(capture(commandSlot)) } answers {
+            firstArg<DirectoryCommand>().directoryId.toMono()
         }
 
         val result: Flux<DirectoryProjection> = directoryCommandService.registerDirectory(location, recursive)
@@ -141,7 +141,7 @@ internal class DirectoryCommandServiceTest {
         val directoryId = DirectoryId()
         val recursive = false
 
-        every { commandGateway.send<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toCompletableFuture() }
+        every { commandDispatch.dispatch<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toMono() }
 
         val result: Flux<DirectoryId> = directoryCommandService.unregisterDirectory(directoryId, recursive)
 
@@ -149,8 +149,8 @@ internal class DirectoryCommandServiceTest {
                 .expectNext(directoryId)
                 .verifyComplete()
 
-        verify { commandGateway.send<Any>(UnregisterDirectoryCommand(directoryId)) }
-        confirmVerified(commandGateway)
+        verify { commandDispatch.dispatch<Any>(UnregisterDirectoryCommand(directoryId)) }
+        confirmVerified(commandDispatch)
     }
 
     @Test
@@ -164,7 +164,7 @@ internal class DirectoryCommandServiceTest {
 
         every { directoryRepository.findById(rootDirectory.id) } returnsMonoOf rootDirectory
         every { directoryRepository.findAllByLocationStartsWith(directories[0].location) } returnsFluxOf directories
-        every { commandGateway.send<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toCompletableFuture() }
+        every { commandDispatch.dispatch<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toMono() }
 
         val result: Flux<DirectoryId> = directoryCommandService.unregisterDirectory(rootDirectoryId, recursive)
 
@@ -172,10 +172,10 @@ internal class DirectoryCommandServiceTest {
                 .expectNextSequence(listOf(rootDirectoryId, subDirectoryId1, subDirectoryId2))
                 .verifyComplete()
 
-        verify { commandGateway.send<Any>(UnregisterDirectoryCommand(rootDirectoryId)) }
-        verify { commandGateway.send<Any>(UnregisterDirectoryCommand(subDirectoryId1)) }
-        verify { commandGateway.send<Any>(UnregisterDirectoryCommand(subDirectoryId2)) }
-        confirmVerified(commandGateway)
+        verify { commandDispatch.dispatch<Any>(UnregisterDirectoryCommand(rootDirectoryId)) }
+        verify { commandDispatch.dispatch<Any>(UnregisterDirectoryCommand(subDirectoryId1)) }
+        verify { commandDispatch.dispatch<Any>(UnregisterDirectoryCommand(subDirectoryId2)) }
+        confirmVerified(commandDispatch)
     }
 
     @Test
@@ -183,7 +183,7 @@ internal class DirectoryCommandServiceTest {
         val directory: DirectoryProjection = fixture.next()
         val directoryId = DirectoryId(directory.id)
 
-        every { commandGateway.send<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toCompletableFuture() }
+        every { commandDispatch.dispatch<DirectoryId>(any()) } answers { firstArg<DirectoryCommand>().directoryId.toMono() }
         every { directoryRepository.subscribeFirst(any(), any()) } returnsMonoOf directory
 
         val result: Mono<DirectoryProjection> = directoryCommandService.updateDirectory(directoryId, true)
@@ -192,7 +192,7 @@ internal class DirectoryCommandServiceTest {
                 .expectNext(directory)
                 .verifyComplete()
 
-        verify { commandGateway.send<Any>(UpdateDirectoryCommand(directoryId, true)) }
-        confirmVerified(commandGateway)
+        verify { commandDispatch.dispatch<Any>(UpdateDirectoryCommand(directoryId, true)) }
+        confirmVerified(commandDispatch)
     }
 }

@@ -11,5 +11,5 @@ data class TagCreatedEvent(
         val label: String,
         val tagColor: RgbColor,
         val textColor: RgbColor,
-        val tagType: TagType
+        val tagType: TagType,
 ) : TagEvent

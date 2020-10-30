@@ -8,9 +8,8 @@ import nl.juraji.reactive.albums.domain.pictures.commands.DeletePictureCommand
 import nl.juraji.reactive.albums.domain.pictures.events.PictureCreatedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureMovedEvent
-import nl.juraji.reactive.albums.util.LoggerCompanion
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.util.SagaAssociations
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.EndSaga
 import org.axonframework.modelling.saga.SagaEventHandler
@@ -25,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired
 class DirectoryPicturesSaga {
 
     @Autowired
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @StartSaga
     @SagaEventHandler(associationProperty = DIRECTORY_ASSOC_KEY)
@@ -59,7 +58,7 @@ class DirectoryPicturesSaga {
 
         associatedPictureIds
                 .map { DeletePictureCommand(pictureId = it) }
-                .forEach { commandGateway.send<Any>(it) }
+                .forEach { commandDispatch.dispatchAndForget(it) }
     }
 
     companion object {

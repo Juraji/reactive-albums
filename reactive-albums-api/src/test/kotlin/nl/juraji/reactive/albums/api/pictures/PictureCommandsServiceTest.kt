@@ -13,15 +13,13 @@ import nl.juraji.reactive.albums.domain.pictures.PictureId
 import nl.juraji.reactive.albums.domain.pictures.commands.*
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
-import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.PictureProjection
 import nl.juraji.reactive.albums.query.projections.TagProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.util.returnsMonoOf
-import nl.juraji.reactive.albums.util.toCompletableFuture
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -34,7 +32,7 @@ import java.nio.file.Paths
 internal class PictureCommandsServiceTest {
 
     @MockK
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @MockK
     private lateinit var duplicateMatchRepository: DuplicateMatchRepository
@@ -53,7 +51,7 @@ internal class PictureCommandsServiceTest {
 
     @BeforeEach
     internal fun setUp() {
-        every { commandGateway.send<PictureId>(any()) } returns pictureId.toCompletableFuture()
+        every { commandDispatch.dispatch<PictureId>(any()) } returnsMonoOf pictureId
     }
 
     @Test
@@ -65,7 +63,7 @@ internal class PictureCommandsServiceTest {
                 .expectComplete()
                 .verify()
 
-        verify { commandGateway.send<Any>(ScanDuplicatesCommand(pictureId)) }
+        verify { commandDispatch.dispatch<Any>(ScanDuplicatesCommand(pictureId)) }
     }
 
     @Test
@@ -89,13 +87,13 @@ internal class PictureCommandsServiceTest {
                 .verify()
 
         verify(exactly = 1) {
-            commandGateway.send<Any>(MovePictureCommand(
+            commandDispatch.dispatch<Any>(MovePictureCommand(
                     pictureId,
                     DirectoryId(targetDirectory.id),
                     Paths.get(targetDirectory.location)
             ))
         }
-        confirmVerified(commandGateway)
+        confirmVerified(commandDispatch)
     }
 
     @Test
@@ -107,8 +105,8 @@ internal class PictureCommandsServiceTest {
                 .expectComplete()
                 .verify()
 
-        verify(exactly = 1) { commandGateway.send<Any>(DeletePictureCommand(pictureId, true)) }
-        confirmVerified(commandGateway)
+        verify(exactly = 1) { commandDispatch.dispatch<Any>(DeletePictureCommand(pictureId, true)) }
+        confirmVerified(commandDispatch)
     }
 
     @Test
@@ -128,8 +126,8 @@ internal class PictureCommandsServiceTest {
                 .expectComplete()
                 .verify()
 
-        verify(exactly = 1) { commandGateway.send<Any>(LinkTagCommand(pictureId, tagId)) }
-        confirmVerified(commandGateway)
+        verify(exactly = 1) { commandDispatch.dispatch<Any>(LinkTagCommand(pictureId, tagId)) }
+        confirmVerified(commandDispatch)
     }
 
     @Test
@@ -149,7 +147,7 @@ internal class PictureCommandsServiceTest {
                 .expectComplete()
                 .verify()
 
-        verify(exactly = 1) { commandGateway.send<Any>(UnlinkTagCommand(pictureId, tagId)) }
-        confirmVerified(commandGateway)
+        verify(exactly = 1) { commandDispatch.dispatch<Any>(UnlinkTagCommand(pictureId, tagId)) }
+        confirmVerified(commandDispatch)
     }
 }

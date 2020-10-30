@@ -15,7 +15,6 @@ import nl.juraji.reactive.albums.query.projections.repositories.DirectoryReposit
 import nl.juraji.reactive.albums.query.projections.repositories.PictureRepository
 import nl.juraji.reactive.albums.query.projections.repositories.SyncPictureRepository
 import nl.juraji.reactive.albums.util.LoggerCompanion
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.beans.factory.annotation.Qualifier
@@ -39,7 +38,7 @@ class FileWatchService(
         private val directoryRepository: DirectoryRepository,
         private val pictureRepository: PictureRepository,
         private val fileSystemService: FileSystemService,
-        private val commandGateway: CommandGateway,
+        private val commandDispatch: CommandDispatch,
         private val directoryStateUpdateService: DirectoryStateUpdateService,
         @Qualifier("fileWatchScheduler") private val fileWatchScheduler: Scheduler,
 ) {
@@ -137,20 +136,25 @@ class FileWatchService(
         val addPicture: () -> Unit = {
             logger.debug("Found new file in $eventPath (for $directoryId)")
 
-            fileSystemService.readContentType(eventPath).subscribe { contentType ->
-                commandGateway.send<Unit>(CreatePictureCommand(
-                        pictureId = PictureId(),
-                        location = eventPath,
-                        contentType = contentType,
-                        directoryId = directoryId,
-                ))
-            }
+            fileSystemService
+                    .readContentType(eventPath)
+                    .map { contentType ->
+                        CreatePictureCommand(
+                                pictureId = PictureId(),
+                                location = eventPath,
+                                contentType = contentType,
+                                directoryId = directoryId,
+                        )
+                    }
+                    .flatMap { commandDispatch.dispatch<Unit>(it) }
+                    .subscribe()
+
         }
 
         val addDirectory: () -> Unit = {
             logger.debug("Found new directory $eventPath (for $directoryId)")
 
-            commandGateway.send<Unit>(
+            commandDispatch.dispatchAndForget(
                     RegisterDirectoryCommand(
                             directoryId = DirectoryId(),
                             location = eventPath
@@ -165,7 +169,7 @@ class FileWatchService(
         pictureRepository.findByLocation(eventPath.toString()).subscribe {
             logger.debug("File modified $directoryId (for $directoryId)")
 
-            commandGateway.send<Unit>(AnalyzePictureMetaDataCommand(
+            commandDispatch.dispatchAndForget(AnalyzePictureMetaDataCommand(
                     pictureId = PictureId(it.id),
                     pictureLocation = eventPath,
             ))
@@ -176,7 +180,7 @@ class FileWatchService(
         pictureRepository.findByLocation(eventPath.toString()).subscribe {
             logger.debug("File deleted $eventPath (for $directoryId)")
 
-            commandGateway.send<Unit>(DeletePictureCommand(
+            commandDispatch.dispatchAndForget(DeletePictureCommand(
                     pictureId = PictureId(it.id),
             ))
         }
@@ -184,7 +188,7 @@ class FileWatchService(
         directoryRepository.findAllByLocationStartsWith(eventPath.toString()).subscribe {
             logger.debug("Directory deleted $eventPath (for $directoryId)")
 
-            commandGateway.send<Unit>(
+            commandDispatch.dispatchAndForget(
                     UnregisterDirectoryCommand(
                             directoryId = DirectoryId(it.id)
                     )
@@ -228,7 +232,7 @@ class FileWatchService(
 class DirectoryStateUpdateService(
         private val fileSystemService: SyncFileSystemService,
         private val pictureRepository: SyncPictureRepository,
-        private val commandGateway: CommandGateway,
+        private val commandDispatch: CommandDispatch,
         @Qualifier("fileWatchExecutor") private val fileWatchExecutor: ExecutorService,
 ) {
 
@@ -245,7 +249,7 @@ class DirectoryStateUpdateService(
                 knownPictureIds
                         .filter { (path) -> path !in files }
                         .forEach { (_, id) ->
-                            commandGateway.send<Unit>(DeletePictureCommand(
+                            commandDispatch.dispatchAndForget(DeletePictureCommand(
                                     pictureId = PictureId(id),
                             ))
                         }
@@ -255,7 +259,7 @@ class DirectoryStateUpdateService(
                         .filter { it !in knownPictureIds.keys }
                         .map { it to fileSystemService.readContentType(it) }
                         .forEach { (location, contentType) ->
-                            commandGateway.send<Unit>(CreatePictureCommand(
+                            commandDispatch.dispatchAndForget(CreatePictureCommand(
                                     pictureId = PictureId(),
                                     location = location,
                                     contentType = contentType,

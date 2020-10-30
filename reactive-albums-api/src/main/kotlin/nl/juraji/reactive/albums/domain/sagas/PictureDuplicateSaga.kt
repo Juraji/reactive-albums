@@ -7,8 +7,8 @@ import nl.juraji.reactive.albums.domain.pictures.commands.UnlinkDuplicateCommand
 import nl.juraji.reactive.albums.domain.pictures.events.DuplicateLinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.util.SagaAssociations
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.SagaEventHandler
 import org.axonframework.modelling.saga.SagaLifecycle
@@ -23,15 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired
 class PictureDuplicateSaga {
 
     @Autowired
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
     fun on(evt: DuplicateLinkedEvent) {
         SagaAssociations.associateWith("targetId", evt.targetId.toString())
 
-        commandGateway.runCatching {
-            sendAndWait<Any>(LinkDuplicateCommand(
+        commandDispatch.runCatching {
+            dispatchBlocking<Any>(LinkDuplicateCommand(
                     pictureId = evt.targetId,
                     targetId = evt.pictureId,
                     similarity = evt.similarity
@@ -42,8 +42,8 @@ class PictureDuplicateSaga {
     @SagaEventHandler(associationProperty = "pictureId")
     fun onSourceUnlink(evt: DuplicateUnlinkedEvent) {
         if (SagaAssociations.hasAssociation("targetId", evt.targetId.toString())) {
-            commandGateway.runCatching {
-                sendAndWait<Any>(UnlinkDuplicateCommand(
+            commandDispatch.runCatching {
+                dispatchBlocking<Any>(UnlinkDuplicateCommand(
                         pictureId = evt.targetId,
                         targetId = evt.pictureId,
                 ))
@@ -55,12 +55,10 @@ class PictureDuplicateSaga {
     fun on(evt: PictureDeletedEvent) {
         val targetIds: List<PictureId> = SagaAssociations.getAssociatedValues("targetId", ::PictureId)
         targetIds.forEach { targetId ->
-            commandGateway.runCatching {
-                send<Any>(UnlinkDuplicateCommand(
-                        pictureId = targetId,
-                        targetId = evt.pictureId,
-                ))
-            }
+            commandDispatch.dispatchAndForget(UnlinkDuplicateCommand(
+                    pictureId = targetId,
+                    targetId = evt.pictureId,
+            ))
         }
     }
 

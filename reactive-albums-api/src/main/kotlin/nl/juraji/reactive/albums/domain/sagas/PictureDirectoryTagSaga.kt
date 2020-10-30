@@ -9,8 +9,8 @@ import nl.juraji.reactive.albums.domain.pictures.events.PictureMovedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.TagUnlinkedEvent
 import nl.juraji.reactive.albums.domain.tags.TagId
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryTagLUTRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.util.SagaAssociations
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.modelling.saga.EndSaga
 import org.axonframework.modelling.saga.SagaEventHandler
@@ -29,7 +29,7 @@ class PictureDirectoryTagSaga {
     private lateinit var directoryTagLUTRepository: DirectoryTagLUTRepository
 
     @Autowired
-    private lateinit var commandGateway: CommandGateway
+    private lateinit var commandDispatch: CommandDispatch
 
     @StartSaga
     @SagaEventHandler(associationProperty = "pictureId")
@@ -44,7 +44,7 @@ class PictureDirectoryTagSaga {
         )
 
         SagaAssociations.associateWith(LINKED_TAG_ASSOC_KEY, tagId.identifier)
-        commandGateway.sendAndWait<Unit>(cmd)
+        commandDispatch.dispatchBlocking<Unit>(cmd)
     }
 
     @SagaEventHandler(associationProperty = "pictureId")
@@ -56,14 +56,14 @@ class PictureDirectoryTagSaga {
 
         if (linkedTagId != null) {
             SagaAssociations.associateWith(UNLINKED_TAG_ASSOC_KEY, linkedTagId.identifier)
-            commandGateway.sendAndWait<Unit>(UnlinkTagCommand(
+            commandDispatch.dispatchBlocking<Unit>(UnlinkTagCommand(
                     pictureId = evt.pictureId,
                     tagId = linkedTagId
             ))
         }
 
         SagaAssociations.associateWith(LINKED_TAG_ASSOC_KEY, newTagId.identifier)
-        commandGateway.sendAndWait<Unit>(LinkTagCommand(
+        commandDispatch.dispatchBlocking<Unit>(LinkTagCommand(
                 pictureId = evt.pictureId,
                 tagId = newTagId,
         ))

@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.api.directories
 
-import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.domain.ValidateAsync
 import nl.juraji.reactive.albums.domain.directories.DirectoryId
 import nl.juraji.reactive.albums.domain.directories.commands.RegisterDirectoryCommand
@@ -8,8 +7,8 @@ import nl.juraji.reactive.albums.domain.directories.commands.UnregisterDirectory
 import nl.juraji.reactive.albums.domain.directories.commands.UpdateDirectoryCommand
 import nl.juraji.reactive.albums.query.projections.DirectoryProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DirectoryRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.services.FileSystemService
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -19,10 +18,10 @@ import java.time.Duration
 
 @Service
 class DirectoryCommandService(
-        commandGateway: CommandGateway,
+        private val commandDispatch: CommandDispatch,
         private val directoryRepository: DirectoryRepository,
         private val fileSystemService: FileSystemService,
-) : CommandSenderService(commandGateway) {
+) {
 
     fun registerDirectory(location: Path, recursive: Boolean): Flux<DirectoryProjection> {
         return ValidateAsync.all(
@@ -38,7 +37,7 @@ class DirectoryCommandService(
 
             directories
                     .map { RegisterDirectoryCommand(directoryId = DirectoryId(), location = it) }
-                    .flatMap { send<DirectoryId>(it) }
+                    .flatMap { commandDispatch.dispatch<DirectoryId>(it) }
                     .flatMap { id -> directoryRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
         }
     }
@@ -55,7 +54,7 @@ class DirectoryCommandService(
 
         return directoryIds
                 .map { UnregisterDirectoryCommand(directoryId = it) }
-                .flatMap { send<DirectoryId>(it) }
+                .flatMap { commandDispatch.dispatch<DirectoryId>(it) }
     }
 
     fun updateDirectory(directoryId: DirectoryId, automaticScanEnabled: Boolean?): Mono<DirectoryProjection> {
@@ -64,7 +63,7 @@ class DirectoryCommandService(
                 automaticScanEnabled = automaticScanEnabled
         )
 
-        return send<DirectoryId>(command)
+        return commandDispatch.dispatch<DirectoryId>(command)
                 .flatMap { id -> directoryRepository.subscribeFirst(updateTimeout) { it.id == id.identifier } }
     }
 

@@ -5,7 +5,6 @@ import nl.juraji.reactive.albums.domain.tags.TagType
 import nl.juraji.reactive.albums.domain.tags.commands.CreateTagCommand
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import nl.juraji.reactive.albums.util.RgbColor
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.beans.factory.config.YamlMapFactoryBean
 import org.springframework.context.event.ContextRefreshedEvent
 import org.springframework.context.event.EventListener
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class InstallService(
-        private val commandGateway: CommandGateway,
+        private val commandDispatch: CommandDispatch,
         private val jdbcTemplate: NamedParameterJdbcTemplate,
 ) {
 
@@ -55,7 +54,7 @@ class InstallService(
                 ?: throw IllegalStateException("Could not load predefined-tag-colors.yaml")
 
         map.forEach { (label, color) ->
-            commandGateway.send<Unit>(CreateTagCommand(
+            commandDispatch.dispatchAndForget(CreateTagCommand(
                     tagId = TagId(),
                     label = label,
                     tagColor = RgbColor.of(color),

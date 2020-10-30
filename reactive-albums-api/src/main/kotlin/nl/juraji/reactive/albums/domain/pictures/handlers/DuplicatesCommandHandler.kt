@@ -1,6 +1,5 @@
 package nl.juraji.reactive.albums.domain.pictures.handlers
 
-import nl.juraji.reactive.albums.api.CommandSenderService
 import nl.juraji.reactive.albums.configuration.PicturesAggregateConfiguration
 import nl.juraji.reactive.albums.configuration.ProcessingGroups
 import nl.juraji.reactive.albums.domain.Validate
@@ -9,9 +8,9 @@ import nl.juraji.reactive.albums.domain.pictures.commands.LinkDuplicateCommand
 import nl.juraji.reactive.albums.domain.pictures.commands.ScanDuplicatesCommand
 import nl.juraji.reactive.albums.domain.pictures.events.ContentHashUpdatedEvent
 import nl.juraji.reactive.albums.query.projections.repositories.SyncContentHashRepository
+import nl.juraji.reactive.albums.services.CommandDispatch
 import nl.juraji.reactive.albums.util.LoggerCompanion
 import org.axonframework.commandhandling.CommandHandler
-import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.stereotype.Service
@@ -20,10 +19,10 @@ import java.util.*
 @Service
 @ProcessingGroup(ProcessingGroups.PICTURE_ANALYSIS)
 class DuplicatesCommandHandler(
-        commandGateway: CommandGateway,
+        private val commandDispatch: CommandDispatch,
         private val syncContentHashRepository: SyncContentHashRepository,
         private val configuration: PicturesAggregateConfiguration,
-) : CommandSenderService(commandGateway) {
+) {
 
     @CommandHandler
     fun handle(cmd: ScanDuplicatesCommand): PictureId {
@@ -37,7 +36,7 @@ class DuplicatesCommandHandler(
                 .map { compareHashes(contentHash, it.pictureId, it.contentHash) }
                 .filter { (_, similarity) -> similarity >= configuration.duplicateSimilarity }
                 .forEach { (targetId, similarity) ->
-                    send<Any>(LinkDuplicateCommand(
+                    commandDispatch.dispatchAndForget(LinkDuplicateCommand(
                             pictureId = cmd.pictureId,
                             targetId = PictureId(targetId),
                             similarity = similarity
@@ -49,7 +48,7 @@ class DuplicatesCommandHandler(
 
     @EventHandler
     fun on(evt: ContentHashUpdatedEvent) {
-        send<Unit>(ScanDuplicatesCommand(pictureId = evt.pictureId, contentHash = evt.contentHash))
+        commandDispatch.dispatchAndForget(ScanDuplicatesCommand(pictureId = evt.pictureId, contentHash = evt.contentHash))
     }
 
     private fun compareHashes(source: BitSet, targetId: String, target: BitSet): Pair<String, Float> {
