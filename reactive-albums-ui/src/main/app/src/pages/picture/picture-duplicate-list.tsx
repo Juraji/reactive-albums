@@ -1,6 +1,6 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import Card from 'react-bootstrap/Card';
-import { DuplicateMatch, ReactiveEvent } from '@types';
+import { DuplicateMatch, PartialPicture, ReactiveEvent } from '@types';
 import { Conditional, ConfirmModal, DeletePictureButton } from '@components';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ListGroupItem from 'react-bootstrap/ListGroupItem';
@@ -28,13 +28,19 @@ interface DuplicateMatchRowProps {
 }
 
 export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
-  const targetPicture = match.target;
   const thumbnailUrl = useApiUrl('pictures', match.targetId, 'thumbnail');
   const { t } = useTranslation();
   const { addToast } = useToasts();
   const dispatch = useDispatch();
 
   const [isShowUnlinkConfirm, showUnlinkConfirm, hideUnlinkConfirm] = useToggleState(false);
+  const targetPicture = useMemo<PartialPicture>(
+    () => ({
+      id: match.targetId,
+      displayName: match.targetDisplayName,
+    }),
+    [match]
+  );
 
   function onUnlinkDuplicateConfirmed() {
     dispatch(unlinkDuplicateMatch({ pictureId: match.pictureId, targetId: match.targetId }))
@@ -45,18 +51,18 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
   }
 
   return (
-    <Conditional condition={!!targetPicture}>
+    <>
       <ListGroupItem className="duplicate-match-row">
         <div className="duplicate-match-details d-flex flex-row mb-1">
           <Link to={`/picture/${match.targetId}`}>
             <img
               src={thumbnailUrl}
               className="img-thumbnail p-0 duplicate-match-thumbnail"
-              alt={targetPicture?.displayName}
+              alt={match?.targetDisplayName}
             />
           </Link>
           <h6 className="duplicate-match-display-name text-ellipsis flex-grow-1 mx-1">
-            <span>{targetPicture?.displayName}</span>
+            <span>{match?.targetDisplayName}</span>
             <br />
             <small>{match.similarity}%</small>
           </h6>
@@ -72,7 +78,7 @@ export const DuplicateMatchRow: FC<DuplicateMatchRowProps> = ({ match }) => {
       <ConfirmModal show={isShowUnlinkConfirm} onConfirm={onUnlinkDuplicateConfirmed} onCancel={hideUnlinkConfirm}>
         {t('picture.duplicates_list.unlink_single_button.confirm', targetPicture)}
       </ConfirmModal>
-    </Conditional>
+    </>
   );
 };
 

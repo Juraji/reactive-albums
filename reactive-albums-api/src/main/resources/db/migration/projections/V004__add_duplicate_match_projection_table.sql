@@ -1,11 +1,13 @@
 create table DuplicateMatchProjection
 (
-    id             varchar(255) not null,
-    createdAt      datetime(3)  not null,
-    lastModifiedAt datetime(3)  not null,
-    pictureId      varchar(255) not null,
-    similarity     integer      not null,
-    targetId       varchar(255) not null,
+    id                 varchar(255)  not null,
+    createdAt          datetime(3)   not null,
+    lastModifiedAt     datetime(3)   not null,
+    pictureId          varchar(255)  not null,
+    targetId           varchar(255)  not null,
+    similarity         integer       not null,
+    pictureDisplayName varchar(4096) not null,
+    targetDisplayName  varchar(4096) not null,
     primary key (id)
 );
 

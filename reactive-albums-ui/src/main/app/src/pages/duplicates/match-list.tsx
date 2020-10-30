@@ -23,7 +23,7 @@ const MatchListItem: FC<MatchListItemProps> = ({ match, selectedMatch, onMatchSe
 
   return (
     <tr className={rowClassName} onClick={() => onMatchSelect(match)}>
-      <td>{match.picture?.displayName}</td>
+      <td>{match.pictureDisplayName}</td>
       <td className="font-weight-bold">{match.similarity}%</td>
     </tr>
   );

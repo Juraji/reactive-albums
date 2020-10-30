@@ -1,4 +1,4 @@
-import { Picture } from '@types';
+import { PartialPicture } from '@types';
 import React, { ChangeEvent, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useToggleState } from '@hooks';
@@ -11,7 +11,7 @@ import { ConfirmModal } from './confirm-modal';
 import FormCheck from 'react-bootstrap/FormCheck';
 
 interface DeletePictureButtonProps {
-  picture: Picture;
+  picture: PartialPicture;
   onDeleteConfirmed?: () => void;
 }
 

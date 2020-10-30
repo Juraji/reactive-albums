@@ -25,6 +25,11 @@ export interface Picture extends Audited {
   imageHeight?: number;
 }
 
+export interface PartialPicture {
+  id: string;
+  displayName: string;
+}
+
 export interface Color {
   hexadecimal: string;
 }
@@ -34,6 +39,6 @@ export interface DuplicateMatch extends Audited {
   pictureId: string;
   targetId: string;
   similarity: number;
-  picture?: Picture;
-  target?: Picture;
+  pictureDisplayName: string;
+  targetDisplayName: string;
 }

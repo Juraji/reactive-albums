@@ -6,6 +6,7 @@ import nl.juraji.reactive.albums.domain.pictures.events.DuplicateUnlinkedEvent
 import nl.juraji.reactive.albums.domain.pictures.events.PictureDeletedEvent
 import nl.juraji.reactive.albums.query.projections.DuplicateMatchProjection
 import nl.juraji.reactive.albums.query.projections.repositories.DuplicateMatchRepository
+import nl.juraji.reactive.albums.query.projections.repositories.SyncPictureRepository
 import org.axonframework.common.IdentifierFactory
 import org.axonframework.config.ProcessingGroup
 import org.axonframework.eventhandling.EventHandler
@@ -17,6 +18,7 @@ import kotlin.math.roundToInt
 @ProcessingGroup(ProcessingGroups.PROJECTIONS)
 class DuplicateMatchProjectionsEventHandler(
         private val duplicateMatchRepository: DuplicateMatchRepository,
+        private val pictureRepository: SyncPictureRepository,
 ) {
 
     @EventHandler
@@ -25,7 +27,9 @@ class DuplicateMatchProjectionsEventHandler(
                 id = IdentifierFactory.getInstance().generateIdentifier(),
                 pictureId = evt.pictureId.identifier,
                 targetId = evt.targetId.identifier,
-                similarity = (evt.similarity * 100.0).roundToInt()
+                similarity = (evt.similarity * 100.0).roundToInt(),
+                pictureDisplayName = pictureRepository.findById(evt.pictureId.identifier).map { it.displayName }.orElse(""),
+                targetDisplayName = pictureRepository.findById(evt.targetId.identifier).map { it.displayName }.orElse(""),
         )
 
         duplicateMatchRepository

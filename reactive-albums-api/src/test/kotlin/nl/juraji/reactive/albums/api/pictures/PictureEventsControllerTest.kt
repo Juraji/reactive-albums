@@ -68,7 +68,14 @@ internal class PictureEventsControllerTest {
     @Test
     fun getAllDuplicateMatches() {
         val fixture = Fixture {
-            register(DuplicateMatchProjection::class) { DuplicateMatchProjection(nextString(), nextString(), nextString(), nextInt()) }
+            register(DuplicateMatchProjection::class) { DuplicateMatchProjection(
+                    id = nextString(),
+                    pictureId = nextString(),
+                    targetId = nextString(),
+                    similarity = nextInt(),
+                    pictureDisplayName = nextString(),
+                    targetDisplayName = nextString()
+            ) }
             register(ServerSentEvent::class) { ServerSentEvent.builder<ReactiveEvent<DuplicateMatchProjection>>(next()).build() }
             register(EventType::class) { EventType.UPSERT }
         }
@@ -96,7 +103,14 @@ internal class PictureEventsControllerTest {
     @Test
     fun getPictureDuplicateMatches() {
         val fixture = Fixture {
-            register(DuplicateMatchProjection::class) { DuplicateMatchProjection(nextString(), nextString(), nextString(), nextInt()) }
+            register(DuplicateMatchProjection::class) { DuplicateMatchProjection(
+                    id = nextString(),
+                    pictureId = nextString(),
+                    targetId = nextString(),
+                    similarity = nextInt(),
+                    pictureDisplayName = nextString(),
+                    targetDisplayName = nextString()
+            ) }
             register(ServerSentEvent::class) { ServerSentEvent.builder<ReactiveEvent<DuplicateMatchProjection>>(next()).build() }
             register(EventType::class) { EventType.UPSERT }
         }

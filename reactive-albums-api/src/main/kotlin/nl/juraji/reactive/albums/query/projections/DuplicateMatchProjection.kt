@@ -10,8 +10,8 @@ data class DuplicateMatchProjection(
         val pictureId: String,
         val targetId: String,
         val similarity: Int,
+        val pictureDisplayName: String,
+        val targetDisplayName: String,
         override var createdAt: LocalDateTime? = null,
         override var lastModifiedAt: LocalDateTime? = null,
-        @Transient val picture: PictureProjection? = null,
-        @Transient val target: PictureProjection? = null,
 ): AuditedProjection(createdAt, lastModifiedAt)

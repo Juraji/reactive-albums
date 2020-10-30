@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { DuplicateMatch, Picture } from '@types';
+import { DuplicateMatch } from '@types';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useApiUrl, useDispatch, useToggleState } from '@hooks';
@@ -15,17 +15,20 @@ import { unlinkDuplicateMatch } from '@reducers';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useToasts } from 'react-toast-notifications';
 import { Link } from 'react-router-dom';
+import { usePictureById } from '../../@reducers/pictures/hooks/use-picture-by-id';
 
 interface MatchViewPictureProps {
   match: DuplicateMatch;
-  picture: Picture;
+  pictureId: string;
 }
 
-export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture, match }) => {
+export const MatchViewPicture: FC<MatchViewPictureProps> = ({ match, pictureId }) => {
   const { t } = useTranslation();
-  const imageUrl = useApiUrl('pictures', picture.id, 'image');
 
-  return (
+  const picture = usePictureById(pictureId);
+  const imageUrl = useApiUrl('pictures', picture?.id ?? '', 'image');
+
+  return !!picture ? (
     <Card className="match-view-picture">
       <Card.Img variant="top" src={imageUrl} className="picture-image" />
       <Card.Body>
@@ -47,7 +50,7 @@ export const MatchViewPicture: FC<MatchViewPictureProps> = ({ picture, match }) 
         </ButtonGroup>
       </Card.Footer>
     </Card>
-  );
+  ) : null;
 };
 
 interface MatchesActionBarProps {
@@ -99,10 +102,10 @@ export const MatchView: FC<MatchViewProps> = ({ match }) => {
         <MatchesActionBar match={match} />
       </Col>
       <Col sm={12} lg={6} className="pb-4">
-        <MatchViewPicture match={match} picture={match.picture!} />
+        <MatchViewPicture match={match} pictureId={match.pictureId} />
       </Col>
       <Col sm={12} lg={6}>
-        <MatchViewPicture match={match} picture={match.target!} />
+        <MatchViewPicture match={match} pictureId={match.targetId} />
       </Col>
     </Row>
   );
