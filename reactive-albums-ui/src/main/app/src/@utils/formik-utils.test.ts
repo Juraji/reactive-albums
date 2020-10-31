@@ -1,5 +1,8 @@
 import { FieldMetaProps, FormikProps } from 'formik';
 import { formikIsFormValid, formikIsInvalid, formikIsValid } from '@utils';
+import installExtensions from './prototypes';
+
+installExtensions();
 
 interface TestForm {
   field1: string;

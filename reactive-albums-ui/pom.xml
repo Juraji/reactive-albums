@@ -54,11 +54,22 @@
                     </execution>
 
                     <execution>
+                        <id>test-frontend</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <arguments>test_ci</arguments>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>build-frontend</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <arguments>build</arguments>
                         </configuration>
