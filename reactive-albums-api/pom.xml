@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <kotlin.version>1.4.0</kotlin.version>
+        <kotlin.version>1.4.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <axon.version>4.3.3</axon.version>
         <imgscalr.version>4.2</imgscalr.version>
@@ -153,6 +153,7 @@
     </dependencies>
 
     <build>
+        <finalName>reactive-albums</finalName>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
