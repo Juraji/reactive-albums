@@ -4,6 +4,7 @@ on: [ push ]
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +22,9 @@ jobs:
         run: mvn -B test
 
   package:
+    name: Package
     runs-on: ubuntu-latest
+    needs: [test]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 14
@@ -34,10 +37,12 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Compile and run tests
+      - name: Build package
         run: mvn -B package -DskipTests
-      - run: mkdir staging && cp reactive-albums-api/target/*.jar staging
+      - name: Stage artifacts
+        run: mkdir staging && cp reactive-albums-api/target/*.jar staging
       - uses: actions/upload-artifact@v2
+        name: Upload artifacts
         with:
           name: Reactive Albums Boot Jar
           path: staging
